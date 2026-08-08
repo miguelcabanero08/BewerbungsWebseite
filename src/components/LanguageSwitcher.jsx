@@ -46,7 +46,7 @@ export default function LanguageSwitcher({ className = '' }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="glass absolute right-0 top-full z-50 mt-2 w-36 overflow-hidden rounded-xl p-1.5"
+            className="glass absolute left-0 top-full z-50 mt-2 w-36 overflow-hidden rounded-xl p-1.5 md:left-auto md:right-0"
           >
             {LANGUAGES.map((lang) => (
               <button
