@@ -269,7 +269,7 @@ export default function UeberMich() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="gradient-border relative order-1 lg:order-2 lg:col-span-2"
+          className="gradient-border relative order-1 rounded-3xl lg:order-2 lg:col-span-2"
         >
           <ImagePlaceholder
             src="/images/portrait.jpg"
