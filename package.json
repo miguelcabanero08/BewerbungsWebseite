@@ -9,12 +9,15 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "hash-password": "node scripts/hash-password.js"
+    "hash-password": "node scripts/hash-password.js",
+    "upload-protected-files": "node scripts/upload-protected-files.mjs"
   },
   "dependencies": {
+    "@vercel/blob": "^2.7.0",
     "bcryptjs": "^3.0.3",
     "cookie": "^2.0.1",
     "cookie-signature": "^1.2.2",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.43.0",
     "gsap": "^3.15.0",
     "lenis": "^1.3.25",

@@ -68,18 +68,25 @@ angemeldete Sessions bleiben bis zum Cookie-Ablauf (24h) gültig.
 
 ## Geschützte Dokumente hinzufügen
 
-1. Datei (z.B. PDF) nach `protected-files/` (Projekt-Root) legen.
+`protected-files/` ist absichtlich in `.gitignore` — das Repo ist öffentlich,
+die PDFs sollen es nicht sein. Sie liegen stattdessen in einem **privaten
+Vercel-Blob-Store** und werden erst nach erfolgreicher Login-Prüfung von der
+Function abgerufen (`api/documents/file.js`, siehe [Private
+Storage-Doku](https://vercel.com/docs/vercel-blob/private-storage)). Ohne
+gültige Vercel-Auth ist der Blob nicht erreichbar — kein öffentlicher Link.
+
+1. Datei (z.B. PDF) nach `protected-files/` (Projekt-Root, lokal, nicht im
+   Git-Repo) legen.
 2. In [`api/_lib/documents.js`](api/_lib/documents.js) im `DOCUMENTS`-Array
    einen Eintrag ergänzen (`{ id: '...', file: 'dateiname.pdf' }`) und die
    Titel/Beschreibung je Sprache in `DOCUMENTS_I18N` ergänzen.
-
-Dateien in `protected-files/` sind **nie** öffentlich erreichbar — sie liegen
-außerhalb von `public/`/`dist/` (Vite fasst sie nicht an, Vercels statisches
-Hosting liefert sie nicht aus) und werden ausschließlich über
-`/api/documents/file?id=...` ausgeliefert, was eine gültige, server-geprüfte
-Session voraussetzt. Damit die Datei zur Laufzeit in der Function verfügbar
-ist, bündelt `vercel.json` (`functions` → `includeFiles`) den kompletten
-Ordner explizit mit in die `api/documents/file.js`-Function.
+3. Hochladen in den Blob-Store:
+   ```bash
+   npm run upload-protected-files
+   ```
+   Braucht `BLOB_READ_WRITE_TOKEN` in `.env` (siehe
+   [Deployment](#deployment) → Blob-Store einrichten). Erneut ausführen, wenn
+   sich eine Datei ändert (z.B. neuer Lebenslauf).
 
 > **Hinweis:** Die Dokument-ID wird bewusst als Query-Parameter (`?id=...`)
 > übergeben statt als dynamisches Pfad-Segment (`api/documents/[id]/file.js`).
@@ -96,10 +103,19 @@ Ordner explizit mit in die `api/documents/file.js`-Function.
    *Production* und *Preview*):
    - `SESSION_SECRET`
    - `SITE_PASSWORD_HASH`
-3. Build-Command (`npm run build`) und Output-Directory (`dist`) sind bereits
+3. **Privaten Blob-Store einrichten** (für die geschützten PDFs, siehe oben):
+   - Projekt → **Storage**-Tab → **Create Database** → **Blob** → Access
+     **Private** wählen, mit dem Projekt verbinden.
+   - Auf Vercel selbst braucht die Function keinen manuellen Token — sobald
+     der Store verbunden ist, authentifiziert sich `api/documents/file.js`
+     automatisch (OIDC).
+   - Lokal: im gleichen Storage-Tab unter **".env.local"** den
+     `BLOB_READ_WRITE_TOKEN` kopieren, in `.env` (Projekt-Root) eintragen.
+   - Dann einmalig hochladen: `npm run upload-protected-files`.
+4. Build-Command (`npm run build`) und Output-Directory (`dist`) sind bereits
    in [`vercel.json`](vercel.json) hinterlegt — Vercel erkennt das
    Vite-Projekt zusätzlich automatisch.
-4. Deployen (Git-Push auf den verbundenen Branch, oder `npx vercel --prod`).
+5. Deployen (Git-Push auf den verbundenen Branch, oder `npx vercel --prod`).
 
 Vercel baut das Frontend (`vite build` → `dist/`) und deployt gleichzeitig
 jede Datei unter `api/` als eigene Serverless Function. `vercel.json` sorgt
