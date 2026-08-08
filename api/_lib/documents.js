@@ -1,6 +1,6 @@
 // Dokumente, die nur nach erfolgreichem Login zugänglich sind.
 // Datei muss unter protected-files/<file> liegen (Projekt-Root, siehe
-// vercel.json -> functions."api/documents/[id]/file.js".includeFiles).
+// vercel.json -> functions."api/documents/file.js".includeFiles).
 export const DOCUMENTS = [
   { id: 'lebenslauf', file: 'lebenslauf.pdf' },
   { id: 'zeugnis', file: 'zeugnis.pdf' },

@@ -66,7 +66,7 @@ export default function DocumentsSection() {
                         className="group glass relative flex h-full flex-col overflow-hidden rounded-2xl p-6"
                       >
                         <a
-                          href={`/api/documents/${doc.id}/file?lang=${language}`}
+                          href={`/api/documents/file?id=${doc.id}&lang=${language}`}
                           target="_blank"
                           rel="noreferrer"
                           className="flex h-full flex-col"

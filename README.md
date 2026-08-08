@@ -76,10 +76,17 @@ angemeldete Sessions bleiben bis zum Cookie-Ablauf (24h) gültig.
 Dateien in `protected-files/` sind **nie** öffentlich erreichbar — sie liegen
 außerhalb von `public/`/`dist/` (Vite fasst sie nicht an, Vercels statisches
 Hosting liefert sie nicht aus) und werden ausschließlich über
-`/api/documents/:id/file` ausgeliefert, was eine gültige, server-geprüfte
+`/api/documents/file?id=...` ausgeliefert, was eine gültige, server-geprüfte
 Session voraussetzt. Damit die Datei zur Laufzeit in der Function verfügbar
 ist, bündelt `vercel.json` (`functions` → `includeFiles`) den kompletten
-Ordner explizit mit in die `api/documents/[id]/file.js`-Function.
+Ordner explizit mit in die `api/documents/file.js`-Function.
+
+> **Hinweis:** Die Dokument-ID wird bewusst als Query-Parameter (`?id=...`)
+> übergeben statt als dynamisches Pfad-Segment (`api/documents/[id]/file.js`).
+> Plain Vercel Functions (ohne Next.js) unterstützen das Muster "dynamischer
+> Ordner + statischer Dateiname danach" nicht zuverlässig — die Route wurde
+> in der Praxis von der SPA-Fallback-Rewrite abgefangen statt die Function
+> aufzurufen.
 
 ## Deployment (Vercel)
 
