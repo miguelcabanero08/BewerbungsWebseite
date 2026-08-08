@@ -1,0 +1,7 @@
+node_modules/
+.env
+
+# Sensible Dokumente NICHT ins Git-Repo committen (auch wenn es privat ist) —
+# sonst liegen sie trotz Backend-Schutz im Repo-Verlauf.
+protected-files/*
+!protected-files/.gitkeep

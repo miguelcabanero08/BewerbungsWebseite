@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Dunkle Werte sind der Default. Tailwind generiert Utilities (bg-bg, text-fg, ...)
+     die var(--color-*) referenzieren, darum reicht es, die Variable weiter unten
+     unter [data-theme="light"] zu überschreiben, damit alles automatisch umschaltet. */
+  --color-bg: #05050a;
+  --color-surface: #0a0a12;
+  --color-surface-2: #10101c;
+  --color-fg: #ffffff;
+  --color-violet: #8b5cf6;
+  --color-cyan: #22d3ee;
+  --color-pink: #ec4899;
+
+  --animate-blob: blob 18s infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-gradient: gradient 6s ease infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-scroll-cue: scroll-cue 2s ease-in-out infinite;
+}
+
+:root {
+  color-scheme: dark;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glare-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Theme-Umschaltung: der Toggle setzt data-theme="light" auf <html> */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f6f4fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #efecf7;
+  --color-fg: #14121f;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(20, 18, 31, 0.08);
+  --glare-color: rgba(20, 18, 31, 0.07);
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(4%, -6%) scale(1.08); }
+  50% { transform: translate(-3%, 4%) scale(0.95); }
+  75% { transform: translate(-6%, -3%) scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+@keyframes gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scroll-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(10px); opacity: 1; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+html.lenis {
+  height: auto;
+}
+html.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+html.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* !important nötig: einzelne (lazy geladene) Komponentenstile wie DepthCarousel.css
+   setzen selbst cursor:pointer/grab mit gleicher Spezifität und werden je nach
+   Ladezeitpunkt später ins Dokument eingefügt, was diese Regel sonst überstimmen würde. */
+.cursor-none,
+.cursor-none * {
+  cursor: none !important;
+}
+
+/* Native <video controls>-Leiste wird vom Browser selbst gezeichnet (kein normales DOM),
+   daher braucht es die -webkit-media-controls-Pseudo-Elemente statt normalem CSS. */
+.cursor-none video::-webkit-media-controls,
+.cursor-none video::-webkit-media-controls-enclosure,
+.cursor-none video::-webkit-media-controls-panel,
+.cursor-none video::-webkit-media-controls-play-button,
+.cursor-none video::-webkit-media-controls-timeline,
+.cursor-none video::-webkit-media-controls-current-time-display,
+.cursor-none video::-webkit-media-controls-time-remaining-display,
+.cursor-none video::-webkit-media-controls-mute-button,
+.cursor-none video::-webkit-media-controls-volume-slider,
+.cursor-none video::-webkit-media-controls-fullscreen-button {
+  cursor: none !important;
+}
+
+.cursor-spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    500px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--color-violet) 12%, transparent),
+    transparent 70%
+  );
+}
+
+::selection {
+  background: var(--color-violet);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-violet), var(--color-cyan));
+  border-radius: 999px;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-violet), var(--color-cyan), var(--color-pink));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient 6s ease infinite;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), var(--glare-color), transparent 60%);
+}
+.group:hover .tilt-glare {
+  opacity: 1;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(120deg, var(--color-violet), var(--color-cyan), var(--color-pink));
+  background-size: 200% 200%;
+  animation: gradient 5s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}

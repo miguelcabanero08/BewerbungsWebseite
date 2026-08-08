@@ -1,0 +1,32 @@
+export const passwordGate = {
+  de: {
+    defaultTitle: 'Zugang geschützt',
+    defaultDescription: 'Bitte gib das Passwort ein, um fortzufahren.',
+    placeholder: 'Passwort',
+    submit: 'Entsperren',
+    submitting: 'Prüfe …',
+    close: 'Schliessen',
+    genericError: "Falsches Passwort. Versuch's nochmal.",
+    unreachableError: 'Server nicht erreichbar. Läuft das Backend?',
+  },
+  en: {
+    defaultTitle: 'Access protected',
+    defaultDescription: 'Please enter the password to continue.',
+    placeholder: 'Password',
+    submit: 'Unlock',
+    submitting: 'Checking …',
+    close: 'Close',
+    genericError: 'Wrong password. Try again.',
+    unreachableError: 'Server unreachable. Is the backend running?',
+  },
+  fr: {
+    defaultTitle: 'Accès protégé',
+    defaultDescription: 'Veuillez saisir le mot de passe pour continuer.',
+    placeholder: 'Mot de passe',
+    submit: 'Déverrouiller',
+    submitting: 'Vérification …',
+    close: 'Fermer',
+    genericError: 'Mot de passe incorrect. Réessayez.',
+    unreachableError: "Serveur inaccessible. Le backend est-il actif ?",
+  },
+}
