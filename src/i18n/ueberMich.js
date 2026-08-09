@@ -2,7 +2,7 @@ export const ueberMich = {
   de: {
     heading: 'Über mich',
     intro1:
-      'Mein Name ist Miguel Cabañero, ich bin 18 Jahre alt und wohne in Thun im Kanton Bern. Aktuell besuche ich die Informatikmittelschule (IMS) an der BWD Bern mit Schwerpunkt Applikationsentwicklung. Im Sommer 2027 schliesse ich die Berufsmaturität sowie den schulischen Teil meiner Ausbildung ab und suche ab diesem Zeitpunkt ein Praktikum als Informatiker Applikationsentwicklung EFZ.',
+      'Mein Name ist Miguel Cabañero, ich bin 18 Jahre alt und wohne in Thun im Kanton Bern. Aktuell besuche ich die Informatikmittelschule (IMS) an der BWD Bern mit Berufsmaturität Wirtschaft und Dienstleistung. Im Sommer 2027 schliesse ich die Berufsmaturität sowie den schulischen Teil meiner Ausbildung ab und suche ab diesem Zeitpunkt ein Praktikum als Informatiker Applikationsentwicklung EFZ.',
     intro2:
       'Mein Interesse an Technologie reicht bis in meine Kindheit zurück: Schon mit etwa 12 Jahren faszinierte mich, wie Programme im Hintergrund funktionieren und welche Überlegungen hinter digitalen Lösungen stecken. Mit rund 16 Jahren schrieb ich schliesslich meine ersten eigenen Zeilen Code. Das war der Ausgangspunkt für alles, was seither dazugekommen ist. Besonders begeistert mich an der Informatik die Kombination aus Logik, Kreativität und Problemlösung. Genau diese Kombination treibt mich auch ausserhalb des Codes an, wie die folgenden Abschnitte zeigen.',
     portraitAlt: 'Portrait von Miguel Cabañero',
@@ -62,7 +62,7 @@ export const ueberMich = {
       {
         period: '2024–2027',
         title: 'Informatikmittelschule (IMS)',
-        place: 'BWD Bern · Schwerpunkt Applikationsentwicklung',
+        place: 'BWD Bern · Berufsmaturität Wirtschaft und Dienstleistung',
         desc: 'Verbindung von Informatik mit wirtschaftlichen Themen und der Berufsmaturität mit Schwerpunkt Wirtschaft und Dienstleistung, Abschluss im Juli 2027 mit EFZ und Berufsmaturität. Durchschnitt EFZ 5.1, Durchschnitt Berufsmaturität 5.1.',
       },
     ],
@@ -94,7 +94,7 @@ export const ueberMich = {
   en: {
     heading: 'About me',
     intro1:
-      "My name is Miguel Cabañero, I'm 18 years old and live in Thun, in the canton of Bern. I currently attend the Informatikmittelschule (IMS) at BWD Bern, specializing in application development. In summer 2027, I will complete my vocational baccalaureate as well as the academic part of my training, and from then on I'm looking for an internship as an IT Specialist EFZ in application development.",
+      "My name is Miguel Cabañero, I'm 18 years old and live in Thun, in the canton of Bern. I currently attend the Informatikmittelschule (IMS) at BWD Bern, with a vocational baccalaureate in Business and Services. In summer 2027, I will complete my vocational baccalaureate as well as the academic part of my training, and from then on I'm looking for an internship as an IT Specialist EFZ in application development.",
     intro2:
       "My interest in technology goes back to my childhood: even at around 12 years old, I was fascinated by how programs work behind the scenes and the thinking behind digital solutions. At around 16, I finally wrote my first lines of code. That was the starting point for everything that has followed since. What excites me most about IT is the combination of logic, creativity and problem-solving. That same combination drives me outside of code too, as the following sections show.",
     portraitAlt: 'Portrait of Miguel Cabañero',
@@ -154,7 +154,7 @@ export const ueberMich = {
       {
         period: '2024–2027',
         title: 'Informatikmittelschule (IMS)',
-        place: 'BWD Bern · Application Development specialization',
+        place: 'BWD Bern · vocational baccalaureate in Business and Services',
         desc: 'Combines computer science with business subjects and the vocational baccalaureate with a focus on business and services, graduating in July 2027 with an EFZ and vocational baccalaureate. EFZ average 5.1, vocational baccalaureate average 5.1.',
       },
     ],
@@ -186,7 +186,7 @@ export const ueberMich = {
   fr: {
     heading: 'À propos de moi',
     intro1:
-      "Je m'appelle Miguel Cabañero, j'ai 18 ans et j'habite à Thoune, dans le canton de Berne. Je suis actuellement l'École de médiamatique (IMS) à la BWD Berne, avec spécialisation en développement d'applications. À l'été 2027, j'obtiendrai ma maturité professionnelle ainsi que la partie scolaire de ma formation, et je chercherai un stage en tant qu'informaticien CFC en développement d'applications à partir de ce moment-là.",
+      "Je m'appelle Miguel Cabañero, j'ai 18 ans et j'habite à Thoune, dans le canton de Berne. Je suis actuellement l'École de médiamatique (IMS) à la BWD Berne, avec maturité professionnelle économie et services. À l'été 2027, j'obtiendrai ma maturité professionnelle ainsi que la partie scolaire de ma formation, et je chercherai un stage en tant qu'informaticien CFC en développement d'applications à partir de ce moment-là.",
     intro2:
       "Mon intérêt pour la technologie remonte à mon enfance : dès l'âge de 12 ans environ, j'étais fasciné par le fonctionnement des programmes en coulisses et par les réflexions derrière les solutions numériques. Vers 16 ans, j'ai enfin écrit mes premières lignes de code. C'était le point de départ de tout ce qui a suivi. Ce qui me passionne le plus en informatique, c'est la combinaison de logique, de créativité et de résolution de problèmes. Cette même combinaison m'anime aussi en dehors du code, comme le montrent les sections suivantes.",
     portraitAlt: 'Portrait de Miguel Cabañero',
@@ -246,7 +246,7 @@ export const ueberMich = {
       {
         period: '2024–2027',
         title: 'Informatikmittelschule (IMS)',
-        place: 'BWD Berne · spécialisation développement d\'applications',
+        place: 'BWD Berne · maturité professionnelle économie et services',
         desc: "Combine l'informatique avec des matières économiques et la maturité professionnelle avec spécialisation économie et services, avec un diplôme en juillet 2027 (CFC et maturité professionnelle). Moyenne CFC 5.1, moyenne maturité professionnelle 5.1.",
       },
     ],

@@ -238,8 +238,51 @@ export default function UeberMich() {
       </svg>
 
       {/* Hero: Intro-Text + Portrait */}
-      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-5">
-        <div className="order-2 lg:order-1 lg:col-span-3">
+      {/* Mobile: Überschrift, Bild, Text. Ab lg: ursprüngliches Zwei-Spalten-Layout. */}
+      <div className="lg:hidden">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="font-display text-4xl font-bold text-fg sm:text-5xl"
+        >
+          {t.heading}
+        </motion.h1>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="gradient-border relative mt-8 rounded-3xl"
+        >
+          <ImagePlaceholder
+            src="/images/portrait.jpg"
+            alt={t.portraitAlt}
+            icon={HiUser}
+            zoomable
+            className="aspect-[3/4] w-full rounded-3xl"
+          />
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="mt-8 leading-relaxed text-fg/70"
+        >
+          {t.intro1}
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.26 }}
+          className="mt-4 leading-relaxed text-fg/70"
+        >
+          {t.intro2}
+        </motion.p>
+      </div>
+
+      <div className="hidden lg:grid lg:grid-cols-5 lg:items-center lg:gap-12">
+        <div className="lg:order-1 lg:col-span-3">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -269,7 +312,7 @@ export default function UeberMich() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="gradient-border relative order-1 rounded-3xl lg:order-2 lg:col-span-2"
+          className="gradient-border relative lg:order-2 lg:col-span-2 rounded-3xl"
         >
           <ImagePlaceholder
             src="/images/portrait.jpg"
