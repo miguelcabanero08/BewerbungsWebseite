@@ -7,6 +7,12 @@
 // Reihenfolge hier bestimmt die Anzeigereihenfolge auf der Projekte-Seite.
 export const projects = [
   {
+    id: 10,
+    image: '/images/TuneHead_preview.png',
+    github: 'https://github.com/miguelcabanero08/TuneHead',
+    live: 'https://tunehead.miguel-cabanero.ch',
+  },
+  {
     id: 9,
     image: '/images/SlapFighters_preview.png',
     github: 'https://github.com/miguelcabanero08/SlapFighters',

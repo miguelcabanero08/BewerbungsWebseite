@@ -142,6 +142,21 @@ export const projekte = {
             'Mein allererstes 3D-Spiel und allererstes selbst erstelltes 3D-Objekt: Einstieg in Unity-Spielphysik (Treffer-Impulse, Rauswurf von der Plattform) sowie Grundlagen von 3D-Modellierung und Charakteranimation in Blender.',
         },
       },
+      10: {
+        title: 'Tunehead',
+        category: 'privat',
+        description:
+          'Webbasiertes Stimmgerät für Gitarre und Bass mit Live-Tonhöhenerkennung über das Mikrofon, frei konfigurierbaren Stimmungen und Metronom. Die Pitch-Detection läuft komplett im Browser über die Web Audio API, Login und gespeicherte Stimmungen laufen über Supabase.',
+        abstract: {
+          ziel: 'Ein präzises, browserbasiertes Stimmgerät für Gitarre und Bass entwickeln, das Töne live über das Mikrofon erkennt, beliebige Stimmungen unterstützt (inkl. Presets wie Drop D oder DADGAD) und eigene Stimmungen zu einem Konto speichern kann.',
+          technologien:
+            'React, Vite, Web Audio API (eigene YIN-Pitch-Detection-Implementierung), Supabase (Auth, Postgres mit Row Level Security), CSS Modules.',
+          meineRolle:
+            'Einzelprojekt. Konzept, Audio-Signalverarbeitung, Frontend sowie Backend-Anbindung lagen komplett bei mir.',
+          wasGelernt:
+            'Implementierung eines Pitch-Detection-Algorithmus (YIN) von Grund auf statt einer fertigen Library, inklusive Umgang mit typischen Problemen bei echtem Audio-Input wie Oktavfehlern bei tiefen Saiten und Hintergrundrauschen. Ausserdem Aufbau einer sicheren Multi-User-Datenbank mit Row-Level-Security in Supabase, sodass Nutzer:innen ausschliesslich auf ihre eigenen Daten zugreifen können.',
+        },
+      },
     },
   },
 
@@ -286,6 +301,21 @@ export const projekte = {
             'Solo project. Concept, game logic, and modeling/animating the 3D characters in Blender were entirely my own.',
           wasGelernt:
             'My very first 3D game and very first self-made 3D object: getting started with Unity game physics (hit impulses, knocking players off the platform) as well as the basics of 3D modeling and character animation in Blender.',
+        },
+      },
+      10: {
+        title: 'Tunehead',
+        category: 'privat',
+        description:
+          'Web-based tuner for guitar and bass with live pitch detection via the microphone, freely configurable tunings and a metronome. Pitch detection runs entirely in the browser via the Web Audio API; login and saved tunings run on Supabase.',
+        abstract: {
+          ziel: 'Build a precise, browser-based tuner for guitar and bass that detects notes live via the microphone, supports arbitrary tunings (including presets like Drop D or DADGAD), and can save custom tunings to an account.',
+          technologien:
+            'React, Vite, Web Audio API (custom YIN pitch-detection implementation), Supabase (Auth, Postgres with Row Level Security), CSS Modules.',
+          meineRolle:
+            'Solo project. Concept, audio signal processing, frontend and backend integration were entirely my own.',
+          wasGelernt:
+            'Implementing a pitch-detection algorithm (YIN) from scratch instead of using an off-the-shelf library, including handling real-world audio issues like octave errors on low strings and background noise. Also building a secure multi-user database with Row Level Security in Supabase, so users can only ever access their own data.',
         },
       },
     },
@@ -433,6 +463,21 @@ export const projekte = {
             "Projet individuel. Le concept, la logique de jeu ainsi que la modélisation et l'animation des personnages 3D dans Blender étaient entièrement de mon ressort.",
           wasGelernt:
             "Mon tout premier jeu 3D et mon tout premier objet 3D créé moi-même : découverte de la physique de jeu Unity (impulsions lors des coups, éjection de la plateforme) ainsi que les bases de la modélisation 3D et de l'animation de personnages dans Blender.",
+        },
+      },
+      10: {
+        title: 'Tunehead',
+        category: 'privat',
+        description:
+          "Accordeur web pour guitare et basse avec détection de la hauteur en direct via le microphone, accordages librement configurables et métronome intégré. La détection de hauteur tourne entièrement dans le navigateur via la Web Audio API ; la connexion et les accordages enregistrés fonctionnent avec Supabase.",
+        abstract: {
+          ziel: "Développer un accordeur web précis pour guitare et basse qui détecte les notes en direct via le microphone, prend en charge des accordages arbitraires (avec des préréglages comme Drop D ou DADGAD) et permet d'enregistrer des accordages personnalisés sur un compte.",
+          technologien:
+            'React, Vite, Web Audio API (implémentation YIN de détection de hauteur réalisée moi-même), Supabase (Auth, Postgres avec Row Level Security), CSS Modules.',
+          meineRolle:
+            'Projet individuel. Le concept, le traitement du signal audio, le frontend ainsi que l\'intégration du backend étaient entièrement de mon ressort.',
+          wasGelernt:
+            "Implémentation d'un algorithme de détection de hauteur (YIN) entièrement par moi-même plutôt qu'avec une bibliothèque toute faite, y compris la gestion de problèmes réels comme les erreurs d'octave sur les cordes graves et le bruit de fond. Également mise en place d'une base de données multi-utilisateurs sécurisée avec Row Level Security dans Supabase, afin que chaque utilisateur·rice n'accède qu'à ses propres données.",
         },
       },
     },
