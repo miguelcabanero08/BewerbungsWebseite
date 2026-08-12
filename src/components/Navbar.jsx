@@ -13,6 +13,19 @@ import { common } from '../i18n/common.js'
 import LanguageSwitcher from './LanguageSwitcher.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
 
+// Inline statt der alten .text-gradient-Klasse — siehe Home.jsx für die Begründung
+// (Build-Pipeline entfernt -webkit-background-clip auch aus handgeschriebenem CSS,
+// dadurch war Farbverlauf-Text auf Safari/iOS unsichtbar).
+const logoGradientStyle = {
+  backgroundImage: 'linear-gradient(90deg, var(--color-violet), var(--color-cyan), var(--color-pink))',
+  backgroundSize: '200% auto',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+  WebkitTextFillColor: 'transparent',
+  animation: 'gradient 6s ease infinite',
+}
+
 function NavItem({ to, label, onClick }) {
   return (
     <NavLink
@@ -54,7 +67,7 @@ export default function Navbar() {
         className="glass-nav mx-auto flex max-w-5xl items-center justify-between rounded-full px-6 py-3"
       >
         <NavLink to="/" className="font-display text-lg font-semibold tracking-tight text-fg">
-          <span className="text-gradient">{t.nav.logo}</span>
+          <span style={logoGradientStyle}>{t.nav.logo}</span>
         </NavLink>
 
         <nav className="hidden items-center gap-8 md:flex">

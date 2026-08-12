@@ -17,6 +17,26 @@ const LightPillar = lazy(() => import('../components/LightPillar.jsx'))
 const FIRST_NAME = 'Miguel'
 const LAST_NAME = 'Cabañero'
 
+// Farbverlauf-Text per Inline-Style statt Tailwind-Utilities (bg-clip-text/text-transparent):
+// die Build-Pipeline hier (Tailwind v4 + Lightning CSS, keine Browserslist konfiguriert)
+// filtert das nötige -webkit-background-clip auch aus handgeschriebenem CSS wieder raus,
+// ohne das bleibt Farbverlauf-Text auf Safari/iOS komplett unsichtbar. Inline-Styles laufen
+// nicht durch diese Pipeline und sind davon nicht betroffen.
+const miguelGradientStyle = {
+  backgroundImage: 'linear-gradient(to right, var(--color-pink), var(--color-cyan))',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+  WebkitTextFillColor: 'transparent',
+}
+const cabaneroGradientStyle = {
+  backgroundImage: 'linear-gradient(to right, var(--color-violet), var(--color-cyan), var(--color-pink))',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+  WebkitTextFillColor: 'transparent',
+}
+
 const TECH_STACK = [
   'Java',
   'C#',
@@ -76,14 +96,20 @@ export default function Home() {
         <div className="relative flex w-full flex-col items-center">
           <TiltCard glare={false} tiltStrength={3} className="block">
             <h1 className="font-display flex flex-col">
-              <span className="font-mono flex flex-wrap bg-gradient-to-r from-pink to-cyan bg-clip-text text-[clamp(1.75rem,7.5vw,7rem)] font-extrabold leading-[1.15] text-transparent">
+              <span
+                className="font-mono flex flex-wrap text-[clamp(1.75rem,7.5vw,7rem)] font-extrabold leading-[1.15]"
+                style={miguelGradientStyle}
+              >
                 {FIRST_NAME.split('').map((ch, i) => (
                   <span key={i} className="name-letter" style={{ animationDelay: `${i * STAGGER}s` }}>
                     {ch}
                   </span>
                 ))}
               </span>
-              <span className="ml-4 flex flex-wrap bg-gradient-to-r from-violet via-cyan to-pink bg-clip-text text-[clamp(2.2rem,22vw_-_1.5rem,20rem)] font-bold leading-[0.82] tracking-tight text-transparent sm:ml-10">
+              <span
+                className="ml-4 flex flex-wrap text-[clamp(2.2rem,22vw_-_1.5rem,20rem)] font-bold leading-[0.82] tracking-tight sm:ml-10"
+                style={cabaneroGradientStyle}
+              >
                 {LAST_NAME.split('').map((ch, i) => (
                   <span
                     key={i}

@@ -199,14 +199,12 @@ body {
   border-radius: 999px;
 }
 
-.text-gradient {
-  background: linear-gradient(90deg, var(--color-violet), var(--color-cyan), var(--color-pink));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: gradient 6s ease infinite;
-}
+/* .text-gradient wurde entfernt: Farbverlauf-Text braucht -webkit-background-clip,
+   aber die Tailwind v4 / Lightning-CSS-Pipeline hier (keine Browserslist konfiguriert)
+   filtert dieses Präfix auch aus handgeschriebenem CSS wieder raus — auf Safari/iOS
+   blieb der Text dadurch unsichtbar. Gradient-Text läuft jetzt per Inline-Style
+   (siehe logoGradientStyle in Navbar.jsx, miguelGradientStyle/cabaneroGradientStyle
+   in Home.jsx), das umgeht die Pipeline komplett. */
 
 .glass {
   background: var(--glass-bg);
