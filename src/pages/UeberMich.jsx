@@ -52,7 +52,7 @@ const SKILL_GROUPS_META = [
   {
     icon: HiCodeBracket,
     skills: [
-      { name: 'Java', level: 85 },
+      { name: 'Java', level: 65 },
       { name: 'C#', level: 85 },
       { name: 'JavaScript', level: 80 },
       { name: 'TypeScript', level: 75 },
