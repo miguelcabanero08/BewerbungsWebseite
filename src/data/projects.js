@@ -7,6 +7,12 @@
 // Reihenfolge hier bestimmt die Anzeigereihenfolge auf der Projekte-Seite.
 export const projects = [
   {
+    id: 11,
+    image: '/images/ProfileAuth_preview.png',
+    github: 'https://github.com/miguelcabanero08/ProfileAuth',
+    live: 'https://profile.miguel-cabanero.ch',
+  },
+  {
     id: 10,
     image: '/images/TuneHead_preview.png',
     github: 'https://github.com/miguelcabanero08/TuneHead',

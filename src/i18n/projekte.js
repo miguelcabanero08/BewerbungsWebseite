@@ -157,6 +157,21 @@ export const projekte = {
             'Implementierung eines Pitch-Detection-Algorithmus (YIN) von Grund auf statt einer fertigen Library, inklusive Umgang mit typischen Problemen bei echtem Audio-Input wie Oktavfehlern bei tiefen Saiten und Hintergrundrauschen. Ausserdem Aufbau einer sicheren Multi-User-Datenbank mit Row-Level-Security in Supabase, sodass Nutzer:innen ausschliesslich auf ihre eigenen Daten zugreifen können.',
         },
       },
+      11: {
+        title: 'ProfileAuth',
+        category: 'privat',
+        description:
+          'Zentrales Konto-System für alle miguel-cabanero.ch-Webseiten: eine Anmeldung, die per geteiltem Cookie über alle Subdomains hinweg funktioniert. Profilverwaltung (Username, Avatar, E-Mail, Passwort, Kontolöschung) läuft ausschliesslich hier, andere Apps wie Tunehead lesen nur noch Username und Avatar und leiten für den Login hierher um.',
+        abstract: {
+          ziel: 'Ein einziges Konto-System aufbauen, das von allen eigenen Webseiten unter *.miguel-cabanero.ch gemeinsam genutzt wird: zentrale Anmeldung/Registrierung, Profilverwaltung (Username, Avatar-Upload, E-Mail- und Passwort-Änderung, Kontolöschung) sowie eine über alle Subdomains geteilte Login-Session, statt für jede Webseite ein eigenes Konto zu brauchen.',
+          technologien:
+            'React, Vite, Supabase (Auth, Postgres mit Row Level Security, Storage für Avatare), CSS Modules, cookie-basiertes Session-Sharing über Subdomains hinweg (Domain=.miguel-cabanero.ch), Vercel.',
+          meineRolle:
+            'Einzelprojekt. Konzept (inkl. Architektur-Dokumentation für Session-Sharing und Redirect-Flow), Frontend, Datenbankschema/RLS-Policies sowie die Migration von Tunehead auf das neue geteilte System lagen komplett bei mir.',
+          wasGelernt:
+            'Aufbau eines cookie-basierten Session-Sharings über mehrere Subdomains hinweg statt des Standard-localStorage, inklusive Absicherung des Redirect-Flows gegen Open-Redirect-Angriffe. Ausserdem die nachträgliche Migration einer bereits laufenden Webseite (Tunehead) auf ein neues, geteiltes Auth-System, ohne bestehende Funktionen zu brechen.',
+        },
+      },
     },
   },
 
@@ -316,6 +331,21 @@ export const projekte = {
             'Solo project. Concept, audio signal processing, frontend and backend integration were entirely my own.',
           wasGelernt:
             'Implementing a pitch-detection algorithm (YIN) from scratch instead of using an off-the-shelf library, including handling real-world audio issues like octave errors on low strings and background noise. Also building a secure multi-user database with Row Level Security in Supabase, so users can only ever access their own data.',
+        },
+      },
+      11: {
+        title: 'ProfileAuth',
+        category: 'privat',
+        description:
+          'Central account system for all miguel-cabanero.ch websites: a login that works across every subdomain via a shared cookie. Profile management (username, avatar, email, password, account deletion) lives exclusively here — other apps like Tunehead only read the username and avatar and redirect here for login.',
+        abstract: {
+          ziel: 'Build a single account system shared by all my own websites under *.miguel-cabanero.ch: central login/signup, profile management (username, avatar upload, email/password changes, account deletion), and a login session shared across every subdomain, instead of needing a separate account per website.',
+          technologien:
+            'React, Vite, Supabase (Auth, Postgres with Row Level Security, Storage for avatars), CSS Modules, cookie-based session sharing across subdomains (Domain=.miguel-cabanero.ch), Vercel.',
+          meineRolle:
+            'Solo project. Concept (including architecture documentation for session sharing and the redirect flow), frontend, database schema/RLS policies, and migrating Tunehead onto the new shared system were entirely my own.',
+          wasGelernt:
+            'Building cookie-based session sharing across multiple subdomains instead of default localStorage, including securing the redirect flow against open-redirect attacks. Also migrating an already-live website (Tunehead) onto a new shared auth system without breaking existing functionality.',
         },
       },
     },
@@ -478,6 +508,21 @@ export const projekte = {
             'Projet individuel. Le concept, le traitement du signal audio, le frontend ainsi que l\'intégration du backend étaient entièrement de mon ressort.',
           wasGelernt:
             "Implémentation d'un algorithme de détection de hauteur (YIN) entièrement par moi-même plutôt qu'avec une bibliothèque toute faite, y compris la gestion de problèmes réels comme les erreurs d'octave sur les cordes graves et le bruit de fond. Également mise en place d'une base de données multi-utilisateurs sécurisée avec Row Level Security dans Supabase, afin que chaque utilisateur·rice n'accède qu'à ses propres données.",
+        },
+      },
+      11: {
+        title: 'ProfileAuth',
+        category: 'privat',
+        description:
+          "Système de compte central pour tous les sites miguel-cabanero.ch : une connexion qui fonctionne sur tous les sous-domaines grâce à un cookie partagé. La gestion du profil (nom d'utilisateur, avatar, e-mail, mot de passe, suppression du compte) se fait exclusivement ici — d'autres applications comme Tunehead ne font que lire le nom d'utilisateur et l'avatar et redirigent ici pour la connexion.",
+        abstract: {
+          ziel: "Construire un système de compte unique partagé par tous mes propres sites sous *.miguel-cabanero.ch : connexion/inscription centralisée, gestion du profil (nom d'utilisateur, upload d'avatar, changement d'e-mail/mot de passe, suppression du compte), ainsi qu'une session de connexion partagée sur tous les sous-domaines, au lieu d'avoir besoin d'un compte séparé par site.",
+          technologien:
+            'React, Vite, Supabase (Auth, Postgres avec Row Level Security, Storage pour les avatars), CSS Modules, partage de session basé sur des cookies entre sous-domaines (Domain=.miguel-cabanero.ch), Vercel.',
+          meineRolle:
+            "Projet individuel. Le concept (y compris la documentation d'architecture pour le partage de session et le flux de redirection), le frontend, le schéma de base de données/politiques RLS, ainsi que la migration de Tunehead vers le nouveau système partagé étaient entièrement de mon ressort.",
+          wasGelernt:
+            "Mise en place d'un partage de session basé sur des cookies entre plusieurs sous-domaines au lieu du localStorage par défaut, y compris la sécurisation du flux de redirection contre les attaques par redirection ouverte (open redirect). Également la migration d'un site déjà en ligne (Tunehead) vers un nouveau système d'authentification partagé, sans casser les fonctionnalités existantes.",
         },
       },
     },
