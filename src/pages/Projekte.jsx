@@ -43,7 +43,7 @@ export default function Projekte() {
       </motion.h1>
       <p className="mt-4 max-w-xl text-fg/60">{t.intro}</p>
 
-      <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((p, i) => {
           const isExpanded = p.id === expandedId
           return (
@@ -59,7 +59,7 @@ export default function Projekte() {
                 ease: EASE,
                 layout: { duration: 0.5, ease: EASE },
               }}
-              className={isExpanded ? 'h-full sm:col-span-2 lg:col-span-3' : 'h-full'}
+              className={isExpanded ? 'h-full sm:col-span-2 lg:col-span-3 xl:col-span-4' : 'h-full'}
             >
               <AnimatePresence initial={false}>
                 {isExpanded ? (

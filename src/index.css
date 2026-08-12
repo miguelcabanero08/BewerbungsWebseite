@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-display: "Bricolage Grotesque", "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
@@ -29,6 +29,17 @@
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glare-color: rgba(255, 255, 255, 0.14);
+  /* Deutlich blickdichter als --glass-bg: die Navbar ist fixed und schwebt
+     dauerhaft über wechselndem Inhalt (LightPillar auf der Startseite,
+     die animierten Blobs, helle Bilder). Bei nur 5% Deckkraft wäscht das
+     den Text aus, darum eigene, verlässlich lesbare Variante nur fürs Nav. */
+  --nav-glass-bg: rgba(8, 8, 16, 0.82);
+
+  /* Skaliert die rem-Basis (und damit alle Text-/Spacing-Utilities) auf großen
+     Screens sanft hoch, damit der jetzt viel breitere Content (siehe
+     PageTransition) nicht "leer"/unterdimensioniert wirkt. Unter ~818px
+     Viewportbreite bleibt es exakt bei 16px (Mobile/Tablet unangetastet). */
+  font-size: clamp(16px, 14.2px + 0.22vw, 18.5px);
 }
 
 /* Theme-Umschaltung: der Toggle setzt data-theme="light" auf <html> */
@@ -41,6 +52,7 @@
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(20, 18, 31, 0.08);
   --glare-color: rgba(20, 18, 31, 0.07);
+  --nav-glass-bg: rgba(255, 255, 255, 0.86);
 }
 
 @keyframes blob {
@@ -84,6 +96,37 @@
 }
 .animate-marquee {
   animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+/* Namens-Einblendung auf der Startseite: bewusst reines CSS statt framer-motion
+   initial/animate — läuft rein über die Browser-Engine, sobald das Element im DOM
+   steht, unabhängig von React-Mount-Timing/StrictMode. animation-delay pro Buchstabe
+   wird per Inline-Style gesetzt (siehe Home.jsx). */
+@keyframes name-letter-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes name-letter-in-big {
+  from { opacity: 0; transform: translateY(60px) scale(0.8); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.name-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: name-letter-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.name-letter-big {
+  display: inline-block;
+  opacity: 0;
+  animation: name-letter-in-big 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .name-letter,
+  .name-letter-big {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 html.lenis {
@@ -169,6 +212,16 @@ body {
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Wie .glass, aber deutlich blickdichter — für die fixed Navbar, die
+   dauerhaft über wechselndem, teils sehr hellem Inhalt schwebt (siehe
+   --nav-glass-bg oben). */
+.glass-nav {
+  background: var(--nav-glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
 }
 

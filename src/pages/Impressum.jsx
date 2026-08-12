@@ -20,7 +20,7 @@ export default function Impressum() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass mt-12 max-w-xl space-y-6 rounded-2xl p-8"
+        className="glass mt-12 grid max-w-4xl grid-cols-1 gap-x-12 gap-y-8 rounded-2xl p-8 sm:p-10 md:grid-cols-2 lg:p-12"
       >
         <div>
           <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-cyan">

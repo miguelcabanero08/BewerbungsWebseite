@@ -93,11 +93,11 @@ const SKILL_GROUPS_META = [
 ]
 
 const INTERESTS_META = [
-  { icon: HiPuzzlePiece, media: 'carousel', items: GAME_ITEMS },
   { icon: HiMusicalNote, media: 'video', video: '/videos/musik-gitarre.mp4', hasAudio: true },
   { icon: HiUserGroup, media: 'video', video: '/videos/sport.mp4', hasAudio: false },
   { icon: HiFilm, media: 'carousel', items: MOVIE_ITEMS },
   { icon: GiSoccerBall, media: 'image', image: '/images/manchester-united.jpg' },
+  { icon: HiPuzzlePiece, media: 'carousel', items: GAME_ITEMS },
 ]
 
 function groupAverage(skills) {
@@ -133,7 +133,7 @@ function Timeline({ items }) {
           <p className="font-mono text-xs uppercase tracking-wider text-cyan">{item.period}</p>
           <h3 className="mt-1 font-display text-lg font-semibold text-fg">{item.title}</h3>
           <p className="text-sm text-fg/50">{item.place}</p>
-          <p className="mt-2 text-sm leading-relaxed text-fg/60">{item.desc}</p>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-fg/60">{item.desc}</p>
         </motion.div>
       ))}
     </div>
@@ -252,7 +252,7 @@ export default function UeberMich() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="gradient-border relative mt-8 rounded-3xl"
+          className="gradient-border relative mx-auto mt-8 max-w-[220px] rounded-3xl sm:max-w-[260px]"
         >
           <ImagePlaceholder
             src="/images/portrait.jpg"
@@ -294,7 +294,7 @@ export default function UeberMich() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-6 leading-relaxed text-fg/70"
+            className="mt-6 max-w-2xl leading-relaxed text-fg/70"
           >
             {t.intro1}
           </motion.p>
@@ -302,7 +302,7 @@ export default function UeberMich() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
-            className="mt-4 leading-relaxed text-fg/70"
+            className="mt-4 max-w-2xl leading-relaxed text-fg/70"
           >
             {t.intro2}
           </motion.p>
@@ -335,19 +335,19 @@ export default function UeberMich() {
             >
               <div className="lg:w-2/5">
                 {item.media === 'carousel' ? (
-                  <div className="relative h-[320px] w-full overflow-hidden rounded-2xl">
+                  <div className="relative h-[320px] w-full overflow-hidden rounded-2xl lg:h-[420px]">
                     <Suspense fallback={<div className="h-full w-full animate-pulse bg-fg/5" />}>
                       <DepthCarousel
                         items={item.items}
                         icon={item.icon}
                         autoplay
                         loop
-                        cardWidth={170}
-                        cardHeight={220}
-                        depth={130}
-                        spread={40}
+                        cardWidth={260}
+                        cardHeight={340}
+                        depth={200}
+                        spread={60}
                         tilt={20}
-                        perspective={900}
+                        perspective={1400}
                         visibleCards={3}
                         blur={6}
                       />

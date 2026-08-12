@@ -9,24 +9,24 @@ export const ueberMich = {
 
     interests: [
       {
-        title: 'Gaming',
-        text: 'Beim Gaming faszinieren mich weniger die neuesten Trends als die Technik dahinter: Wie ein Survival-Spiel wie Subnautica riesige, dynamische Welten simuliert, wie Satisfactory komplexe Produktionsketten im Hintergrund berechnet, oder wie EA Sports FC und ARK: Survival Evolved ganz unterschiedliche Systeme miteinander verbinden, von der Physik bis zur KI. Genau dieses Interesse an der Entwicklung hinter den Spielen hat auch meine Neugier für Game Development geweckt, das ich gerne weiterverfolgen möchte.',
-      },
-      {
         title: 'Musik & Gitarre',
-        text: 'Musik begleitet mich praktisch täglich, beim Programmieren genauso wie in der Freizeit. Seit rund zweieinhalb Jahren spiele ich zudem Gitarre; angefangen habe ich damit während eines Abschlussprojekts, in dem ich mich intensiv mit dem Thema auseinandergesetzt habe. Für mich ist das Gitarrespielen ein guter Ausgleich zur analytischen Arbeit am Code: kreativ, praktisch und für einmal ganz ohne Bildschirm.',
+        text: 'Musik begleitet mich praktisch täglich, beim Programmieren genauso wie in der Freizeit. Seit rund zweieinhalb Jahren spiele ich zudem Gitarre; angefangen habe ich damit während eines Abschlussprojekts, in dem ich mich intensiv mit dem Thema auseinandergesetzt habe. Am Anfang habe ich mir vieles selbst beigebracht, mit der Zeit kamen dann auch schwierigere Akkorde und Songs dazu. Fürs Üben nehme ich mir nicht jeden Tag gleich viel Zeit, aber wenn neben der Schule mal etwas bleibt, greife ich gern zur Gitarre. Für mich ist das Gitarrespielen ein guter Ausgleich zur analytischen Arbeit am Code: kreativ, praktisch und für einmal ganz ohne Bildschirm.',
       },
       {
         title: 'Sport',
-        text: 'Neben Bildschirm und Code halte ich mich auch gerne aktiv: Regelmässig spiele ich mit Freunden Fussball oder Basketball. Der Teamgedanke dabei ist mir wichtig, denn ähnlich wie bei Softwareprojekten kommt es auch im Sport auf Kommunikation, Verlässlichkeit und das Zusammenspiel im Team an.',
+        text: 'Neben Bildschirm und Code halte ich mich auch gerne aktiv: Regelmässig spiele ich mit Freunden Fussball oder Basketball, meistens spontan und ohne grosse Planung, einfach weil wir Lust darauf haben. Nach einem Tag mit viel Sitzen und Bildschirmzeit tut mir das richtig gut, dabei kann ich den Kopf wieder freikriegen. Der Teamgedanke dabei ist mir wichtig, denn ähnlich wie bei Softwareprojekten kommt es auch im Sport auf Kommunikation, Verlässlichkeit und das Zusammenspiel im Team an.',
       },
       {
         title: 'Filme & Serien',
-        text: 'Bei Filmen und Serien hat es mir besonders das Marvel-Universum angetan, dazu Serien wie Supernatural, Smallville, Dexter, Breaking Bad und The Mentalist. Gemeinsam ist vielen davon eine Faszination für komplexe Figuren und cleveres Storytelling, eine andere Art von "Problemlösung", die mich ähnlich reizt wie ein gutes Stück Code.',
+        text: 'Bei Filmen und Serien hat es mir besonders das Marvel-Universum angetan, dazu Serien wie Supernatural, Smallville, Dexter, Breaking Bad und The Mentalist. Meistens schaue ich abends, wenn ich vom Lernen oder Programmieren eine Pause brauche, und dann gerne auch mal eine ganze Staffel am Stück. Mir ist aufgefallen, dass es bei mir oft in Richtung Krimi oder Mystery geht, am liebsten mit Figuren, die nicht einfach nur gut oder böse sind. Gemeinsam ist vielen davon eine Faszination für komplexe Figuren und cleveres Storytelling, eine andere Art von "Problemlösung", die mich ähnlich reizt wie ein gutes Stück Code.',
       },
       {
         title: 'Manchester United',
         text: 'Mein grosser Fussball-Favorit ist Manchester United. Ich schaue sehr gerne Fussball und verfolge die Spiele des Vereins regelmässig. Im Dezember, während der Winterferien, war ich mit zwei Kollegen für ein paar Tage in Manchester; dort haben wir gemeinsam ein Spiel von Manchester United geschaut, ein echtes Highlight für uns drei. Diese Begeisterung für den Verein habe ich später auch in einem meiner Schulprojekte aufgegriffen, in einer eigenen Manchester-United-Webseite.',
+      },
+      {
+        title: 'Gaming',
+        text: 'Beim Gaming faszinieren mich weniger die neuesten Trends als die Technik dahinter: Wie ein Survival-Spiel wie Subnautica riesige, dynamische Welten simuliert, wie Satisfactory komplexe Produktionsketten im Hintergrund berechnet, oder wie EA Sports FC und ARK: Survival Evolved ganz unterschiedliche Systeme miteinander verbinden, von der Physik bis zur KI. Genau dieses Interesse an der Entwicklung hinter den Spielen hat auch meine Neugier für Game Development geweckt, das ich gerne weiterverfolgen möchte.',
       },
     ],
 
@@ -101,24 +101,24 @@ export const ueberMich = {
 
     interests: [
       {
-        title: 'Gaming',
-        text: "When it comes to gaming, I'm less interested in the latest trends than in the technology behind them: how a survival game like Subnautica simulates huge, dynamic worlds, how Satisfactory calculates complex production chains in the background, or how EA Sports FC and ARK: Survival Evolved combine very different systems, from physics to AI. This same interest in what happens behind the scenes of games also sparked my curiosity for game development, which I'd like to pursue further.",
-      },
-      {
         title: 'Music & Guitar',
-        text: "Music accompanies me almost every day, while coding just as much as in my free time. I've also been playing guitar for about two and a half years; I started during a final project where I explored the topic in depth. For me, playing guitar is a great counterbalance to the analytical work of coding: creative, hands-on, and for once, completely screen-free.",
+        text: "Music accompanies me almost every day, while coding just as much as in my free time. I've also been playing guitar for about two and a half years; I started during a final project where I explored the topic in depth. In the beginning I mostly taught myself, and harder chords and songs got added along the way. I don't practice the same amount every day, but whenever I find a bit of time next to school, I like picking the guitar back up. For me, playing guitar is a great counterbalance to the analytical work of coding: creative, hands-on, and for once, completely screen-free.",
       },
       {
         title: 'Sports',
-        text: "Besides screens and code, I also like to stay active: I regularly play football or basketball with friends. Teamwork matters a lot to me here. Much like in software projects, sport is also about communication, reliability and working well together as a team.",
+        text: "Besides screens and code, I also like to stay active: I regularly play football or basketball with friends, usually spontaneously and without much planning, just because we feel like it. After a day of sitting around and screen time, it really helps me clear my head. Teamwork matters a lot to me here. Much like in software projects, sport is also about communication, reliability and working well together as a team.",
       },
       {
         title: 'Movies & TV Shows',
-        text: 'When it comes to movies and TV shows, I\'m especially drawn to the Marvel universe, as well as series like Supernatural, Smallville, Dexter, Breaking Bad and The Mentalist. Many of them share a fascination with complex characters and clever storytelling, a different kind of "problem-solving" that appeals to me in a similar way to a good piece of code.',
+        text: 'When it comes to movies and TV shows, I\'m especially drawn to the Marvel universe, as well as series like Supernatural, Smallville, Dexter, Breaking Bad and The Mentalist. I usually watch in the evening when I need a break from studying or coding, and I don\'t mind bingeing a whole season in one go. I\'ve noticed I keep coming back to crime and mystery shows, especially ones with characters who aren\'t simply good or bad. Many of them share a fascination with complex characters and clever storytelling, a different kind of "problem-solving" that appeals to me in a similar way to a good piece of code.',
       },
       {
         title: 'Manchester United',
         text: "My favourite football club is Manchester United. I really enjoy watching football and follow the club's matches regularly. In December, during the winter holidays, I spent a few days in Manchester with two friends; together we watched a Manchester United match there, a real highlight for the three of us. I later carried this enthusiasm for the club into one of my school projects too, my own Manchester United website.",
+      },
+      {
+        title: 'Gaming',
+        text: "When it comes to gaming, I'm less interested in the latest trends than in the technology behind them: how a survival game like Subnautica simulates huge, dynamic worlds, how Satisfactory calculates complex production chains in the background, or how EA Sports FC and ARK: Survival Evolved combine very different systems, from physics to AI. This same interest in what happens behind the scenes of games also sparked my curiosity for game development, which I'd like to pursue further.",
       },
     ],
 
@@ -193,24 +193,24 @@ export const ueberMich = {
 
     interests: [
       {
-        title: 'Jeux vidéo',
-        text: "En matière de jeux vidéo, ce ne sont pas les dernières tendances qui m'intéressent le plus, mais plutôt la technologie qui se cache derrière : comment un jeu de survie comme Subnautica simule d'immenses mondes dynamiques, comment Satisfactory calcule des chaînes de production complexes en arrière-plan, ou comment EA Sports FC et ARK: Survival Evolved combinent des systèmes très différents, de la physique à l'IA. C'est justement cet intérêt pour ce qui se passe derrière les jeux qui a éveillé ma curiosité pour le développement de jeux, un domaine que j'aimerais approfondir.",
-      },
-      {
         title: 'Musique & guitare',
-        text: "La musique m'accompagne presque tous les jours, aussi bien en programmant que pendant mon temps libre. Je joue également de la guitare depuis environ deux ans et demi ; j'ai commencé pendant un travail de fin d'études où j'ai approfondi ce sujet. Pour moi, jouer de la guitare est un excellent contrepoids au travail analytique du code : créatif, concret et, pour une fois, complètement sans écran.",
+        text: "La musique m'accompagne presque tous les jours, aussi bien en programmant que pendant mon temps libre. Je joue également de la guitare depuis environ deux ans et demi ; j'ai commencé pendant un travail de fin d'études où j'ai approfondi ce sujet. Au début, j'ai surtout appris seul, puis des accords et des morceaux plus difficiles s'y sont ajoutés avec le temps. Je ne pratique pas autant chaque jour, mais dès que j'ai un peu de temps à côté de l'école, j'aime bien reprendre la guitare. Pour moi, jouer de la guitare est un excellent contrepoids au travail analytique du code : créatif, concret et, pour une fois, complètement sans écran.",
       },
       {
         title: 'Sport',
-        text: "En dehors des écrans et du code, j'aime aussi rester actif : je joue régulièrement au football ou au basketball avec des amis. L'esprit d'équipe est important pour moi. Comme dans les projets logiciels, le sport repose aussi sur la communication, la fiabilité et le bon fonctionnement du travail d'équipe.",
+        text: "En dehors des écrans et du code, j'aime aussi rester actif : je joue régulièrement au football ou au basketball avec des amis, en général spontanément et sans grande organisation, juste parce qu'on en a envie. Après une journée passée assis devant un écran, ça me fait vraiment du bien de me changer les idées. L'esprit d'équipe est important pour moi. Comme dans les projets logiciels, le sport repose aussi sur la communication, la fiabilité et le bon fonctionnement du travail d'équipe.",
       },
       {
         title: 'Films & séries',
-        text: "Côté films et séries, j'apprécie particulièrement l'univers Marvel, ainsi que des séries comme Supernatural, Smallville, Dexter, Breaking Bad et The Mentalist. Beaucoup d'entre elles partagent une fascination pour des personnages complexes et une narration ingénieuse, une autre forme de « résolution de problèmes » qui me séduit un peu comme un bon bout de code.",
+        text: "Côté films et séries, j'apprécie particulièrement l'univers Marvel, ainsi que des séries comme Supernatural, Smallville, Dexter, Breaking Bad et The Mentalist. Je regarde en général le soir, quand j'ai besoin d'une pause après les révisions ou la programmation, et il m'arrive volontiers d'enchaîner toute une saison. Je remarque que je reviens souvent vers des séries policières ou mystérieuses, avec des personnages qui ne sont pas simplement bons ou méchants. Beaucoup d'entre elles partagent une fascination pour des personnages complexes et une narration ingénieuse, une autre forme de « résolution de problèmes » qui me séduit un peu comme un bon bout de code.",
       },
       {
         title: 'Manchester United',
         text: "Mon grand club de football favori est Manchester United. J'aime beaucoup regarder le football et je suis régulièrement les matchs du club. En décembre, pendant les vacances d'hiver, j'ai passé quelques jours à Manchester avec deux amis ; nous y avons regardé ensemble un match de Manchester United, un vrai moment fort pour nous trois. J'ai d'ailleurs repris cet enthousiasme pour le club plus tard dans l'un de mes projets scolaires, mon propre site web sur Manchester United.",
+      },
+      {
+        title: 'Jeux vidéo',
+        text: "En matière de jeux vidéo, ce ne sont pas les dernières tendances qui m'intéressent le plus, mais plutôt la technologie qui se cache derrière : comment un jeu de survie comme Subnautica simule d'immenses mondes dynamiques, comment Satisfactory calcule des chaînes de production complexes en arrière-plan, ou comment EA Sports FC et ARK: Survival Evolved combinent des systèmes très différents, de la physique à l'IA. C'est justement cet intérêt pour ce qui se passe derrière les jeux qui a éveillé ma curiosité pour le développement de jeux, un domaine que j'aimerais approfondir.",
       },
     ],
 

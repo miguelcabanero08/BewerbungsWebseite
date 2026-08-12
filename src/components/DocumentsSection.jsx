@@ -58,7 +58,7 @@ export default function DocumentsSection() {
                     {t.lockButton}
                   </button>
                 </div>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-2">
                   {documents.map((doc, i) => (
                     <Reveal key={doc.id} delay={i * 0.06} className="h-full">
                       <TiltCard
@@ -101,7 +101,7 @@ export default function DocumentsSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="group glass relative flex w-full flex-col items-center gap-4 overflow-hidden rounded-2xl border border-dashed border-fg/15 p-10 text-center transition hover:border-fg/30"
+            className="group glass relative mx-auto flex w-full max-w-2xl flex-col items-center gap-4 overflow-hidden rounded-2xl border border-dashed border-fg/15 p-10 text-center transition hover:border-fg/30"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet to-cyan text-fg transition-transform group-hover:scale-110">
               <HiLockClosed size={24} />

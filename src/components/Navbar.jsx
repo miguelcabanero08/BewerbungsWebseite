@@ -51,7 +51,7 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-0 z-40">
       <motion.div
         style={{ marginTop, scale, boxShadow }}
-        className="mx-auto flex max-w-5xl items-center justify-between rounded-full glass px-6 py-3"
+        className="glass-nav mx-auto flex max-w-5xl items-center justify-between rounded-full px-6 py-3"
       >
         <NavLink to="/" className="font-display text-lg font-semibold tracking-tight text-fg">
           <span className="text-gradient">{t.nav.logo}</span>
@@ -83,7 +83,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="glass mx-4 mt-2 flex flex-col gap-4 rounded-2xl p-6 md:hidden"
+            className="glass-nav mx-4 mt-2 flex flex-col gap-4 rounded-2xl p-6 md:hidden"
           >
             {links.map((l) => (
               <NavItem key={l.to} {...l} onClick={() => setOpen(false)} />
