@@ -22,20 +22,34 @@ const LAST_NAME = 'Cabañero'
 // filtert das nötige -webkit-background-clip auch aus handgeschriebenem CSS wieder raus,
 // ohne das bleibt Farbverlauf-Text auf Safari/iOS komplett unsichtbar. Inline-Styles laufen
 // nicht durch diese Pipeline und sind davon nicht betroffen.
-const miguelGradientStyle = {
-  backgroundImage: 'linear-gradient(to right, var(--color-pink), var(--color-cyan))',
-  WebkitBackgroundClip: 'text',
-  backgroundClip: 'text',
-  color: 'transparent',
-  WebkitTextFillColor: 'transparent',
+//
+// Zusätzliche, subtilere Safari/WebKit-Falle (Ursache des "Name fehlt nur auf dem iPhone,
+// in Chrome UND Safari"-Bugs): -webkit-background-clip:text muss dort *direkt* auf dem
+// Element mit dem Textinhalt liegen — Chrome/Firefox akzeptieren es dagegen anstandslos auch
+// auf einem Elternelement, dessen Kinder den eigentlichen Text tragen. Zusätzlich bricht es in
+// Safari ab, sobald das geclippte Element selbst ein Flex-Container/-Item ist. Beides war
+// hier der Fall: der Gradient lag auf dem äußeren, flex-basierten Wrapper, die einzelnen
+// Buchstaben (fürs Stagger-Timing) in Kind-Spans darunter — auf Desktop-Chrome/Firefox (und
+// damit auch deren Responsive-/Device-Ansicht, die dieselbe Engine nutzt) unsichtbar kein
+// Problem, auf iPhone (Safari UND Chrome, beide WebKit) blieb der Name komplett unsichtbar.
+// Fix: der Gradient liegt jetzt direkt auf jedem Buchstaben-Span (kein Flex mehr nötig), mit
+// einer über Index/Gesamtlänge berechneten background-size/-position, sodass es weiterhin wie
+// ein durchgehender Verlauf übers ganze Wort wirkt statt pro Buchstabe neu zu starten.
+function letterGradientStyle(gradient, index, count) {
+  return {
+    backgroundImage: gradient,
+    backgroundSize: `${count * 100}% 100%`,
+    backgroundPosition: count > 1 ? `${(index / (count - 1)) * 100}% 0` : '0 0',
+    backgroundRepeat: 'no-repeat',
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+    color: 'transparent',
+    WebkitTextFillColor: 'transparent',
+  }
 }
-const cabaneroGradientStyle = {
-  backgroundImage: 'linear-gradient(to right, var(--color-violet), var(--color-cyan), var(--color-pink))',
-  WebkitBackgroundClip: 'text',
-  backgroundClip: 'text',
-  color: 'transparent',
-  WebkitTextFillColor: 'transparent',
-}
+const MIGUEL_GRADIENT = 'linear-gradient(to right, var(--color-pink), var(--color-cyan))'
+const CABANERO_GRADIENT =
+  'linear-gradient(to right, var(--color-violet), var(--color-cyan), var(--color-pink))'
 
 const TECH_STACK = [
   'Java',
@@ -96,25 +110,29 @@ export default function Home() {
         <div className="relative flex w-full flex-col items-center">
           <TiltCard glare={false} tiltStrength={3} className="block">
             <h1 className="font-display flex flex-col">
-              <span
-                className="font-mono flex flex-wrap text-[clamp(1.75rem,7.5vw,7rem)] font-extrabold leading-[1.15]"
-                style={miguelGradientStyle}
-              >
+              <span className="font-mono text-[clamp(1.75rem,7.5vw,7rem)] font-extrabold leading-[1.15]">
                 {FIRST_NAME.split('').map((ch, i) => (
-                  <span key={i} className="name-letter" style={{ animationDelay: `${i * STAGGER}s` }}>
+                  <span
+                    key={i}
+                    className="name-letter"
+                    style={{
+                      animationDelay: `${i * STAGGER}s`,
+                      ...letterGradientStyle(MIGUEL_GRADIENT, i, FIRST_NAME.length),
+                    }}
+                  >
                     {ch}
                   </span>
                 ))}
               </span>
-              <span
-                className="ml-4 flex flex-wrap text-[clamp(2.2rem,22vw_-_1.5rem,20rem)] font-bold leading-[0.82] tracking-tight sm:ml-10"
-                style={cabaneroGradientStyle}
-              >
+              <span className="ml-4 text-[clamp(2.2rem,22vw_-_1.5rem,20rem)] font-bold leading-[0.82] tracking-tight sm:ml-10">
                 {LAST_NAME.split('').map((ch, i) => (
                   <span
                     key={i}
                     className="name-letter-big"
-                    style={{ animationDelay: `${(FIRST_NAME.length + i) * STAGGER}s` }}
+                    style={{
+                      animationDelay: `${(FIRST_NAME.length + i) * STAGGER}s`,
+                      ...letterGradientStyle(CABANERO_GRADIENT, i, LAST_NAME.length),
+                    }}
                   >
                     {ch}
                   </span>
