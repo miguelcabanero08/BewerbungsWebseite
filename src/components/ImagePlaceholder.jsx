@@ -45,6 +45,8 @@ export default function ImagePlaceholder({
         <img
           src={images[0]}
           alt={alt}
+          loading="lazy"
+          decoding="async"
           onError={() => markErrored(0)}
           onClick={(e) => handleZoom(e, images[0])}
           className={`h-full w-full object-cover ${zoomable ? 'cursor-zoom-in' : ''}`}
@@ -63,6 +65,8 @@ export default function ImagePlaceholder({
               <img
                 src={s}
                 alt={alt}
+                loading="lazy"
+                decoding="async"
                 onError={() => markErrored(i)}
                 onClick={(e) => handleZoom(e, s)}
                 className={`h-full w-full object-cover ${zoomable ? 'cursor-zoom-in' : ''}`}

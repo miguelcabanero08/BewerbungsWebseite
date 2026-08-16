@@ -395,6 +395,8 @@ const DepthCarousel = ({
                   src={item.image}
                   alt={item.alt || ''}
                   draggable={false}
+                  loading="lazy"
+                  decoding="async"
                   onError={() => setErroredIdx((prev) => new Set(prev).add(i))}
                 />
                 {active === i && (

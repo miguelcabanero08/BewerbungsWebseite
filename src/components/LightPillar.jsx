@@ -251,6 +251,13 @@ const LightPillar = ({
 
     const animate = currentTime => {
       if (!materialRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) return;
+      // Tab im Hintergrund: keinen weiteren Frame mehr anfordern, statt weiter unsichtbar
+      // zu rendern (Akku/CPU) — rafRef muss dafür auf null, sonst hält handleVisibilityChange
+      // die Loop fälschlich für aktiv und weckt sie nicht wieder auf.
+      if (document.hidden) {
+        rafRef.current = null;
+        return;
+      }
 
       const deltaTime = currentTime - lastTime;
 
@@ -267,6 +274,13 @@ const LightPillar = ({
       rafRef.current = requestAnimationFrame(animate);
     };
     rafRef.current = requestAnimationFrame(animate);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden || rafRef.current) return;
+      lastTime = performance.now();
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     let resizeTimeout = null;
     const handleResize = () => {
@@ -286,6 +300,7 @@ const LightPillar = ({
     window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('resize', handleResize);
       if (interactive) {
         container.removeEventListener('mousemove', handleMouseMove);

@@ -33,19 +33,22 @@ const ABOUT_ICONS = [HiLightBulb, HiAcademicCap, HiBriefcase, HiFlag]
 
 // Games/Filme sind Eigennamen — unübersetzt, daher hier statt in ueberMich.js.
 const GAME_ITEMS = [
-  { image: '/images/games/subnautica.jpg', alt: 'Subnautica' },
+  { image: '/images/games/subnautica.webp', alt: 'Subnautica' },
   { image: '/images/games/satisfactory.avif', alt: 'Satisfactory' },
   { image: '/images/games/ea-sports-fc.webp', alt: 'EA Sports FC' },
   { image: '/images/games/ark-survival-evolved.webp', alt: 'ARK: Survival Evolved' },
 ]
 
+// supernatural.jpg/dexter.jpg bewusst als JPG belassen: bei beiden war die WebP-
+// Neukodierung (selbst bei niedrigerer Qualitätsstufe) grösser als das Original, JPG
+// bleibt hier also die kleinere Wahl.
 const MOVIE_ITEMS = [
-  { image: '/images/movies/marvel.jpg', alt: 'Marvel' },
+  { image: '/images/movies/marvel.webp', alt: 'Marvel' },
   { image: '/images/movies/supernatural.jpg', alt: 'Supernatural' },
-  { image: '/images/movies/smallville.jpg', alt: 'Smallville' },
+  { image: '/images/movies/smallville.webp', alt: 'Smallville' },
   { image: '/images/movies/dexter.jpg', alt: 'Dexter' },
-  { image: '/images/movies/breaking-bad.jpg', alt: 'Breaking Bad' },
-  { image: '/images/movies/the-mentalist.jpg', alt: 'The Mentalist' },
+  { image: '/images/movies/breaking-bad.webp', alt: 'Breaking Bad' },
+  { image: '/images/movies/the-mentalist.webp', alt: 'The Mentalist' },
 ]
 
 const SKILL_GROUPS_META = [
@@ -96,7 +99,7 @@ const INTERESTS_META = [
   { icon: HiMusicalNote, media: 'video', video: '/videos/musik-gitarre.mp4', hasAudio: true },
   { icon: HiUserGroup, media: 'video', video: '/videos/sport.mp4', hasAudio: false },
   { icon: HiFilm, media: 'carousel', items: MOVIE_ITEMS },
-  { icon: GiSoccerBall, media: 'image', image: '/images/manchester-united.jpg' },
+  { icon: GiSoccerBall, media: 'image', image: '/images/manchester-united.webp' },
   { icon: HiPuzzlePiece, media: 'carousel', items: GAME_ITEMS },
 ]
 
@@ -255,7 +258,7 @@ export default function UeberMich() {
           className="gradient-border relative mx-auto mt-8 max-w-[220px] rounded-3xl sm:max-w-[260px]"
         >
           <ImagePlaceholder
-            src="/images/portrait.jpg"
+            src="/images/portrait.webp"
             alt={t.portraitAlt}
             icon={HiUser}
             zoomable
@@ -315,7 +318,7 @@ export default function UeberMich() {
           className="gradient-border relative lg:order-2 lg:col-span-2 rounded-3xl"
         >
           <ImagePlaceholder
-            src="/images/portrait.jpg"
+            src="/images/portrait.webp"
             alt={t.portraitAlt}
             icon={HiUser}
             zoomable

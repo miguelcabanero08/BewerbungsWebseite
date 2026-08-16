@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { HiArrowRight } from 'react-icons/hi2'
@@ -81,25 +81,45 @@ export default function Home() {
   const { theme } = useTheme()
   const t = home[language]
 
+  // Der Lichtstrahl ist rein dekorativ, sein Chunk (three.js) aber mit Abstand das
+  // schwerste Stück JS der Startseite (~130 KB gzip) — er lädt deshalb erst, sobald der
+  // Browser Leerlaufzeit hat, statt sofort mit Font-/Hauptbundle um Bandbreite und
+  // Hauptthread zu konkurrieren (der Fade-in beim Erscheinen ist ohnehin schon so
+  // gestaltet, dass er verzögert eintrudeln darf). Bei "reduzierte Bewegung" wird der
+  // Chunk gar nicht erst angefordert — analog zu TypewriterText.jsx/DepthCarousel.jsx,
+  // die dieselbe Präferenz respektieren.
+  const [showPillar, setShowPillar] = useState(false)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (window.requestIdleCallback) {
+      const id = window.requestIdleCallback(() => setShowPillar(true), { timeout: 2000 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const id = window.setTimeout(() => setShowPillar(true), 300)
+    return () => window.clearTimeout(id)
+  }, [])
+
   return (
     <div className="relative z-10">
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <Suspense fallback={null}>
-            <LightPillar
-              topColor={theme === 'light' ? '#7dd3fc' : '#8b5cf6'}
-              bottomColor={theme === 'light' ? '#0ea5e9' : '#ec4899'}
-              intensity={theme === 'light' ? 0.5 : 0.6}
-              rotationSpeed={0.1}
-              glowAmount={0.005}
-              pillarWidth={2.1}
-              pillarHeight={0.2}
-              noiseIntensity={0.4}
-              pillarRotation={90}
-              interactive={false}
-              mixBlendMode={theme === 'light' ? 'normal' : 'screen'}
-            />
-          </Suspense>
+          {showPillar && (
+            <Suspense fallback={null}>
+              <LightPillar
+                topColor={theme === 'light' ? '#7dd3fc' : '#8b5cf6'}
+                bottomColor={theme === 'light' ? '#0ea5e9' : '#ec4899'}
+                intensity={theme === 'light' ? 0.5 : 0.6}
+                rotationSpeed={0.1}
+                glowAmount={0.005}
+                pillarWidth={2.1}
+                pillarHeight={0.2}
+                noiseIntensity={0.4}
+                pillarRotation={90}
+                interactive={false}
+                mixBlendMode={theme === 'light' ? 'normal' : 'screen'}
+              />
+            </Suspense>
+          )}
         </div>
 
         {/* Der Name darf hier bewusst aus der sonst schmaleren Content-Spalte

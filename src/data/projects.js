@@ -8,65 +8,65 @@
 export const projects = [
   {
     id: 11,
-    image: '/images/ProfileAuth_preview.png',
+    image: '/images/ProfileAuth_preview.webp',
     github: 'https://github.com/miguelcabanero08/ProfileAuth',
     live: 'https://profile.miguel-cabanero.ch',
   },
   {
     id: 10,
-    image: '/images/TuneHead_preview.png',
+    image: '/images/TuneHead_preview.webp',
     github: 'https://github.com/miguelcabanero08/TuneHead',
     live: 'https://tunehead.miguel-cabanero.ch',
   },
   {
     id: 9,
-    image: '/images/SlapFighters_preview.png',
+    image: '/images/SlapFighters_preview.webp',
     github: 'https://github.com/miguelcabanero08/SlapFighters',
   },
   {
     id: 5,
     image: [
-      '/images/Carpin1_preview.jfif',
-      '/images/Carpin2_preview.jfif',
-      '/images/Carpin3_preview.jfif',
+      '/images/Carpin1_preview.webp',
+      '/images/Carpin2_preview.webp',
+      '/images/Carpin3_preview.webp',
     ],
     github: 'https://github.com/miguelcabanero08/CarPin',
   },
   {
     id: 8,
-    image: '/images/FilmFinder_preview.png',
+    image: '/images/FilmFinder_preview.webp',
     github: 'https://github.com/miguelcabanero08/FilmFinder',
     live: 'https://filmfinder-planary.vercel.app/',
   },
   {
     id: 4,
-    image: '/images/BookLoan_preview.png',
+    image: '/images/BookLoan_preview.webp',
     github: 'https://github.com/miguelcabanero08/BookLoan',
   },
   {
     id: 2,
-    image: '/images/ManUtd_preview.png',
+    image: '/images/ManUtd_preview.webp',
     github: 'https://github.com/miguelcabanero08/ManUtdWebsite',
     live: 'https://manutd-cabanero.vercel.app/',
   },
   {
     id: 3,
-    image: '/images/hotelsoft.png',
+    image: '/images/hotelsoft.webp',
     github: 'https://github.com/miguelcabanero08/HotelsoftSolutions',
   },
   {
     id: 7,
-    image: '/images/InfTicTacToe_preview.png',
+    image: '/images/InfTicTacToe_preview.webp',
     github: 'https://github.com/miguelcabanero08/InfTicTacToe',
   },
   {
     id: 6,
-    image: '/images/UrlShortener_preview.png',
+    image: '/images/UrlShortener_preview.webp',
     github: 'https://github.com/miguelcabanero08/UrlShortener',
   },
   {
     id: 1,
-    image: '/images/ErsteWebseite_preview.png',
+    image: '/images/ErsteWebseite_preview.webp',
     github: 'https://github.com/miguelcabanero08/FirstWebsite',
   },
 ]
