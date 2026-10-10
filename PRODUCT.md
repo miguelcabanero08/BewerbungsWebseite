@@ -28,7 +28,7 @@ A third point was indicated but not specified yet (open).
 
 - Entry point is a link in a printed or PDF application letter; first impression happens in seconds.
 - The reader compares many applications; scannability of facts (who, what school, when available, what he built) matters.
-- Application documents (Lebenslauf, Zeugnis, Bewerbungsschreiben) are behind a password the reader gets with the application.
+- Application documents (Lebenslauf, Zeugnis) are behind a password the reader gets with the application. Contact: miguel@cabanero.ch.
 
 ## Capabilities and Constraints
 
@@ -47,7 +47,7 @@ A third point was indicated but not specified yet (open).
   7. More about who he is as a person.
   8. Skill levels: rework, remove percentage numbers.
   9. Show a cinematic film he made (new interest: cinematic video).
-  Status (2026-10-09, React build): 1, 3, 4, 6, 7, 8, 9 done. 2 and 5 are built but empty until Miguel provides the song files and Blender renders. Structure: hall → room → PC with one URL per app (no one-pager). The Bewerbungsschreiben was added to the protected documents and must be uploaded once with `npm run upload-protected-files`.
+  Status (2026-10-10, React build, deployed): all items done, including songs, Blender models and the Isabella's Lullaby film. Structure: hall → room → PC with one URL per app (no one-pager). The Bewerbungsschreiben is no longer offered as a download (removed on request).
 
 ## Brand Commitments
 

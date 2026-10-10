@@ -62,7 +62,9 @@ button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--bell-amber); outline-offset: 3px; }
 
 /* 3D-Bühne */
-.stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+/* nimmt Klicks/Tipps selbst an (iOS löst auf dem Seitenhintergrund keine Klicks aus);
+   touch-action: none, damit Ziehen das Diorama dreht statt die Seite zu zoomen */
+.stage { position: fixed; inset: 0; z-index: 0; touch-action: none; }
 .stage canvas { display: block; }
 
 .vignette {

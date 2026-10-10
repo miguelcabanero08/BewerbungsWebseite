@@ -37,11 +37,14 @@ function DayButton({ daylight, onDaylight, t }) {
   )
 }
 
-export function RoomOverlay({ visible, onPC, onTV, onWindow, onHelp, daylight, onDaylight }) {
+export function RoomOverlay({ visible, touch, onPC, onTV, onWindow, onHelp, daylight, onDaylight }) {
   const { language } = useLanguage()
   const t = ui[language].room
+  const hall = ui[language].hall
   return (
-    <section className={`ui room-ui${visible ? ' on' : ''}`} aria-hidden={!visible} inert={!visible}>
+    <section className={`ui room-ui${visible ? ' on' : ''}${daylight ? ' day' : ''}`} aria-hidden={!visible} inert={!visible}>
+      {/* Handy: über dem Diorama steht, wessen Zimmer das ist */}
+      {touch && <p className="room-title"><b>Miguel Cabañero</b> · {hall.facts}</p>}
       <div className="room-corner">
         <LangSwitch className="ghost" />
         <div className="room-tools">
@@ -52,7 +55,7 @@ export function RoomOverlay({ visible, onPC, onTV, onWindow, onHelp, daylight, o
         </div>
       </div>
       <div className="room-bottom">
-        <span className="chip"><UiIcon name="down" size={16} /> {t.chip}</span>
+        <span className="chip"><UiIcon name="down" size={16} /> {touch ? t.chipTouch : t.chip}</span>
         {/* für Tastatur und Screenreader; sichtbar, sobald sie den Fokus haben */}
         <button type="button" className="sr focusable" onClick={onPC}>{t.toPC}</button>
         <button type="button" className="sr focusable" onClick={onTV}>{t.toTV}</button>
@@ -111,19 +114,28 @@ export function TvOverlay({ visible, onBack, onSound }) {
   )
 }
 
-export function Hints({ tvRef, pcRef, winRef }) {
+// Desktop: "Klick"-Pfeile (nur Hinweis). Handy: dieselben Anker als Knöpfe mit Namen,
+// denn ohne Maus gibt es kein Hover und die Objekte sind im Diorama klein.
+export function Hints({ tvRef, pcRef, winRef, touch, onTV, onPC, onWindow }) {
   const { language } = useLanguage()
-  const label = ui[language].room.hint
+  const t = ui[language].room
+  const label = t.hint
   const arrow = (
     <svg width="34" height="46" viewBox="0 0 34 46" aria-hidden="true">
       <path d="M17 2v36M5 27l12 13 12-13" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
+  // immer dieselben Elemente (die Engine hält die Referenzen), nur Text und Bedienbarkeit wechseln
+  const tag = (ref, onClick, name) => (
+    <button type="button" className={touch ? 'hint3d tag' : 'hint3d'} ref={ref} onClick={touch ? onClick : undefined} tabIndex={touch ? 0 : -1} aria-hidden={!touch}>
+      <span>{touch ? name : label}</span>{arrow}
+    </button>
+  )
   return (
     <>
-      <div className="hint3d" ref={tvRef} aria-hidden="true"><span>{label}</span>{arrow}</div>
-      <div className="hint3d" ref={pcRef} aria-hidden="true"><span>{label}</span>{arrow}</div>
-      <div className="hint3d" ref={winRef} aria-hidden="true"><span>{label}</span>{arrow}</div>
+      {tag(tvRef, onTV, t.tags.tv)}
+      {tag(pcRef, onPC, t.tags.pc)}
+      {tag(winRef, onWindow, t.tags.win)}
     </>
   )
 }

@@ -10,7 +10,7 @@ import {
   ACESFilmicToneMapping, CanvasTexture, CatmullRomCurve3, Color, MathUtils, PCFShadowMap, PerspectiveCamera, Raycaster, SRGBColorSpace, Vector2, Vector3, VideoTexture, WebGLRenderer,
 } from 'three'
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js'
-import { buildWorld, SCREEN, TV_SCREEN, HZ, WIN, RW } from './scene.js'
+import { buildWorld, SCREEN, TV_SCREEN, HZ, WIN, RW, RH } from './scene.js'
 import { createFx } from './fx.js'
 import { DESK_W, DESK_H } from '../data/apps.js'
 
@@ -36,7 +36,7 @@ export function createEngine({
   // und mit 1× Pixeldichte; läuft es trotzdem ruckelig, senkt quality() die Auflösung weiter.
   const lowTier = phoneMode || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4
   const renderer = new WebGLRenderer({ antialias: !lowTier, powerPreference: lowTier ? 'low-power' : 'high-performance' })
-  let pixelRatio = Math.min(window.devicePixelRatio || 1, lowTier ? 1 : 1.5)
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, lowTier && !phoneMode ? 1 : 1.5)
   renderer.setPixelRatio(pixelRatio)
   renderer.setClearColor(0x0b0d12, 1)
   renderer.shadowMap.enabled = true
@@ -175,49 +175,79 @@ export function createEngine({
   const tvCenter = new Vector3(TV_SCREEN.x, TV_SCREEN.y, TV_SCREEN.z)
   const aspect = () => (Number.isFinite(camera.aspect) && camera.aspect > 0 ? camera.aspect : 16 / 10)
   const portrait = () => aspect() < 0.9
-  function fitDistance(w, h, margin) {
-    const t = Math.tan(MathUtils.degToRad(camera.fov / 2))
+  const baseFov = () => (portrait() ? 76 : 45)
+  function fitDistance(w, h, margin, fov = baseFov()) {
+    const t = Math.tan(MathUtils.degToRad(fov / 2))
     return Math.max(h / 2 / t, w / 2 / (t * aspect())) * margin
   }
   const finalDistance = () => fitDistance(SCREEN.w, SCREEN.h, 1.015)
-  let posCurve, lookCurve
+
+  // Hochformat (Handy): das ganze Zimmer als Diorama von schräg oben, wie ein Puppenhaus.
+  // Wände, die zur Kamera zeigen, verschwinden von selbst (nur ihre Innenseiten werden gezeichnet).
+  // Mit dem Finger lässt es sich drehen (yaw).
+  const DIORAMA_FOV = 28
+  const dioTarget = new Vector3(0, 650, -150)
+  const YAW_MAX = 0.9
+  let yaw = 0.2, yawVel = 0
+  function dioramaPose() {
+    const t = Math.tan(MathUtils.degToRad(DIORAMA_FOV / 2))
+    const halfW = 3450 + Math.abs(Math.sin(yaw)) * 1500 // gedreht ist das Zimmer breiter
+    const dist = Math.max(halfW / (t * aspect()), 3500 / t)
+    const elev = 0.95, ce = Math.cos(elev)
+    const pos = new Vector3(Math.sin(yaw) * ce, Math.sin(elev), Math.cos(yaw) * ce).multiplyScalar(dist).add(dioTarget)
+    return { pos, look: dioTarget.clone(), fov: DIORAMA_FOV }
+  }
+  const DESK_START = { pos: new Vector3(-900, 1750, 3700), look: new Vector3(-250, 1050, -1500) }
+  const roomPose = () => (portrait() ? dioramaPose() : { pos: DESK_START.pos.clone(), look: DESK_START.look.clone(), fov: 45 })
+
+  let posCurve, lookCurve, pathFov = [45, 45]
   function buildPath() {
     const end = screenCenter.clone().add(new Vector3(0, 0, finalDistance()))
-    const start = portrait()
-      ? [new Vector3(475, 1600, 4700), new Vector3(475, 950, -1500)]
-      : [new Vector3(-900, 1750, 3700), new Vector3(-250, 1050, -1500)]
-    posCurve = new CatmullRomCurve3([start[0], new Vector3(500, 1580, 2300), new Vector3(1500, 1350, 300), new Vector3(2120, 1160, -1150), end], false, 'centripetal')
-    lookCurve = new CatmullRomCurve3([start[1], new Vector3(200, 900, -1500), new Vector3(1700, 1000, -2000), new Vector3(2150, 1090, -2300), screenCenter.clone()], false, 'centripetal')
+    const start = roomPose()
+    pathFov = [start.fov, baseFov()]
+    posCurve = new CatmullRomCurve3([start.pos, new Vector3(500, 1580, 2300), new Vector3(1500, 1350, 300), new Vector3(2120, 1160, -1150), end], false, 'centripetal')
+    lookCurve = new CatmullRomCurve3([start.look, new Vector3(200, 900, -1500), new Vector3(1700, 1000, -2000), new Vector3(2150, 1090, -2300), screenCenter.clone()], false, 'centripetal')
   }
-  const tvPose = () => ({ pos: tvCenter.clone().add(new Vector3(0, 0, fitDistance(TV_SCREEN.w, TV_SCREEN.h, 1.25))), look: tvCenter.clone() })
+  const tvPose = () => ({ pos: tvCenter.clone().add(new Vector3(0, 0, fitDistance(TV_SCREEN.w, TV_SCREEN.h, 1.25))), look: tvCenter.clone(), fov: baseFov() })
   // Am Fenster: nah an der Scheibe, Blick schräg die Avenue hinunter (Wassertürme, Skyline)
   const WIN_Z = (WIN.z0 + WIN.z1) / 2
   const windowPose = () => portrait()
-    ? { pos: new Vector3(-2440, 1560, WIN_Z + 300), look: new Vector3(-6380, 1150, WIN_Z - 2780) }
-    : { pos: new Vector3(-2470, 1560, WIN_Z + 550), look: new Vector3(-6800, 1200, WIN_Z - 1950) }
+    ? { pos: new Vector3(-2440, 1560, WIN_Z + 300), look: new Vector3(-6380, 1150, WIN_Z - 2780), fov: 76 }
+    : { pos: new Vector3(-2470, 1560, WIN_Z + 550), look: new Vector3(-6800, 1200, WIN_Z - 1950), fov: 45 }
   const HALL = {
     start: { pos: new Vector3(0, 1550, HZ + 1150), look: new Vector3(0, 1300, HZ - 1500) },
     door: { pos: new Vector3(0, 1480, HZ - 1300), look: new Vector3(0, 1420, HZ - 4000) },
     deep: { pos: new Vector3(0, 1450, HZ - 3200), look: new Vector3(0, 1400, HZ - 6000) },
   }
-  const pose = { pos: HALL.start.pos.clone(), look: HALL.start.look.clone() }
-  const snap = () => ({ pos: pose.pos.clone(), look: pose.look.clone() })
-  const lerpPose = (a, b, k) => { pose.pos.lerpVectors(a.pos, b.pos, k); pose.look.lerpVectors(a.look, b.look, k) }
-  const curvePose = (t) => { t = clamp01(t); posCurve.getPointAt(t, pose.pos); lookCurve.getPointAt(t, pose.look) }
+  const pose = { pos: HALL.start.pos.clone(), look: HALL.start.look.clone(), fov: 45 }
+  const snap = () => ({ pos: pose.pos.clone(), look: pose.look.clone(), fov: pose.fov })
+  const setPose = (p) => { pose.pos.copy(p.pos); pose.look.copy(p.look); if (p.fov) pose.fov = p.fov }
+  const lerpPose = (a, b, k) => {
+    pose.pos.lerpVectors(a.pos, b.pos, k); pose.look.lerpVectors(a.look, b.look, k)
+    const fa = a.fov ?? pose.fov, fb = b.fov ?? fa
+    pose.fov = fa + (fb - fa) * k
+  }
+  const curvePose = (t) => {
+    t = clamp01(t); posCurve.getPointAt(t, pose.pos); lookCurve.getPointAt(t, pose.look)
+    const f = Math.min(1, t / 0.45) // Blickwinkel früh öffnen (Diorama → Raum)
+    pose.fov = pathFov[0] + (pathFov[1] - pathFov[0]) * f * f * (3 - 2 * f)
+  }
 
   let vw = 0, vh = 0
   function resize() {
     if (!innerWidth || !innerHeight) return false
     vw = innerWidth; vh = innerHeight
     camera.aspect = innerWidth / innerHeight
-    camera.fov = portrait() ? 76 : 45
-    camera.updateProjectionMatrix()
     renderer.setSize(innerWidth, innerHeight)
     buildPath()
-    if (state === 'room') curvePose(0)
-    else if (state === 'pc') { curvePose(1); if (!phone) deskFlat() }
-    else if (state === 'tv') { const p = tvPose(); pose.pos.copy(p.pos); pose.look.copy(p.look) }
-    else if (state === 'window') { const p = windowPose(); pose.pos.copy(p.pos); pose.look.copy(p.look) }
+    if (state === 'room') setPose(roomPose())
+    else if (state === 'pc') curvePose(1)
+    else if (state === 'tv') setPose(tvPose())
+    else if (state === 'window') setPose(windowPose())
+    else pose.fov = baseFov()
+    camera.fov = pose.fov
+    camera.updateProjectionMatrix()
+    if (state === 'pc' && !phone) deskFlat()
     return true
   }
   buildPath()
@@ -312,6 +342,8 @@ export function createEngine({
     goPC() {
       if (state !== 'room') return
       hintsDone = true
+      yawVel = 0
+      buildPath()
       setState('moving')
       run(2600, (k) => curvePose(easeIO(k)), arriveAtPC)
     },
@@ -356,7 +388,7 @@ export function createEngine({
     leaveWindow() {
       if (state !== 'window') return
       setState('moving')
-      const from = snap(), to = { pos: posCurve.getPointAt(0), look: lookCurve.getPointAt(0) }
+      const from = snap(), to = roomPose()
       run(1700, (k) => lerpPose(from, to, easeIO(k)), () => setState('room'))
     },
 
@@ -364,7 +396,7 @@ export function createEngine({
       if (state !== 'tv') return
       tvVideo.muted = true
       setState('moving')
-      const from = snap(), to = { pos: posCurve.getPointAt(0), look: lookCurve.getPointAt(0) }
+      const from = snap(), to = roomPose()
       run(1500, (k) => lerpPose(from, to, easeIO(k)), () => setState('room'))
     },
 
@@ -431,13 +463,14 @@ export function createEngine({
     else if (state === 'window') api.leaveWindow()
   }, { passive: true })
 
-  let touchY = null
-  on(window, 'touchstart', (e) => { touchY = e.touches[0]?.clientY ?? null }, { passive: true })
+  let touchY = null, touchX = 0
+  on(window, 'touchstart', (e) => { touchY = e.touches[0]?.clientY ?? null; touchX = e.touches[0]?.clientX ?? 0 }, { passive: true })
   on(window, 'touchend', (e) => {
     if (touchY === null) return
     const dy = touchY - (e.changedTouches[0]?.clientY ?? touchY)
+    const dx = touchX - (e.changedTouches[0]?.clientX ?? touchX)
     touchY = null
-    if (Math.abs(dy) < 40) return
+    if (Math.abs(dy) < 40 || Math.abs(dx) > Math.abs(dy)) return
     if (state === 'room' && dy > 0) api.goPC()
     else if (state === 'pc' && dy < 0 && !inLocalUI(e.target)) api.goRoom()
     else if (state === 'tv') api.leaveTV()
@@ -462,7 +495,31 @@ export function createEngine({
     ray.setFromCamera(ndc, camera)
     return ray.intersectObjects(targets, false)[0]?.object ?? null
   }
-  on(window, 'click', (e) => {
+  // Diorama drehen: horizontal ziehen (Finger oder Maus), mit etwas Nachschwung
+  let drag = null, dragMoved = false
+  const YAW_PER_PX = () => 1.7 / Math.max(320, innerWidth)
+  const clampYaw = (v) => Math.max(-YAW_MAX, Math.min(YAW_MAX, v))
+  on(renderer.domElement, 'pointerdown', (e) => {
+    dragMoved = false
+    if (state !== 'room' || !portrait()) return
+    drag = { x: e.clientX, y: e.clientY, yaw0: yaw, lastX: e.clientX, lastT: performance.now() }
+    yawVel = 0
+  })
+  on(window, 'pointermove', (e) => {
+    if (!drag) return
+    if (Math.abs(e.clientX - drag.x) > 8 || Math.abs(e.clientY - drag.y) > 8) dragMoved = true
+    const now = performance.now()
+    yaw = clampYaw(drag.yaw0 - (e.clientX - drag.x) * YAW_PER_PX())
+    yawVel = (-(e.clientX - drag.lastX) * YAW_PER_PX() / Math.max(8, now - drag.lastT)) * 1000
+    drag.lastX = e.clientX; drag.lastT = now
+    setPose(dioramaPose())
+  }, { passive: true })
+  const endDrag = () => { if (drag && performance.now() - drag.lastT > 80) yawVel = 0; drag = null }
+  on(window, 'pointerup', endDrag)
+  on(window, 'pointercancel', endDrag)
+
+  on(renderer.domElement, 'click', (e) => {
+    if (dragMoved) return // war ein Ziehen, kein Tippen
     if ((state !== 'hall' && state !== 'room') || onButton(e.target) || inLocalUI(e.target)) return
     const hit = pick(e.clientX, e.clientY)
     if (!hit) return
@@ -521,6 +578,7 @@ export function createEngine({
   }
 
   let lastDraw = -Infinity
+  const BG_NIGHT = new Color(0x0b0d12), BG_DAY = new Color(0xd6cfc4), bgNow = new Color(0x0b0d12), bgLast = new Color(0x0b0d12)
   function frame(now) {
     raf = requestAnimationFrame(frame)
     // höchstens ~60–80 Bilder/s: Bildschirme mit 120/144 Hz würden sonst doppelt so oft rechnen
@@ -578,6 +636,15 @@ export function createEngine({
       for (const m of world.fog) { m.rotation.z += m.userData.spin * dt; m.position.x += Math.sin(e * 0.3 + m.userData.drift) * 20 * dt }
     }
 
+    // Diorama: Nachschwung nach dem Loslassen
+    if (state === 'room' && portrait() && !drag && yawVel) {
+      yaw = clampYaw(yaw + yawVel * dt)
+      yawVel *= Math.pow(0.03, dt)
+      if (Math.abs(yawVel) < 0.01 || Math.abs(yaw) >= YAW_MAX) yawVel = 0
+      setPose(dioramaPose())
+    }
+    if (camera.fov !== pose.fov) { camera.fov = pose.fov; camera.updateProjectionMatrix() }
+
     camera.position.copy(pose.pos)
     // am Fenster wiegt der Blick ganz leicht: so sieht man, dass die Stadt räumlich ist
     if (state === 'window' && !reduceMotion) {
@@ -587,11 +654,23 @@ export function createEngine({
     }
     camera.lookAt(pose.look)
     camera.updateMatrixWorld()
-    // Stadt: nur Kacheln zeichnen, die man durchs Fenster sieht (am PC nie im Bild)
-    if (state === 'pc') world.city.hide()
+    // Stadt: nur Kacheln zeichnen, die man durchs Fenster sieht (am PC nie im Bild).
+    // Von oben (Diorama) keine Stadt: das Zimmer schwebt vor einem ruhigen Hintergrund.
+    const fromAbove = pose.pos.y > RH + 400
+    if (state === 'pc' || fromAbove) world.city.hide()
     else world.city.cull(camera)
+    bgNow.copy(BG_NIGHT)
+    if (fromAbove) bgNow.lerp(BG_DAY, dayK)
+    if (!bgNow.equals(bgLast)) { renderer.setClearColor(bgNow, 1); bgLast.copy(bgNow) }
+    // Raumnebel (ab 7 m) würde das Diorama aus 30 m Entfernung verschlucken
+    scene.fog.near = fromAbove ? 1e8 : 7000
+    scene.fog.far = fromAbove ? 2e8 : 14000
+    // von oben wirkt das nur innen beleuchtete Zimmer dunkel: Belichtung mit der Höhe sanft anheben
+    const lift = Math.min(1, Math.max(0, (pose.pos.y - RH) / 8000))
+    renderer.toneMappingExposure = 0.9 + lift * (0.75 - dayK * 0.45)
 
-    const showHints = state === 'room' && (!hintsDone || now < hintsUntil)
+    // im Diorama sind die Hinweise Knöpfe mit Namen und bleiben sichtbar (kein Hover auf dem Handy)
+    const showHints = state === 'room' && (portrait() || !hintsDone || now < hintsUntil)
     for (const { el, at } of hintList) {
       if (!el) continue
       projV.copy(at).project(camera)
@@ -603,7 +682,7 @@ export function createEngine({
     }
 
     // Flur und Zimmer liegen weit auseinander: die Kamera entscheidet, welche Szene gilt
-    const active = pose.pos.z > HZ / 2 ? hallScene : scene
+    const active = pose.pos.z > HZ / 2 && pose.pos.y < RH ? hallScene : scene // Flur-Kameras stehen nie über Deckenhöhe
     if (active === hallScene && state === 'entering') shadowDirty.set(hallScene, true) // Tür geht auf
     renderer.shadowMap.needsUpdate = shadowDirty.get(active)
     renderer.render(active, camera)

@@ -169,6 +169,13 @@ export function buildWorld({ labels, tvPosterUrl, posterUrl, lowTier = false }) 
   box(RW, 90, 14, 0xe6e2da, 0, 0, -RD / 2 + 7)
   box(14, 90, RD, 0xe6e2da, -RW / 2 + 7, 0, 0)
   box(14, 90, RD, 0xe6e2da, RW / 2 - 7, 0, 0)
+  // Schnittkanten fürs Handy-Diorama (von oben): Wandkronen und Bodenplatte, dunkel wie ein
+  // Modell-Schnitt. Liegen über der Decke bzw. unter dem Boden, im Zimmer also nie sichtbar.
+  const cut = mat(0x17161c, { roughness: 1 })
+  box(RW + 500, 40, 250, cut, 0, RH, -RD / 2 - 125)
+  box(250, 40, RD + 250, cut, -RW / 2 - 125, RH, -125)
+  box(250, 40, RD + 250, cut, RW / 2 + 125, RH, -125)
+  box(RW + 500, 300, RD + 250, cut, 0, -315, -125) // knapp unter dem Boden, sonst flimmern die Flächen
 
   // Fenster links: echtes Loch in der Wand, dahinter die Stadt (city.js).
   // Schwarzer Stahlrahmen wie in einem New Yorker Loft, Laibung 25 cm tief.

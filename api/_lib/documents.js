@@ -5,15 +5,9 @@
 export const DOCUMENTS = [
   { id: 'lebenslauf', file: 'lebenslauf.pdf' },
   { id: 'zeugnis', file: 'zeugnis.pdf' },
-  { id: 'bewerbungsschreiben', file: 'Bewerbungsschreiben_Miguel.pdf' },
 ]
 
 export const DOCUMENTS_I18N = {
-  bewerbungsschreiben: {
-    de: { title: 'Bewerbungsschreiben', description: 'Allgemeines Bewerbungsschreiben als PDF' },
-    en: { title: 'Cover letter', description: 'General cover letter as PDF' },
-    fr: { title: 'Lettre de motivation', description: 'Lettre de motivation générale au format PDF' },
-  },
   lebenslauf: {
     de: { title: 'Lebenslauf', description: 'Aktueller Lebenslauf als PDF' },
     en: { title: 'Resume', description: 'Current resume as PDF' },

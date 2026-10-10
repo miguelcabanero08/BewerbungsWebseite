@@ -109,6 +109,22 @@
   opacity: 0; transition: opacity 0.4s ease;
 }
 .hint3d.on { opacity: 1; }
+button.hint3d { display: flex; flex-direction: column; align-items: center; border: 0; background: none; padding: 0; font: inherit; color: rgba(255, 255, 255, 0.72); }
+/* Handy: Hinweise sind Knöpfe mit Namen */
+.hint3d.tag { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.hint3d.tag.on { pointer-events: auto; }
+.hint3d.tag span { text-transform: none; letter-spacing: 0.01em; font-size: 14px; padding: 8px 13px; background: rgba(20, 18, 40, 0.62); }
+.hint3d.tag:active span { background: rgba(20, 18, 40, 0.85); }
+.hint3d.tag svg { width: 24px; height: 32px; }
+
+/* Handy: Name über dem Diorama */
+.room-title {
+  position: absolute; left: 20px; right: 20px; top: 72px; margin: 0;
+  font-size: 13.5px; line-height: 1.45; color: var(--overlay-ink); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
+}
+.room-title b { color: #fff; }
+.room-ui.day .room-title { color: #3a3128; text-shadow: none; }
+.room-ui.day .room-title b { color: #1d1712; }
 .hint3d span {
   font: 700 15px/1 var(--font-world); letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
   padding: 6px 11px; border-radius: 999px;

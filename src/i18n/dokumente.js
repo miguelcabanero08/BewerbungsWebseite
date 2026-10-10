@@ -1,7 +1,7 @@
 export const dokumente = {
   de: {
     lockedTitle: 'Dieser Ordner ist geschützt',
-    lockedText: 'Lebenslauf, Zeugnisse und Bewerbungsschreiben. Den Code finden Sie in meinem Bewerbungsschreiben.',
+    lockedText: 'Lebenslauf und Zeugnisse. Den Code finden Sie in meinem Bewerbungsschreiben.',
     codeLabel: 'Code',
     placeholder: 'Code eingeben',
     unlock: 'Entsperren',
@@ -23,7 +23,7 @@ export const dokumente = {
   },
   en: {
     lockedTitle: 'This folder is protected',
-    lockedText: 'Resume, transcripts and cover letter. You will find the code in my cover letter.',
+    lockedText: 'Resume and transcripts. You will find the code in my cover letter.',
     codeLabel: 'Code',
     placeholder: 'Enter code',
     unlock: 'Unlock',
@@ -45,7 +45,7 @@ export const dokumente = {
   },
   fr: {
     lockedTitle: 'Ce dossier est protégé',
-    lockedText: 'CV, bulletins et lettre de motivation. Vous trouverez le code dans ma lettre de motivation.',
+    lockedText: 'CV et bulletins. Vous trouverez le code dans ma lettre de motivation.',
     codeLabel: 'Code',
     placeholder: 'Saisir le code',
     unlock: 'Déverrouiller',

@@ -178,11 +178,14 @@ export default function Experience() {
       {mode === 'world' && (
         <>
           <HallOverlay visible={worldState === 'hall'} onRing={() => engineRef.current?.ring()} onSkip={() => engineRef.current?.skipToPC()} />
-          <RoomOverlay visible={worldState === 'room'} onPC={() => engineRef.current?.goPC()} onTV={() => engineRef.current?.goTV()} onWindow={() => engineRef.current?.goWindow()} onHelp={() => engineRef.current?.showHints()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
+          <RoomOverlay visible={worldState === 'room'} touch={isPhone} onPC={() => engineRef.current?.goPC()} onTV={() => engineRef.current?.goTV()} onWindow={() => engineRef.current?.goWindow()} onHelp={() => engineRef.current?.showHints()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
           <PcOverlay visible={atPC && !isPhone} onBack={leave} />
           <TvOverlay visible={worldState === 'tv'} onBack={() => engineRef.current?.leaveTV()} onSound={(on) => engineRef.current?.setTVMuted(!on)} />
           <WindowOverlay visible={worldState === 'window'} onBack={() => engineRef.current?.leaveWindow()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
-          <Hints tvRef={hintTvRef} pcRef={hintPcRef} winRef={hintWinRef} />
+          <Hints
+            tvRef={hintTvRef} pcRef={hintPcRef} winRef={hintWinRef} touch={isPhone}
+            onTV={() => engineRef.current?.goTV()} onPC={() => engineRef.current?.goPC()} onWindow={() => engineRef.current?.goWindow()}
+          />
         </>
       )}
 

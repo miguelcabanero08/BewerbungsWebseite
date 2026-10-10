@@ -110,10 +110,9 @@ und keinen Zugriff.
    Datei ändert, zum Beispiel ein neuer Lebenslauf.
 4. Code-Änderung aus Schritt 2 committen und deployen.
 
-Aktuell eingetragen: `lebenslauf.pdf`, `zeugnis.pdf` und **neu**
-`Bewerbungsschreiben_Miguel.pdf`. Das Bewerbungsschreiben muss einmal mit
-`npm run upload-protected-files` hochgeladen werden, sonst meldet die Seite
-dafür „Datei liegt noch nicht auf dem Server“.
+Aktuell eingetragen: `lebenslauf.pdf` und `zeugnis.pdf`. (Das
+Bewerbungsschreiben wurde wieder entfernt; liegt es noch im Blob-Store, ist es
+über die Seite nicht mehr abrufbar und kann im Vercel-Dashboard gelöscht werden.)
 
 **„Alle herunterladen (.zip)“** baut das ZIP im Browser (Bibliothek
 `fflate`): Die Seite holt jedes PDF einzeln über die geschützte Function und

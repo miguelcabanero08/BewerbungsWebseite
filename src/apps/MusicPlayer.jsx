@@ -28,7 +28,7 @@ export default function MusicPlayer({ embedded = false }) {
   return (
     <div className={`player${embedded ? ' embedded' : ''}`}>
       <header className="pl-head">
-        <img className="pl-cover" src="/images/portrait.webp" alt="" />
+        <img className="pl-cover" src="/images/songs-cover.webp" alt="" />
         <div>
           <small>{t.playlist}</small>
           <h2>{t.title}</h2>
