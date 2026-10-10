@@ -123,6 +123,7 @@ button.hint3d { display: flex; flex-direction: column; align-items: center; bord
   font-size: 13.5px; line-height: 1.45; color: var(--overlay-ink); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
 }
 .room-title b { color: #fff; }
+@media (min-width: 761px) { .room-title { left: clamp(20px, 4vw, 56px); right: auto; top: clamp(18px, 4vh, 44px); max-width: 520px; font-size: 15px; } }
 .room-ui.day .room-title { color: #3a3128; text-shadow: none; }
 .room-ui.day .room-title b { color: #1d1712; }
 .hint3d span {

@@ -13,10 +13,14 @@ import { hasWebGL } from './world/webgl.js'
 
 const PHONE_QUERY = '(max-width: 760px)'
 const DAY_KEY = 'mc-daylight'
+const DIORAMA_KEY = 'mc-diorama'
 
 // Licht-Modus merken (nur Bequemlichkeit pro Besucher; ohne Speicher einfach Nacht)
 function readDaylight() {
   try { return localStorage.getItem(DAY_KEY) === '1' } catch { return false }
+}
+function readDiorama() {
+  try { return localStorage.getItem(DIORAMA_KEY) === '1' } catch { return false }
 }
 const REDUCE_QUERY = '(prefers-reduced-motion: reduce)'
 
@@ -58,6 +62,7 @@ export default function Experience() {
   const [worldState, setWorldState] = useState(() => (mode === 'flat' ? 'pc' : entry.start))
   const [ready, setReady] = useState(mode === 'flat')
   const [daylight, setDaylight] = useState(readDaylight)
+  const [diorama, setDiorama] = useState(readDiorama) // Computer: Zimmer als Diorama von oben
   const isPhone = useMediaQuery(PHONE_QUERY)
   const reduceMotion = useMediaQuery(REDUCE_QUERY)
 
@@ -69,8 +74,8 @@ export default function Experience() {
   const blackRef = useRef(null)
   const engineRef = useRef(null)
   const labels = useMemo(() => ({ plateSub: t.world.plateSub, doormat: t.world.doormat }), [t])
-  const latest = useRef({ labels, isPhone, reduceMotion, daylight })
-  latest.current = { labels, isPhone, reduceMotion, daylight }
+  const latest = useRef({ labels, isPhone, reduceMotion, daylight, diorama })
+  latest.current = { labels, isPhone, reduceMotion, daylight, diorama }
 
   /* ---------- 3D-Engine laden (eigener Chunk mit three.js) ---------- */
   useEffect(() => {
@@ -91,6 +96,7 @@ export default function Experience() {
           phoneMode: now.isPhone,
           reduceMotion: now.reduceMotion,
           daylight: now.daylight,
+          diorama: now.diorama,
           tv: tvFilm,
           wallpaperUrl: '/images/manchester-united.webp',
           posterUrl: '/media/catsleep-poster.jpg',
@@ -117,6 +123,11 @@ export default function Experience() {
   }, [mode, entry.start])
 
   useEffect(() => { engineRef.current?.setPhoneMode(isPhone) }, [isPhone])
+
+  useEffect(() => {
+    engineRef.current?.setDiorama(diorama)
+    try { localStorage.setItem(DIORAMA_KEY, diorama ? '1' : '0') } catch { /* egal */ }
+  }, [diorama])
 
   useEffect(() => {
     engineRef.current?.setDaylight(daylight)
@@ -178,12 +189,12 @@ export default function Experience() {
       {mode === 'world' && (
         <>
           <HallOverlay visible={worldState === 'hall'} onRing={() => engineRef.current?.ring()} onSkip={() => engineRef.current?.skipToPC()} />
-          <RoomOverlay visible={worldState === 'room'} touch={isPhone} onPC={() => engineRef.current?.goPC()} onTV={() => engineRef.current?.goTV()} onWindow={() => engineRef.current?.goWindow()} onHelp={() => engineRef.current?.showHints()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
+          <RoomOverlay visible={worldState === 'room'} touch={isPhone} diorama={diorama && !isPhone} onDiorama={() => setDiorama((d) => !d)} onPC={() => engineRef.current?.goPC()} onTV={() => engineRef.current?.goTV()} onWindow={() => engineRef.current?.goWindow()} onHelp={() => engineRef.current?.showHints()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
           <PcOverlay visible={atPC && !isPhone} onBack={leave} />
           <TvOverlay visible={worldState === 'tv'} onBack={() => engineRef.current?.leaveTV()} onSound={(on) => engineRef.current?.setTVMuted(!on)} />
           <WindowOverlay visible={worldState === 'window'} onBack={() => engineRef.current?.leaveWindow()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
           <Hints
-            tvRef={hintTvRef} pcRef={hintPcRef} winRef={hintWinRef} touch={isPhone}
+            tvRef={hintTvRef} pcRef={hintPcRef} winRef={hintWinRef} touch={isPhone || diorama}
             onTV={() => engineRef.current?.goTV()} onPC={() => engineRef.current?.goPC()} onWindow={() => engineRef.current?.goWindow()}
           />
         </>

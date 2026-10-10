@@ -27,7 +27,7 @@ const DESK_HOME = {
 
 export function createEngine({
   host, deskLayer, hintEls, blackEl,
-  labels, startState = 'hall', phoneMode = false, reduceMotion = false, daylight = false,
+  labels, startState = 'hall', phoneMode = false, reduceMotion = false, daylight = false, diorama = false,
   tv, wallpaperUrl, posterUrl,
   onState, onReady,
 }) {
@@ -192,13 +192,16 @@ export function createEngine({
   function dioramaPose() {
     const t = Math.tan(MathUtils.degToRad(DIORAMA_FOV / 2))
     const halfW = 3450 + Math.abs(Math.sin(yaw)) * 1500 // gedreht ist das Zimmer breiter
-    const dist = Math.max(halfW / (t * aspect()), 3500 / t)
+    const dist = Math.max(halfW / (t * aspect()), 4100 / t) // Querformat: Luft für Titel und Knöpfe
     const elev = 0.95, ce = Math.cos(elev)
     const pos = new Vector3(Math.sin(yaw) * ce, Math.sin(elev), Math.cos(yaw) * ce).multiplyScalar(dist).add(dioTarget)
     return { pos, look: dioTarget.clone(), fov: DIORAMA_FOV }
   }
   const DESK_START = { pos: new Vector3(-900, 1750, 3700), look: new Vector3(-250, 1050, -1500) }
-  const roomPose = () => (portrait() ? dioramaPose() : { pos: DESK_START.pos.clone(), look: DESK_START.look.clone(), fov: 45 })
+  // Diorama: im Hochformat immer, am Computer auf Wunsch (Knopf im Zimmer)
+  let dioramaPref = diorama
+  const isDiorama = () => portrait() || dioramaPref
+  const roomPose = () => (isDiorama() ? dioramaPose() : { pos: DESK_START.pos.clone(), look: DESK_START.look.clone(), fov: 45 })
 
   let posCurve, lookCurve, pathFov = [45, 45]
   function buildPath() {
@@ -407,6 +410,17 @@ export function createEngine({
 
     setLabels(next) { world.setLabels(next) },
 
+    // Ansicht am Computer: im Zimmer stehen oder das ganze Zimmer als Diorama von oben
+    setDiorama(on) {
+      if (on === dioramaPref) return
+      dioramaPref = on
+      if (state !== 'room') { buildPath(); return }
+      yawVel = 0
+      setState('moving')
+      const from = snap(), to = roomPose()
+      run(1800, (k) => lerpPose(from, to, easeIO(k)), () => { buildPath(); setState('room') })
+    },
+
     // Licht-Modus: Tag (Sonne durchs Fenster, Lampen aus) oder Nacht (LED-Leisten)
     setDaylight(on) {
       const to = on ? 1 : 0
@@ -501,7 +515,7 @@ export function createEngine({
   const clampYaw = (v) => Math.max(-YAW_MAX, Math.min(YAW_MAX, v))
   on(renderer.domElement, 'pointerdown', (e) => {
     dragMoved = false
-    if (state !== 'room' || !portrait()) return
+    if (state !== 'room' || !isDiorama()) return
     drag = { x: e.clientX, y: e.clientY, yaw0: yaw, lastX: e.clientX, lastT: performance.now() }
     yawVel = 0
   })
@@ -531,7 +545,8 @@ export function createEngine({
   on(window, 'pointermove', (e) => {
     if (e.pointerType === 'touch') return
     const pointer = (state === 'hall' || state === 'room') && !onButton(e.target) && !!pick(e.clientX, e.clientY)
-    document.body.style.cursor = pointer ? 'pointer' : ''
+    const grab = state === 'room' && isDiorama() && e.target === renderer.domElement
+    document.body.style.cursor = pointer ? 'pointer' : drag ? 'grabbing' : grab ? 'grab' : ''
   }, { passive: true })
 
   /* ---------- Startzustand ---------- */
@@ -637,7 +652,7 @@ export function createEngine({
     }
 
     // Diorama: Nachschwung nach dem Loslassen
-    if (state === 'room' && portrait() && !drag && yawVel) {
+    if (state === 'room' && isDiorama() && !drag && yawVel) {
       yaw = clampYaw(yaw + yawVel * dt)
       yawVel *= Math.pow(0.03, dt)
       if (Math.abs(yawVel) < 0.01 || Math.abs(yaw) >= YAW_MAX) yawVel = 0
@@ -659,18 +674,18 @@ export function createEngine({
     const fromAbove = pose.pos.y > RH + 400
     if (state === 'pc' || fromAbove) world.city.hide()
     else world.city.cull(camera)
-    bgNow.copy(BG_NIGHT)
-    if (fromAbove) bgNow.lerp(BG_DAY, dayK)
+    // je höher die Kamera, desto mehr Diorama: Hintergrund, Nebel und Belichtung gleiten mit
+    const lift = Math.min(1, Math.max(0, (pose.pos.y - RH) / 8000))
+    bgNow.copy(BG_NIGHT).lerp(BG_DAY, dayK * lift)
     if (!bgNow.equals(bgLast)) { renderer.setClearColor(bgNow, 1); bgLast.copy(bgNow) }
     // Raumnebel (ab 7 m) würde das Diorama aus 30 m Entfernung verschlucken
-    scene.fog.near = fromAbove ? 1e8 : 7000
-    scene.fog.far = fromAbove ? 2e8 : 14000
+    scene.fog.near = 7000 + lift * lift * 1e7
+    scene.fog.far = 14000 + lift * lift * 2e7
     // von oben wirkt das nur innen beleuchtete Zimmer dunkel: Belichtung mit der Höhe sanft anheben
-    const lift = Math.min(1, Math.max(0, (pose.pos.y - RH) / 8000))
     renderer.toneMappingExposure = 0.9 + lift * (0.75 - dayK * 0.45)
 
     // im Diorama sind die Hinweise Knöpfe mit Namen und bleiben sichtbar (kein Hover auf dem Handy)
-    const showHints = state === 'room' && (portrait() || !hintsDone || now < hintsUntil)
+    const showHints = state === 'room' && (isDiorama() || !hintsDone || now < hintsUntil)
     for (const { el, at } of hintList) {
       if (!el) continue
       projV.copy(at).project(camera)

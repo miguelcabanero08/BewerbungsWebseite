@@ -37,17 +37,23 @@ function DayButton({ daylight, onDaylight, t }) {
   )
 }
 
-export function RoomOverlay({ visible, touch, onPC, onTV, onWindow, onHelp, daylight, onDaylight }) {
+export function RoomOverlay({ visible, touch, diorama, onDiorama, onPC, onTV, onWindow, onHelp, daylight, onDaylight }) {
   const { language } = useLanguage()
   const t = ui[language].room
   const hall = ui[language].hall
   return (
     <section className={`ui room-ui${visible ? ' on' : ''}${daylight ? ' day' : ''}`} aria-hidden={!visible} inert={!visible}>
       {/* Handy: über dem Diorama steht, wessen Zimmer das ist */}
-      {touch && <p className="room-title"><b>Miguel Cabañero</b> · {hall.facts}</p>}
+      {(touch || diorama) && <p className="room-title"><b>Miguel Cabañero</b> · {hall.facts}</p>}
       <div className="room-corner">
         <LangSwitch className="ghost" />
         <div className="room-tools">
+          {/* nur am Computer: auf dem Handy ist das Diorama immer an */}
+          {!touch && (
+            <button type="button" className="tvbtn ghost" onClick={onDiorama} aria-label={diorama ? t.toInside : t.toDiorama} title={diorama ? t.toInside : t.toDiorama}>
+              <UiIcon name={diorama ? 'eye' : 'iso'} size={16} /> <span className="lbl">{diorama ? t.inside : t.diorama}</span>
+            </button>
+          )}
           <DayButton daylight={daylight} onDaylight={onDaylight} t={t} />
           <button type="button" className="tvbtn ghost" onClick={onHelp} aria-label={t.helpLabel} title={t.helpLabel}>
             <UiIcon name="help" size={16} /> <span className="lbl">{t.help}</span>
@@ -55,7 +61,7 @@ export function RoomOverlay({ visible, touch, onPC, onTV, onWindow, onHelp, dayl
         </div>
       </div>
       <div className="room-bottom">
-        <span className="chip"><UiIcon name="down" size={16} /> {touch ? t.chipTouch : t.chip}</span>
+        <span className="chip"><UiIcon name="down" size={16} /> {touch ? t.chipTouch : diorama ? t.chipDiorama : t.chip}</span>
         {/* für Tastatur und Screenreader; sichtbar, sobald sie den Fokus haben */}
         <button type="button" className="sr focusable" onClick={onPC}>{t.toPC}</button>
         <button type="button" className="sr focusable" onClick={onTV}>{t.toTV}</button>

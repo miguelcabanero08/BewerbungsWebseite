@@ -105,6 +105,8 @@ export function UiIcon({ name, size = 16 }) {
     case 'download': return <svg {...p}><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13.5h10" /></svg>
     case 'play': return <svg {...p} fill="currentColor" stroke="none"><path d="M4.5 2.5v11l9-5.5Z" /></svg>
     case 'pause': return <svg {...p} fill="currentColor" stroke="none"><rect x="3.5" y="2.5" width="3" height="11" rx=".6" /><rect x="9.5" y="2.5" width="3" height="11" rx=".6" /></svg>
+    case 'iso': return <svg {...p}><path d="M8 1.8 13.5 5v6L8 14.2 2.5 11V5Z" /><path d="M2.5 5 8 8.2 13.5 5M8 8.2v6" /></svg>
+    case 'eye': return <svg {...p}><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8Z" /><circle cx="8" cy="8" r="2" /></svg>
     case 'sun': return <svg {...p}><circle cx="8" cy="8" r="3" /><path d="M8 1.2v1.6M8 13.2v1.6M1.2 8h1.6M13.2 8h1.6M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" /></svg>
     case 'moon': return <svg {...p}><path d="M13.2 10.1A5.6 5.6 0 0 1 5.9 2.8a5.6 5.6 0 1 0 7.3 7.3Z" /></svg>
     case 'help': return <svg {...p}><circle cx="8" cy="8" r="6.5" /><path d="M6.2 6.2a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.6-1.9 2.8" /><circle cx="8" cy="11.7" r=".7" fill="currentColor" stroke="none" /></svg>
