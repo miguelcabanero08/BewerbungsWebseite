@@ -1,0 +1,47 @@
+/* Handy-Oberfläche am PC (statt des skalierten 1280er-Desktops) */
+.phone {
+  position: fixed; inset: 0; z-index: 30;
+  background: #12141c url("/images/manchester-united.webp") 62% center / cover;
+  font-family: var(--font-desk);
+  animation: phone-in 0.35s var(--ease-out);
+}
+@keyframes phone-in { from { opacity: 0; transform: scale(0.98); } }
+.phone::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 10, 16, 0.55), rgba(8, 10, 16, 0.35) 45%, rgba(8, 10, 16, 0.75)); }
+
+.phone-home {
+  position: relative; height: 100%;
+  display: flex; flex-direction: column; gap: 18px;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  overflow: auto;
+}
+.phone-top { display: flex; justify-content: flex-end; }
+.phone-note {
+  display: flex; flex-direction: column; padding: 14px 16px; border-radius: 10px;
+  background: var(--sticky-paper); color: var(--sticky-ink); font-size: 14px; line-height: 1.5;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.6);
+}
+.phone-note b { font-size: 17px; margin-bottom: 2px; }
+.phone-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 8px; }
+.phone-grid button {
+  width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border: 0; background: none; color: #fff; padding: 4px 0; cursor: pointer;
+  font-size: 12px; line-height: 1.2; text-align: center; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+.phone-grid button:active svg { transform: scale(0.94); }
+.phone-leave {
+  margin-top: auto; align-self: center;
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--chip-line); background: var(--chip-bg); color: #fff;
+  font: 600 14px/1 var(--font-world); padding: 12px 18px; border-radius: 999px; cursor: pointer;
+}
+
+.phone-app { position: relative; height: 100%; display: flex; flex-direction: column; background: var(--win-surface); }
+.phone-bar {
+  flex: none; display: flex; align-items: center; gap: 8px;
+  padding: max(10px, env(safe-area-inset-top)) 12px 10px;
+  background: #f7f7f7; border-bottom: 1px solid var(--win-line); color: var(--win-ink);
+}
+.phone-bar h1 { margin: 0; font-size: 16px; font-weight: 600; outline: none; }
+.phone-back { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; color: var(--win-accent); font-size: 15px; padding: 6px 6px 6px 0; cursor: pointer; }
+.phone-body { flex: 1; min-height: 0; container-type: inline-size; padding-bottom: env(safe-area-inset-bottom); }
+.phone-body > .about, .phone-body > .explorer, .phone-body > .player, .phone-body > .notepad-wrap, .phone-body > .cinema, .phone-body > .game { height: 100%; }

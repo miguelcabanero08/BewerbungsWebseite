@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T12:00:00+02:00",
+  "title": "Design System: Miguel Cabañero · Bewerbung",
+  "extensions": {
+    "colorMeta": {
+      "led-violet": { "role": "primary", "displayName": "LED-Violett", "canonical": "#a595ff" },
+      "bell-amber": { "role": "primary", "displayName": "Klingel-Amber", "canonical": "#ffb547" },
+      "mu-red": { "role": "secondary", "displayName": "Vereinsrot Manchester", "canonical": "#c8102e" },
+      "thun-red": { "role": "secondary", "displayName": "Vereinsrot Thun", "canonical": "#d0021b" },
+      "night": { "role": "neutral", "displayName": "Nacht", "canonical": "#0b0d12" },
+      "room-wall": { "role": "neutral", "displayName": "Lavendelgraue Wand", "canonical": "#c6c4d6" },
+      "win-accent": { "role": "neutral", "displayName": "Desktop-Akzent", "canonical": "#0f6cbd" }
+    },
+    "typographyMeta": {
+      "overlay": { "displayName": "Overlay", "purpose": "Fakten-Zeile und Hinweise über der 3D-Welt." },
+      "world-print": { "displayName": "Welt-Druck", "purpose": "Canvas-Texte in der Welt: Türschild, Trikot, Wimpel, Fussmatte." },
+      "desktop-ui": { "displayName": "Desktop", "purpose": "Alles innerhalb des PC-Desktops." }
+    },
+    "shadows": [
+      { "name": "window", "value": "0 22px 48px -12px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.25)", "purpose": "Desktop-Fenster." },
+      { "name": "sticky", "value": "0 10px 24px -8px rgba(0,0,0,.55)", "purpose": "Notizzettel auf dem Desktop." },
+      { "name": "bell-glow", "value": "0 10px 30px -8px rgba(255,181,71,.6)", "purpose": "Klingel-Knopf im Flur." }
+    ],
+    "motion": [
+      { "name": "camera-move", "value": "easeInOutCubic, 2600ms (Zimmer↔PC), 1700ms (zum TV), 1500ms (vom TV)", "purpose": "Zeitbasierte Kamerafahrten, Fortschritt auf 0..1 begrenzt." },
+      { "name": "door-open", "value": "easeInOutCubic, 1700ms, 1.7 rad", "purpose": "Wohnungstür nach dem Klingeln." },
+      { "name": "fade-black", "value": "1.2s ease-in an, 1.8s ease aus", "purpose": "Übergang Nebel → Zimmer." },
+      { "name": "window-in", "value": "220ms cubic-bezier(.16,1,.3,1)", "purpose": "Fenster öffnen." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Klingel-Knopf",
+      "kind": "button",
+      "refersTo": "ring-button",
+      "description": "Primäre Aktion im Flur: klingeln und eintreten.",
+      "html": "<button class=\"ds-ring\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><path d=\"M9 2.2a4.8 4.8 0 0 0-4.8 4.8v3.4L2.6 13h12.8l-1.6-2.6V7A4.8 4.8 0 0 0 9 2.2Z\" fill=\"currentColor\"/></svg>Klingeln</button>",
+      "css": ".ds-ring { display:inline-flex; align-items:center; gap:10px; font:700 16px/1 Archivo, sans-serif; color:#1b1205; background:#ffb547; border:0; border-radius:999px; padding:15px 24px; box-shadow:0 10px 30px -8px rgba(255,181,71,.6); transition:transform .2s cubic-bezier(.16,1,.3,1), background-color .2s; cursor:pointer; } .ds-ring:hover { transform:translateY(-2px); background:#ffc56e; } .ds-ring:focus-visible { outline:2px solid #fff; outline-offset:3px; }"
+    },
+    {
+      "name": "Overlay-Chip",
+      "kind": "chip",
+      "refersTo": "overlay-chip",
+      "description": "Hinweis über der 3D-Szene.",
+      "html": "<span class=\"ds-chip\">Kurz scrollen oder PC anklicken</span>",
+      "css": ".ds-chip { display:inline-flex; align-items:center; gap:10px; font:600 14px/1 Archivo, sans-serif; color:#fff; padding:11px 18px; border-radius:999px; background:rgba(10,12,18,.66); border:1px solid rgba(255,255,255,.16); }"
+    },
+    {
+      "name": "Desktop-Button primär",
+      "kind": "button",
+      "refersTo": "desktop-button-primary",
+      "description": "Hauptaktion in Desktop-Fenstern, z. B. Entsperren, Live ansehen.",
+      "html": "<button class=\"ds-dbtn\">Entsperren</button>",
+      "css": ".ds-dbtn { font:14px/1.2 'Segoe UI', system-ui, sans-serif; background:#0f6cbd; color:#fff; border:1px solid #0f6cbd; border-radius:5px; padding:7px 14px; } .ds-dbtn:hover { background:#115ea3; } .ds-dbtn:focus-visible { outline:2px solid #1b1b1b; outline-offset:2px; }"
+    },
+    {
+      "name": "Notizzettel",
+      "kind": "card",
+      "refersTo": "sticky-note",
+      "description": "HR-Fakten auf dem Desktop.",
+      "html": "<aside class=\"ds-sticky\"><header></header><div><b>Miguel Cabañero</b>Praktikum gesucht ab August 2027</div></aside>",
+      "css": ".ds-sticky { width:270px; background:#fff4a8; color:#2a2510; border-radius:4px; box-shadow:0 10px 24px -8px rgba(0,0,0,.55); font:14.5px/1.5 'Segoe UI', system-ui, sans-serif; } .ds-sticky header { height:26px; background:#ffe66b; border-radius:4px 4px 0 0; } .ds-sticky div { padding:12px 16px 16px; } .ds-sticky b { display:block; font-size:17px; }"
+    },
+    {
+      "name": "Projekt-Tag",
+      "kind": "chip",
+      "refersTo": "tag-live",
+      "description": "Status eines Projekts: live, in Arbeit, Schule.",
+      "html": "<span class=\"ds-tag ds-live\">live</span> <span class=\"ds-tag ds-wip\">in Arbeit</span>",
+      "css": ".ds-tag { display:inline-block; font:700 11.5px/1.6 'Segoe UI', system-ui, sans-serif; padding:1px 7px; border-radius:3px; } .ds-live { background:#dff3e5; color:#12632f; } .ds-wip { background:#fff1d6; color:#8a4b00; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Ein Zimmer, kein Portfolio",
+    "overview": "Die Seite ist ein Ort: Treppenhaus, Wohnungstür, ein einfaches Studentenzimmer bei Nacht, und alle Inhalte als Apps auf dem PC in der Ecke. Ruhig, filmisch, dunkel blau-lila; nur die Bildschirme leuchten und färben den Raum.",
+    "keyCharacteristics": [
+      "Begehbare 3D-Welt statt Seiten-Scrollen",
+      "Nur Bildschirme, LED-Leisten und Fensterhimmel leuchten",
+      "Desktop als echtes HTML in Windows-Anmutung, ohne Microsoft-Marken",
+      "Echte, persönliche Medien",
+      "HR-Fakten in jeder Station in einem Satz"
+    ],
+    "rules": [
+      { "name": "The Only-Screens-Glow Rule", "body": "Selbstleuchtend sind nur Fernseher, Monitor, LED-Leisten und der Fensterhimmel; alles andere ist matt.", "section": "colors" },
+      { "name": "The Screen-Light Rule", "body": "Bildschirme werfen ihr Bild als dezentes Flächenlicht in der Durchschnittsfarbe des aktuellen Bildes.", "section": "colors" },
+      { "name": "The Fonts-Before-Canvas Rule", "body": "Canvas-Texte erst nach dem Laden von Archivo neu zeichnen.", "section": "typography" },
+      { "name": "The Dim-Room Rule", "body": "Grundlicht bleibt sehr gedimmt; bei 'zu hell' die Grundlichter senken, nie die Bildschirme.", "section": "elevation" },
+      { "name": "The Real-Object Rule", "body": "Möbel als Gruppe in lokalen Koordinaten bauen und erst dann platzieren, nie für einen Blickwinkel zurechtbiegen.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do die Reihenfolge Flur → Zimmer → PC beibehalten und 'Direkt zu den Inhalten' im Flur anbieten.",
+      "Do jede Bewegung mit einem einzigen Scroll-Tick, Wisch oder einer Taste komplett auslösen.",
+      "Do echte, eigene Medien zeigen.",
+      "Do Vereine nur über Farben und Schriftzüge zeigen.",
+      "Do Skills in Worten statt Zahlen."
+    ],
+    "donts": [
+      "Don't irgendetwas ausser Bildschirmen, LED-Leisten und Fensterhimmel leuchten lassen.",
+      "Don't offizielle Wappen oder das Windows-Logo nachzeichnen.",
+      "Don't Prozentwerte, Skill-Balken oder Kreisdiagramme.",
+      "Don't zum alten Look zurück.",
+      "Don't einen One-Pager bauen.",
+      "Don't Spiele- oder Film-Cover von Dritten verwenden, wo eigene Bilder möglich sind."
+    ]
+  }
+}

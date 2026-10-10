@@ -1,0 +1,131 @@
+/* Oberfläche über der 3D-Welt: Flur, Zimmer, Fernseher, Klick-Hilfe */
+.ui {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+.ui.on { opacity: 1; visibility: visible; transition: opacity 0.5s ease, visibility 0s; }
+.ui.on button, .ui.on a { pointer-events: auto; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 600; color: #fff;
+  padding: 11px 18px; border-radius: 999px;
+  background: var(--chip-bg); border: 1px solid var(--chip-line);
+}
+.chip svg { flex: none; animation: nudge 1.6s var(--ease-out) infinite; }
+@keyframes nudge { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(4px); } }
+
+/* Flur */
+.hall-top { position: absolute; left: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); max-width: min(520px, calc(100% - 40px)); }
+.hall-top p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--overlay-ink); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.85); }
+.hall-top b { color: #fff; }
+.hall-corner {
+  position: absolute; right: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px);
+  display: flex; align-items: center; gap: 18px;
+}
+.skip {
+  color: #fff; font-size: 14px; font-weight: 600;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+}
+.skip:hover { color: var(--bell-amber); }
+.hall-bottom {
+  position: absolute; left: 50%; bottom: max(clamp(24px, 6vh, 56px), env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 14px; white-space: nowrap;
+}
+.ring {
+  display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+  font: 700 16px/1 var(--font-world); color: #1b1205; background: var(--bell-amber);
+  border: 0; border-radius: 999px; padding: 15px 24px;
+  box-shadow: 0 10px 30px -8px rgba(255, 181, 71, 0.6);
+  transition: transform 0.2s var(--ease-out), background-color 0.2s;
+}
+.ring:hover { transform: translateY(-2px); background: var(--bell-amber-hover); }
+.ring:active { transform: translateY(0); }
+.ring svg { transform-origin: 50% 10%; }
+.ring:hover svg { animation: swing 0.6s ease-in-out; }
+@keyframes swing { 25% { transform: rotate(14deg); } 75% { transform: rotate(-10deg); } }
+.hint { font-size: 13.5px; color: #e8e2d7; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85); }
+.hint kbd { font: 600 12px/1 var(--font-world); padding: 4px 7px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(0, 0, 0, 0.35); }
+
+.lang-inline { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--chip-bg); border: 1px solid var(--chip-line); }
+.lang-inline button {
+  border: 0; background: none; color: #d9d3c8; cursor: pointer;
+  font: 700 12px/1 var(--font-world); letter-spacing: 0.06em;
+  padding: 7px 10px; border-radius: 999px;
+}
+.lang-inline button[aria-pressed="true"] { background: var(--overlay-ink); color: #15131c; }
+.lang-inline button:hover:not([aria-pressed="true"]) { color: #fff; }
+
+/* Zimmer */
+.room-bottom {
+  position: absolute; left: 50%; bottom: max(28px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  width: max-content; max-width: calc(100vw - 32px);
+}
+.room-bottom .chip { white-space: normal; text-align: center; }
+.room-bottom .sr.focusable:focus-visible {
+  font-weight: 700; font-size: 14px; color: #1b1205; background: var(--bell-amber);
+  border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer;
+}
+
+.room-corner { position: absolute; right: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); display: flex; align-items: center; gap: 10px; }
+.room-tools { display: flex; align-items: center; gap: 10px; }
+
+/* halbtransparente Knöpfe über der Szene (Zimmer, PC) */
+.ghost {
+  background: rgba(10, 12, 18, 0.36) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(8px);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.tvbtn.ghost:hover, .lang-inline.ghost:hover { background: rgba(10, 12, 18, 0.62) !important; border-color: rgba(255, 255, 255, 0.3) !important; }
+.lang-inline.ghost button[aria-pressed="true"] { background: rgba(241, 236, 227, 0.88); }
+
+/* PC: Knopf oben links, über dem Desktop */
+.pc-ui { z-index: 31; }
+.pc-back { position: absolute; left: 14px; top: 14px; padding: 9px 14px; font-size: 13px; }
+
+/* Fernseher */
+.tv-top { position: absolute; left: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); display: flex; gap: 10px; flex-wrap: wrap; }
+.tvbtn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 600 14px/1 var(--font-world); color: #fff;
+  background: rgba(10, 12, 18, 0.72); border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px; padding: 11px 16px; cursor: pointer;
+}
+.tvbtn:hover { background: rgba(30, 32, 40, 0.88); }
+.tvbtn[aria-pressed="true"] { border-color: var(--bell-amber); color: var(--bell-amber); }
+.tv-cap { position: absolute; left: clamp(20px, 4vw, 56px); bottom: max(clamp(20px, 4vh, 40px), env(safe-area-inset-bottom)); margin: 0; font-size: 14px; line-height: 1.5; color: #ddd; text-shadow: 0 1px 8px #000; }
+.tv-cap b { color: #fff; font-size: 16px; }
+
+/* Klick-Hilfe über Fernseher und PC (Position setzt die Engine) */
+.hint3d {
+  position: fixed; left: 0; top: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  pointer-events: none; color: rgba(255, 255, 255, 0.72);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.hint3d.on { opacity: 1; }
+.hint3d span {
+  font: 700 15px/1 var(--font-world); letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
+  padding: 6px 11px; border-radius: 999px;
+  background: rgba(20, 18, 40, 0.45); border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(6px);
+}
+.hint3d svg { filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45)); animation: bob 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(-4px); } 50% { transform: translateY(6px); } }
+
+@media (max-width: 640px) {
+  .hall-top { right: 20px; }
+  .hall-top p { font-size: 14px; }
+  .hall-corner { top: 116px; left: 20px; right: auto; gap: 14px; }
+  .hall-bottom { flex-direction: column; gap: 10px; }
+  .hint { display: none; }
+  .chip { font-size: 13px; padding: 10px 14px; }
+  .room-corner { left: 20px; right: 20px; justify-content: space-between; }
+  .room-tools { gap: 8px; }
+  .room-tools .tvbtn { padding: 10px 12px; }
+}

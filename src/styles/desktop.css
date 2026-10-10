@@ -1,0 +1,122 @@
+/* Desktop-Ebene: Grundzustand = unsichtbar unter der 3D-Szene (die Engine legt sie
+   am PC flach über den Monitor). Immer 1280 × 800, wird per transform skaliert. */
+.desk-layer {
+  position: fixed; left: 0; top: 0; z-index: -1;
+  width: 1280px; height: 800px; overflow: hidden;
+  pointer-events: none; transform-origin: 0 0;
+}
+
+.desktop {
+  position: absolute; inset: 0; overflow: hidden;
+  font-family: var(--font-desk); font-size: 14px; color: #fff;
+  background: #1d2433;
+  user-select: none;
+  color-scheme: light;
+}
+.wallpaper {
+  position: absolute; inset: 0;
+  background: #1d2433 url("/images/manchester-united.webp") center / cover;
+}
+.wallpaper::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(8, 10, 16, 0.35), rgba(8, 10, 16, 0.15) 40%, rgba(8, 10, 16, 0.45));
+}
+
+.icons {
+  position: absolute; left: 10px; top: 64px; bottom: 58px; /* oben Platz für "Zurück ins Zimmer" */
+  margin: 0; padding: 0; list-style: none;
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(6, 100px); grid-auto-columns: 92px; gap: 4px 6px;
+}
+.icon {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px;
+  padding: 8px 4px 4px; border-radius: 6px; border: 1px solid transparent;
+  background: none; color: #fff; font-size: 13px; line-height: 1.2; text-align: center; cursor: default;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.5);
+}
+.icon svg { flex: none; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); }
+.icon:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.18); }
+.icon:focus-visible, .icon.sel { outline: none; background: rgba(120, 170, 255, 0.28); border-color: rgba(160, 200, 255, 0.55); }
+
+.sticky {
+  position: absolute; right: 26px; top: 26px; width: 280px;
+  background: var(--sticky-paper); color: var(--sticky-ink); border-radius: 4px;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.55);
+  font-size: 14.5px; line-height: 1.5; user-select: text;
+}
+.sticky-top { height: 26px; background: #ffe66b; border-radius: 4px 4px 0 0; }
+.sticky-body { padding: 12px 16px 16px; display: flex; flex-direction: column; }
+.sticky-body b { font-size: 17px; margin-bottom: 4px; }
+.sticky-body a { color: #6a3d00; font-weight: 600; margin-top: 4px; }
+
+/* Taskleiste */
+.taskbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 48px; z-index: 900;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  background: rgba(28, 30, 38, 0.86);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.tb-btn {
+  position: relative; width: 40px; height: 40px; border-radius: 6px; border: 0; background: none;
+  display: grid; place-items: center; cursor: default;
+}
+.tb-btn:hover { background: rgba(255, 255, 255, 0.09); }
+.tb-btn.open::after { content: ""; position: absolute; bottom: 2px; left: 50%; width: 16px; height: 3px; border-radius: 2px; transform: translateX(-50%) scaleX(0.375); background: #9cc2ff; transition: transform 0.2s var(--ease-out); }
+.tb-btn.active::after { transform: translateX(-50%) scaleX(1); }
+.start-mark { width: 26px; height: 26px; border-radius: 6px; background: var(--bell-amber); color: #1b1205; display: grid; place-items: center; font: 800 12px/1 var(--font-world); letter-spacing: -0.02em; }
+.tray-left { position: absolute; left: 14px; top: 0; bottom: 0; display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #e9e9e9; }
+.tray-left .dot { width: 8px; height: 8px; border-radius: 50%; background: #5ee08a; box-shadow: 0 0 0 3px rgba(94, 224, 138, 0.2); }
+.tray { position: absolute; right: 10px; top: 0; bottom: 0; display: flex; align-items: center; gap: 12px; font-size: 12px; color: #eee; }
+.clock { text-align: right; line-height: 1.35; font-variant-numeric: tabular-nums; }
+
+.lang-tray { position: relative; }
+.lang-btn { border: 0; background: none; color: #eee; font: 600 12px/1 var(--font-desk); padding: 8px 9px; border-radius: 5px; cursor: default; }
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { background: rgba(255, 255, 255, 0.09); }
+.lang-menu {
+  position: absolute; right: 0; bottom: 46px; margin: 0; padding: 6px; list-style: none; min-width: 170px;
+  background: rgba(36, 38, 48, 0.97); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+}
+.lang-menu button { width: 100%; display: flex; gap: 10px; align-items: center; border: 0; background: none; color: #eee; font-size: 13px; padding: 8px 10px; border-radius: 5px; text-align: left; }
+.lang-menu button:hover { background: rgba(255, 255, 255, 0.09); }
+.lang-menu button[aria-pressed="true"] { background: rgba(156, 194, 255, 0.16); }
+
+/* Startmenü */
+.startmenu {
+  position: absolute; left: 50%; bottom: 58px; width: 580px; transform: translateX(-50%); z-index: 950;
+  background: rgba(36, 38, 48, 0.96); backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
+  padding: 22px 24px 0;
+  animation: sm-in 0.25s var(--ease-out);
+}
+@keyframes sm-in { from { opacity: 0; transform: translate(-50%, 12px); } }
+.startmenu h3 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: #ddd; }
+.sm-grid { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.sm-grid .icon { text-shadow: none; font-size: 12px; padding: 10px 4px; }
+.sm-grid .icon svg { filter: none; }
+.sm-foot { margin: 18px -24px 0; padding: 14px 24px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.18); border-radius: 0 0 10px 10px; }
+.sm-user { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.sm-user img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.sm-power { display: flex; align-items: center; gap: 8px; border: 0; background: rgba(255, 255, 255, 0.07); color: #fff; font-size: 13px; padding: 8px 12px; border-radius: 6px; cursor: default; }
+.sm-power:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* Fenster */
+.win {
+  position: absolute; display: flex; flex-direction: column;
+  background: var(--win-bg); color: var(--win-ink); border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 22px 48px -12px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.25);
+  user-select: text;
+  animation: win-in 0.22s var(--ease-out);
+}
+@keyframes win-in { from { opacity: 0; transform: scale(0.96) translateY(8px); } }
+.win.max { left: 0 !important; top: 0 !important; width: 100% !important; height: calc(100% - 48px) !important; border-radius: 0; }
+.titlebar { height: 36px; flex: none; display: flex; align-items: center; gap: 8px; padding-left: 12px; background: #eaeaea; font-size: 12.5px; user-select: none; touch-action: none; }
+.win.focus .titlebar { background: #f9f9f9; }
+.titlebar .tt { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wc { width: 46px; height: 36px; border: 0; background: none; display: grid; place-items: center; cursor: default; color: #222; }
+.wc:hover { background: rgba(0, 0, 0, 0.07); }
+.wc.x:hover { background: #c42b1c; color: #fff; }
+.wc:focus-visible { outline-offset: -3px; }
+.wbody { flex: 1; min-height: 0; background: var(--win-surface); container-type: inline-size; position: relative; }

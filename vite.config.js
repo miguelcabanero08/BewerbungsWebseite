@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Leitet Frontend-Aufrufe an /api/* im Dev-Modus an den Express-Server weiter,
-      // damit Browser alles als gleiche Origin sieht (kein CORS, Cookies funktionieren).
+      // Nur für `npm run dev`: leitet /api/* an einen lokalen Server auf Port 3001 weiter.
+      // Mit `npm run dev:all` (vercel dev) laufen die echten Functions aus api/ direkt.
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,

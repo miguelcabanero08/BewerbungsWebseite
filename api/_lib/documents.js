@@ -1,12 +1,19 @@
 // Dokumente, die nur nach erfolgreichem Login zugänglich sind.
-// Datei muss unter protected-files/<file> liegen (Projekt-Root, siehe
-// vercel.json -> functions."api/documents/file.js".includeFiles).
+// Die Dateien liegen lokal in protected-files/ (nicht im Git) und werden mit
+// `npm run upload-protected-files` in den privaten Vercel-Blob-Store geladen.
+// Neue Datei: hier eintragen, Texte unten ergänzen, dann `npm run upload-protected-files`.
 export const DOCUMENTS = [
   { id: 'lebenslauf', file: 'lebenslauf.pdf' },
   { id: 'zeugnis', file: 'zeugnis.pdf' },
+  { id: 'bewerbungsschreiben', file: 'Bewerbungsschreiben_Miguel.pdf' },
 ]
 
 export const DOCUMENTS_I18N = {
+  bewerbungsschreiben: {
+    de: { title: 'Bewerbungsschreiben', description: 'Allgemeines Bewerbungsschreiben als PDF' },
+    en: { title: 'Cover letter', description: 'General cover letter as PDF' },
+    fr: { title: 'Lettre de motivation', description: 'Lettre de motivation générale au format PDF' },
+  },
   lebenslauf: {
     de: { title: 'Lebenslauf', description: 'Aktueller Lebenslauf als PDF' },
     en: { title: 'Resume', description: 'Current resume as PDF' },

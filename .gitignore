@@ -35,3 +35,6 @@ protected-files/*
 *.njsproj
 *.sln
 *.sw?
+
+# Mockups: Medien sind Kopien aus public/media bzw. Rohfassungen (gross) – nicht ins Git
+design/mockups/media/

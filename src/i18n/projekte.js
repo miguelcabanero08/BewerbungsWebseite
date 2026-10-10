@@ -172,6 +172,19 @@ export const projekte = {
             'Aufbau eines cookie-basierten Session-Sharings über mehrere Subdomains hinweg statt des Standard-localStorage, inklusive Absicherung des Redirect-Flows gegen Open-Redirect-Angriffe. Ausserdem die nachträgliche Migration einer bereits laufenden Webseite (Tunehead) auf ein neues, geteiltes Auth-System, ohne bestehende Funktionen zu brechen.',
         },
       },
+      12: {
+        title: 'Fellow Tenants',
+        category: 'privat',
+        description:
+          'Mein aktuelles Spiel: ein Story-Horrorspiel in Unity, das ich alleine entwickle. Ein Sirenenalarm, Kreaturen, die auf Geräusche reagieren, und eine Regel: Stille heisst Überleben. Rauskommen kann man nur, indem man mit den Nachbarn spricht. Noch in Entwicklung.',
+        abstract: {
+          ziel: 'Ein atmosphärisches Story-Horrorspiel mit mehreren Enden entwickeln, bei dem Stille, Entscheidungen und Gespräche mit den Nachbarn im Mittelpunkt stehen statt klassisches Survival-Gameplay.',
+          technologien: 'Unity, C#; Story, Hintergrundwelt und alle Figuren in eigenen Design-Dokumenten ausgearbeitet.',
+          meineRolle: 'Einzelprojekt. Idee, Story, Game Design und Programmierung liegen komplett bei mir.',
+          wasGelernt:
+            'Das Projekt läuft noch. Bisher vor allem: eine grössere Geschichte mit elf Nachbarn, Abhängigkeiten und mehreren Enden zu planen und Schritt für Schritt in Dialoge, Interaktionen und Spielmechanik umzusetzen.',
+        },
+      },
     },
   },
 
@@ -346,6 +359,19 @@ export const projekte = {
             'Solo project. Concept (including architecture documentation for session sharing and the redirect flow), frontend, database schema/RLS policies, and migrating Tunehead onto the new shared system were entirely my own.',
           wasGelernt:
             'Building cookie-based session sharing across multiple subdomains instead of default localStorage, including securing the redirect flow against open-redirect attacks. Also migrating an already-live website (Tunehead) onto a new shared auth system without breaking existing functionality.',
+        },
+      },
+      12: {
+        title: 'Fellow Tenants',
+        category: 'privat',
+        description:
+          'My current game: a story-driven horror game in Unity that I am developing on my own. A siren, creatures that react to sound and one rule: silence means survival. The only way out is to talk to the neighbours. Still in development.',
+        abstract: {
+          ziel: 'Develop an atmospheric story-driven horror game with several endings that focuses on silence, decisions and conversations with the neighbours instead of classic survival gameplay.',
+          technologien: 'Unity, C#; story, background world and all characters worked out in my own design documents.',
+          meineRolle: 'Solo project. Idea, story, game design and programming are entirely my own.',
+          wasGelernt:
+            'The project is still running. So far mostly: planning a larger story with eleven neighbours, dependencies and several endings, and turning it step by step into dialogues, interactions and game mechanics.',
         },
       },
     },
@@ -523,6 +549,19 @@ export const projekte = {
             "Projet individuel. Le concept (y compris la documentation d'architecture pour le partage de session et le flux de redirection), le frontend, le schéma de base de données/politiques RLS, ainsi que la migration de Tunehead vers le nouveau système partagé étaient entièrement de mon ressort.",
           wasGelernt:
             "Mise en place d'un partage de session basé sur des cookies entre plusieurs sous-domaines au lieu du localStorage par défaut, y compris la sécurisation du flux de redirection contre les attaques par redirection ouverte (open redirect). Également la migration d'un site déjà en ligne (Tunehead) vers un nouveau système d'authentification partagé, sans casser les fonctionnalités existantes.",
+        },
+      },
+      12: {
+        title: 'Fellow Tenants',
+        category: 'privat',
+        description:
+          "Mon jeu actuel : un jeu d'horreur narratif sous Unity que je développe seul. Une sirène, des créatures qui réagissent au bruit et une seule règle : le silence, c'est la survie. On ne peut s'en sortir qu'en parlant aux voisins. Encore en développement.",
+        abstract: {
+          ziel: "Développer un jeu d'horreur narratif et atmosphérique avec plusieurs fins, centré sur le silence, les décisions et les conversations avec les voisins plutôt que sur un gameplay de survie classique.",
+          technologien: 'Unity, C# ; histoire, univers et tous les personnages élaborés dans mes propres documents de conception.',
+          meineRolle: "Projet individuel. L'idée, l'histoire, le game design et la programmation sont entièrement de mon ressort.",
+          wasGelernt:
+            "Le projet est toujours en cours. Jusqu'ici surtout : planifier une histoire plus large avec onze voisins, des dépendances et plusieurs fins, puis la transformer pas à pas en dialogues, interactions et mécaniques de jeu.",
         },
       },
     },

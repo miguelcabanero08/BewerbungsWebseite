@@ -1,0 +1,1335 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mockup · Zimmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --night: #0b0d12;
+    --warm: #ffcf8a;
+    --ink: #f3efe7;
+    --accent: #ffb547;
+    --win-bg: #f3f3f3;
+    --win-ink: #1b1b1b;
+    --win-line: #dcdcdc;
+    --win-accent: #0f6cbd;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--night); color: var(--ink); }
+  body { font-family: "Archivo", system-ui, sans-serif; }
+  ::selection { background: var(--accent); color: #111; }
+
+  #stage { position: fixed; inset: 0; overflow: hidden; }
+  #css, #gl { position: absolute; inset: 0; }
+  #css { z-index: 0; }
+  #css.locked { pointer-events: none; }
+  #gl { z-index: 1; pointer-events: none; }
+  #gl canvas { display: block; }
+  html, body { overflow: hidden; height: 100%; }
+
+  /* ---------- Overlays je Zustand ---------- */
+  .ui { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+  .ui.on { opacity: 1; }
+  .ui.on .hit { pointer-events: auto; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 600; letter-spacing: .01em; color: #fff;
+    padding: 11px 18px; border-radius: 999px;
+    background: rgba(10, 12, 18, .66); border: 1px solid rgba(255,255,255,.16);
+    white-space: nowrap;
+  }
+  .hall-top { position: absolute; left: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); max-width: 520px; }
+  .hall-top p { margin: 0; font-size: 15px; line-height: 1.5; color: #f1ece3; text-shadow: 0 1px 10px rgba(0,0,0,.8); }
+  .hall-top b { color: #fff; }
+  .hall-bottom { position: absolute; left: 50%; bottom: clamp(24px, 6vh, 56px); transform: translateX(-50%); display: flex; align-items: center; gap: 14px; }
+  .ring {
+    display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+    font: 700 16px/1 "Archivo", sans-serif; color: #1b1205; background: #ffb547;
+    border: 0; border-radius: 999px; padding: 15px 24px;
+    box-shadow: 0 10px 30px -8px rgba(255,181,71,.6);
+    transition: transform .2s cubic-bezier(.16,1,.3,1), background-color .2s;
+  }
+  .ring:hover { transform: translateY(-2px); background: #ffc56e; }
+  .ring:focus-visible, .skip:focus-visible, .tvbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .ring svg { transform-origin: 50% 10%; }
+  .ring:hover svg { animation: swing .6s ease-in-out; }
+  @keyframes swing { 25% { transform: rotate(14deg); } 75% { transform: rotate(-10deg); } }
+  .hint { font-size: 13.5px; color: #e8e2d7; text-shadow: 0 1px 8px rgba(0,0,0,.8); }
+  .hint kbd { font: 600 12px/1 "Archivo", sans-serif; padding: 4px 7px; border-radius: 4px; border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.35); }
+  .skip { position: absolute; right: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); color: #fff; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-shadow: 0 1px 8px rgba(0,0,0,.8); }
+  .room-bottom { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); }
+  .room-bottom svg { animation: nudge 1.6s cubic-bezier(.16,1,.3,1) infinite; }
+  @keyframes nudge { 0%,100% { transform: translateY(-2px); } 50% { transform: translateY(4px); } }
+  .tv-top { position: absolute; left: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); display: flex; gap: 10px; }
+  .tvbtn { font: 600 14px/1 "Archivo", sans-serif; color: #fff; background: rgba(10,12,18,.7); border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 11px 16px; cursor: pointer; }
+  .tvbtn:hover { background: rgba(30,32,40,.85); }
+  .tv-cap { position: absolute; left: clamp(20px, 4vw, 56px); bottom: clamp(20px, 4vh, 40px); font-size: 14px; color: #ddd; text-shadow: 0 1px 8px #000; }
+  .tv-cap b { color: #fff; font-size: 16px; }
+  .hint3d { position: fixed; z-index: 2; left: 0; top: 0; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; color: rgba(255,255,255,.72); opacity: 0; transition: opacity .4s ease; }
+  .hint3d.on { opacity: 1; }
+  .hint3d span { font: 700 15px/1 "Archivo", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #fff; padding: 6px 11px; border-radius: 999px; background: rgba(20, 18, 40, .45); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(6px); }
+  .hint3d svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.45)); animation: bob 1.4s cubic-bezier(.45,0,.55,1) infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(-4px); } 50% { transform: translateY(6px); } }
+  @media (prefers-reduced-motion: reduce) { .hint3d svg { animation: none; } }
+  #vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .6s ease; background: radial-gradient(ellipse 75% 70% at 50% 48%, transparent 45%, rgba(8, 5, 22, .62) 100%); }
+  #vignette.on { opacity: 1; }
+  #black { position: fixed; inset: 0; z-index: 4; background: #000; opacity: 0; pointer-events: none; transition: opacity 1.8s ease; }
+  #black.on { opacity: 1; transition: opacity 1.2s ease-in; }
+  #loading {
+    position: fixed; inset: 0; z-index: 5; display: grid; place-items: center;
+    background: var(--night); color: #cfc8bb; font-size: 14px; letter-spacing: .04em;
+    transition: opacity .6s ease;
+  }
+  @media (prefers-reduced-motion: reduce) { .room-bottom svg, .ring:hover svg { animation: none; } }
+  @media (max-width: 640px) { .hall-bottom { flex-direction: column; } .skip { top: auto; bottom: 120px; right: 50%; transform: translateX(50%); } }
+  .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* ---------- Desktop auf dem Monitor (1280 × 800 CSS-px) ---------- */
+  #desktop {
+    width: 1280px;
+    height: 800px;
+    position: relative;
+    overflow: hidden;
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    color: #fff;
+    background: #1d2433 url("/images/manchester-united.webp") center / cover;
+    user-select: none;
+  }
+  #desktop::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,16,.35), rgba(8,10,16,.15) 40%, rgba(8,10,16,.45)); }
+  .icons {
+    position: absolute;
+    left: 10px; top: 10px; bottom: 58px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(6, 100px);
+    grid-auto-columns: 92px;
+    gap: 4px 6px;
+  }
+  .icon {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    gap: 6px; padding: 8px 4px 4px; border-radius: 6px; border: 1px solid transparent;
+    background: none; color: #fff; font: inherit; font-size: 13px; line-height: 1.2; text-align: center; cursor: default;
+    text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 8px rgba(0,0,0,.5);
+  }
+  .icon svg { width: 48px; height: 48px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+  .icon:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.18); }
+  .icon:focus-visible, .icon.sel { outline: none; background: rgba(120,170,255,.28); border-color: rgba(160,200,255,.55); }
+
+  .sticky {
+    position: absolute; right: 26px; top: 26px; width: 270px;
+    background: #fff4a8; color: #2a2510; border-radius: 4px;
+    box-shadow: 0 10px 24px -8px rgba(0,0,0,.55);
+    font-size: 14.5px; line-height: 1.5;
+  }
+  .sticky header { height: 26px; background: #ffe66b; border-radius: 4px 4px 0 0; }
+  .sticky div { padding: 12px 16px 16px; }
+  .sticky b { display: block; font-size: 17px; margin-bottom: 4px; }
+  .sticky .hl { font-weight: 700; color: #6a3d00; }
+
+  .taskbar {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 48px; z-index: 900;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    background: rgba(28, 30, 38, .86);
+    backdrop-filter: blur(24px) saturate(1.4);
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .tb-btn {
+    position: relative; width: 40px; height: 40px; border-radius: 6px; border: 0; background: none;
+    display: grid; place-items: center; cursor: default;
+  }
+  .tb-btn svg { width: 26px; height: 26px; }
+  .tb-btn:hover { background: rgba(255,255,255,.09); }
+  .tb-btn.open::after { content: ""; position: absolute; bottom: 2px; left: 50%; width: 6px; height: 3px; border-radius: 2px; transform: translateX(-50%); background: #9cc7ff; }
+  .tb-btn.active::after { width: 16px; }
+  .start-mark { width: 26px; height: 26px; border-radius: 6px; background: #ffb547; color: #1a1205; display: grid; place-items: center; font: 800 12px/1 "Archivo", sans-serif; letter-spacing: -.02em; }
+  .tray { position: absolute; right: 10px; top: 0; bottom: 0; display: flex; align-items: center; gap: 14px; font-size: 12px; color: #eee; }
+  .tray .clock { text-align: right; line-height: 1.35; }
+  .tray .lang { padding: 4px 8px; border-radius: 4px; }
+  .tray .lang:hover { background: rgba(255,255,255,.09); }
+  .tray-left { position: absolute; left: 12px; top: 0; bottom: 0; display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #e9e9e9; }
+  .tray-left .dot { width: 8px; height: 8px; border-radius: 50%; background: #5ee08a; box-shadow: 0 0 0 3px rgba(94,224,138,.2); }
+
+  .startmenu {
+    position: absolute; left: 50%; bottom: 58px; width: 560px; transform: translate(-50%, 12px);
+    background: rgba(36, 38, 48, .94); backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px; padding: 22px 24px 0; z-index: 950; opacity: 0; pointer-events: none;
+    transition: opacity .18s ease, transform .25s cubic-bezier(.16,1,.3,1);
+  }
+  .startmenu.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+  .startmenu h3 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: #ddd; }
+  .sm-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .sm-grid .icon { text-shadow: none; font-size: 12px; }
+  .sm-grid .icon svg { width: 36px; height: 36px; filter: none; }
+  .sm-foot { margin: 18px -24px 0; padding: 14px 24px; border-top: 1px solid rgba(255,255,255,.08); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,.18); border-radius: 0 0 10px 10px; }
+  .sm-user { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .sm-user img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+  .sm-power { display: flex; align-items: center; gap: 8px; border: 0; background: rgba(255,255,255,.07); color: #fff; font: inherit; font-size: 13px; padding: 8px 12px; border-radius: 6px; cursor: default; }
+  .sm-power:hover { background: rgba(255,255,255,.14); }
+
+  /* ---------- Fenster ---------- */
+  .win {
+    position: absolute; z-index: 100; display: flex; flex-direction: column;
+    background: var(--win-bg); color: var(--win-ink); border-radius: 8px; overflow: hidden;
+    border: 1px solid rgba(0,0,0,.25);
+    box-shadow: 0 22px 48px -12px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.25);
+    animation: winIn .22s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes winIn { from { opacity: 0; transform: scale(.96) translateY(8px); } }
+  .win.max { left: 0 !important; top: 0 !important; width: 100% !important; height: calc(100% - 48px) !important; border-radius: 0; }
+  .win.min { display: none; }
+  .titlebar { height: 36px; display: flex; align-items: center; gap: 8px; padding-left: 12px; background: #eaeaea; font-size: 12.5px; flex: none; }
+  .win.focus .titlebar { background: #f9f9f9; }
+  .titlebar svg.ti { width: 16px; height: 16px; }
+  .titlebar .tt { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wc { width: 46px; height: 36px; border: 0; background: none; display: grid; place-items: center; cursor: default; color: #222; }
+  .wc:hover { background: rgba(0,0,0,.07); }
+  .wc.x:hover { background: #c42b1c; color: #fff; }
+  .wbody { flex: 1; overflow: auto; overscroll-behavior: contain; background: #fff; font-size: 14.5px; line-height: 1.55; }
+  .wbody::-webkit-scrollbar { width: 10px; }
+  .wbody::-webkit-scrollbar-thumb { background: #c9c9c9; border-radius: 6px; border: 3px solid #fff; }
+  .pad { padding: 26px 30px; }
+  .win h2 { margin: 0 0 6px; font-size: 26px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+  .win h4 { margin: 22px 0 6px; font-size: 15px; }
+  .win p { margin: 0 0 12px; max-width: 68ch; }
+  .muted { color: #5b5b5b; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #c8c8c8; background: #fbfbfb; color: #1b1b1b; padding: 7px 14px; border-radius: 5px; font: inherit; font-size: 13.5px; text-decoration: none; cursor: default; }
+  .btn:hover { background: #f0f0f0; }
+  .btn.primary { background: var(--win-accent); border-color: var(--win-accent); color: #fff; }
+  .btn.primary:hover { background: #115ea3; }
+  .placeholder-note { display: inline-block; font-size: 12px; font-weight: 600; color: #8a4b00; background: #fff1d6; border: 1px solid #f0cf8f; padding: 3px 8px; border-radius: 4px; }
+
+  /* Über mich */
+  .about { display: grid; grid-template-columns: 230px 1fr; gap: 28px; }
+  .about img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 6px; }
+  .facts { margin: 14px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .facts li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid #ececec; }
+  .facts li span:last-child { font-weight: 600; text-align: right; }
+
+  /* Explorer */
+  .explorer { display: grid; grid-template-columns: 190px 1fr; height: 100%; }
+  .ex-side { background: #f7f7f7; border-right: 1px solid var(--win-line); padding: 12px 8px; font-size: 13.5px; }
+  .ex-side button { display: flex; width: 100%; gap: 8px; align-items: center; border: 0; background: none; font: inherit; padding: 7px 10px; border-radius: 5px; text-align: left; cursor: default; color: #1b1b1b; }
+  .ex-side button:hover { background: #ececec; }
+  .ex-side button.on { background: #e1ebf7; font-weight: 600; }
+  .ex-main { overflow: auto; overscroll-behavior: contain; padding: 18px 20px; }
+  .ex-path { font-size: 12.5px; color: #5b5b5b; margin-bottom: 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .tile { border: 1px solid transparent; border-radius: 6px; padding: 8px; background: none; font: inherit; text-align: left; cursor: default; color: #1b1b1b; }
+  .tile:hover { background: #f0f5fb; border-color: #d6e4f3; }
+  .tile img, .tile .ph { width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 4px; display: block; background: #e6e6e6; }
+  .tile b { display: block; margin-top: 8px; font-size: 14px; }
+  .tile small { font-size: 12px; color: #5b5b5b; }
+  .tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 3px; margin-right: 4px; }
+  .tag.live { background: #dff3e5; color: #12632f; }
+  .tag.wip { background: #fff1d6; color: #8a4b00; }
+  .tag.school { background: #e8eef8; color: #24477a; }
+  .detail { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
+  .detail img, .detail video { width: 100%; border-radius: 6px; display: block; }
+  .back { margin-bottom: 14px; }
+
+  /* Dokumente */
+  .lockbox { max-width: 420px; margin: 40px auto; text-align: center; }
+  .lockbox svg { width: 56px; height: 56px; }
+  .lockbox input { width: 100%; margin: 14px 0 10px; padding: 10px 12px; font: inherit; border: 1px solid #c8c8c8; border-bottom: 2px solid var(--win-accent); border-radius: 5px; }
+  .lockbox input:focus { outline: none; background: #fafcff; }
+  .files { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .files th { text-align: left; font-weight: 600; color: #5b5b5b; padding: 8px 10px; border-bottom: 1px solid var(--win-line); }
+  .files td { padding: 10px; border-bottom: 1px solid #f0f0f0; }
+  .files tr:hover td { background: #f3f8fd; }
+
+  /* Musik */
+  .player { display: grid; grid-template-rows: auto 1fr auto; height: 100%; background: #121212; color: #fff; }
+  .pl-head { display: flex; gap: 22px; align-items: flex-end; padding: 28px; background: linear-gradient(180deg, #5a3a1c, #121212); }
+  .pl-cover { width: 150px; height: 150px; border-radius: 6px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .pl-head small { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #ddd; }
+  .pl-head h2 { color: #fff; font-size: 40px; margin: 4px 0 6px; }
+  .tracks { padding: 8px 18px; overflow: auto; overscroll-behavior: contain; }
+  .track { display: grid; grid-template-columns: 32px 1fr 80px; align-items: center; padding: 9px 10px; border-radius: 5px; color: #bbb; font-size: 14px; }
+  .track:hover { background: rgba(255,255,255,.07); color: #fff; }
+  .track b { color: #fff; font-weight: 500; }
+  .pl-bar { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-top: 1px solid #282828; background: #181818; font-size: 12.5px; color: #bbb; }
+  .pl-bar .playbtn { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: grid; place-items: center; border: 0; }
+  .pl-bar .prog { flex: 1; height: 4px; border-radius: 2px; background: #4d4d4d; }
+
+  /* Filme / Fellow Tenants */
+  .cinema { background: #0d0d0d; color: #eee; min-height: 100%; }
+  .cinema video { width: 100%; display: block; background: #000; }
+  .cinema .pad h2 { color: #fff; }
+  .cinema .muted { color: #a9a9a9; }
+  .reel { display: flex; gap: 12px; margin-top: 16px; }
+  .reel button { border: 1px solid #333; background: #1a1a1a; color: #eee; font: inherit; font-size: 13px; padding: 8px 12px; border-radius: 5px; cursor: default; }
+  .reel button.on { border-color: #ffb547; color: #ffb547; }
+  .game { background: #0a0b0d; color: #ddd; min-height: 100%; }
+  .game .hero { position: relative; }
+  .game .hero video { width: 100%; display: block; filter: saturate(.85); }
+  .game .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, #0a0b0d); }
+  .game .hero h2 { position: absolute; left: 30px; bottom: 18px; z-index: 1; margin: 0; color: #fff; font: 800 44px/1 "Archivo", sans-serif; font-stretch: 115%; letter-spacing: .04em; text-transform: uppercase; }
+  .game .rule { display: inline-block; margin: 0 0 14px; padding: 4px 10px; border: 1px solid #5c1f1f; color: #ff8f8f; font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .game .muted { color: #9a9a9a; }
+
+  /* Notepad */
+  .notepad { font-family: Consolas, "Cascadia Mono", monospace; font-size: 14px; white-space: pre-wrap; padding: 14px 18px; line-height: 1.6; }
+  .menubar { display: flex; gap: 16px; padding: 6px 12px; font-size: 12.5px; border-bottom: 1px solid var(--win-line); background: #fafafa; color: #333; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="loading">Zimmer wird eingerichtet …</div>
+
+<div id="stage">
+  <div id="css" class="locked"></div>
+  <div id="gl"></div>
+</div>
+
+<section class="ui" id="hallUI" aria-label="Eingang">
+  <div class="hall-top">
+    <h1 class="sr">Miguel Cabañero</h1>
+    <p><b>Miguel Cabañero</b> · 18, Thun · Informatiker EFZ Applikationsentwicklung an der IMS Bern, sucht ein Praktikum ab August 2027.</p>
+  </div>
+  <a class="skip hit" id="skip" href="#pc">Direkt zu den Inhalten</a>
+  <div class="hall-bottom">
+    <button class="ring hit" id="ringBtn">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2.2a4.8 4.8 0 0 0-4.8 4.8v3.4L2.6 13h12.8l-1.6-2.6V7A4.8 4.8 0 0 0 9 2.2Z" fill="currentColor"/><path d="M7.2 14.6a1.9 1.9 0 0 0 3.6 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Klingeln
+    </button>
+    <span class="hint">oder <kbd>Enter</kbd> drücken</span>
+  </div>
+</section>
+
+<section class="ui" id="roomUI" aria-label="Zimmer">
+  <div class="room-bottom">
+    <span class="chip">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      Kurz scrollen oder PC anklicken: zu den Inhalten · Fernseher: mein Film
+    </span>
+  </div>
+</section>
+
+<section class="ui" id="tvUI" aria-label="Fernseher">
+  <div class="tv-top">
+    <button class="tvbtn hit" id="backBtn">← Zurück ins Zimmer</button>
+    <button class="tvbtn hit" id="soundBtn">Ton an</button>
+  </div>
+  <p class="tv-cap"><b>CatSleep</b><br />Mein Kurzfilm, gefilmt und geschnitten in DaVinci Resolve.</p>
+</section>
+
+<div class="hint3d" id="hintTV" aria-hidden="true"><span>Klick</span><svg width="34" height="46" viewBox="0 0 34 46"><path d="M17 2v36M5 27l12 13 12-13" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="hint3d" id="hintPC" aria-hidden="true"><span>Klick</span><svg width="34" height="46" viewBox="0 0 34 46"><path d="M17 2v36M5 27l12 13 12-13" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div id="vignette" class="on"></div>
+<div id="black"></div>
+
+<!-- Desktop-DOM: liegt unsichtbar unter der Szene, als Abbild auf dem Monitor und flach davor, sobald man am PC sitzt -->
+<template id="desktop-tpl">
+  <div id="desktop">
+    <div class="icons" id="icons"></div>
+
+    <aside class="sticky" aria-label="Notiz">
+      <header></header>
+      <div>
+        <b>Miguel Cabañero</b>
+        18 · Thun BE<br />
+        IMS BWD Bern, mit BM Wirtschaft &amp; Dienstleistung<br />
+        Notenschnitt EFZ <span class="hl">5.1</span> · BM <span class="hl">5.1</span><br />
+        Praktikum gesucht <span class="hl">ab August 2027</span><br />
+        contact@miguel-cabanero.ch
+      </div>
+    </aside>
+
+    <div id="windows"></div>
+
+    <div class="startmenu" id="startmenu">
+      <h3>Angeheftet</h3>
+      <div class="sm-grid" id="smgrid"></div>
+      <div class="sm-foot">
+        <div class="sm-user"><img src="/images/portrait.webp" alt="" /> Miguel Cabañero</div>
+        <button class="sm-power" id="leave">
+          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6M4.4 3.7a5.5 5.5 0 1 0 7.2 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Zurück ins Zimmer
+        </button>
+      </div>
+    </div>
+
+    <nav class="taskbar" aria-label="Taskleiste">
+      <div class="tray-left"><span class="dot"></span>Offen für ein Praktikum</div>
+      <button class="tb-btn" id="startbtn" aria-label="Start"><span class="start-mark">MC</span></button>
+      <span id="tbapps" style="display:contents"></span>
+      <div class="tray">
+        <span class="lang">DE</span>
+        <span class="clock" id="clock"></span>
+      </div>
+    </nav>
+  </div>
+</template>
+
+<script type="module">
+import * as THREE from 'three';
+import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+
+/* =========================================================
+   1. Szene (Einheiten: Millimeter)
+   ========================================================= */
+const glHost = document.getElementById('gl');
+const cssHost = document.getElementById('css');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x0b0d12, 1);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = .9;
+glHost.appendChild(renderer.domElement);
+
+RectAreaLightUniformsLib.init();
+
+const reduceMotionEarly = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x0b0d12, 7000, 14000);
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 10, 20000);
+
+const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: .85, metalness: 0, ...o });
+function box(w, h, d, material, x, y, z, ry = 0) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), typeof material === 'number' ? mat(material) : material);
+  m.position.set(x, y + h / 2, z);
+  m.rotation.y = ry;
+  m.castShadow = m.receiveShadow = true;
+  scene.add(m);
+  return m;
+}
+function cyl(rt, rb, h, color, x, y, z, seg = 24) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), typeof color === 'number' ? mat(color) : color);
+  m.position.set(x, y + h / 2, z);
+  m.castShadow = m.receiveShadow = true;
+  scene.add(m);
+  return m;
+}
+
+// --- Texturen per Canvas ---
+const redraws = [];
+document.fonts.load('800 50px "Archivo"').then(() => redraws.forEach((f) => f()));
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); }
+  redraws.push(() => { draw(c.getContext('2d'), w, h); t.needsUpdate = true; });
+  return t;
+}
+let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+const floorTex = canvasTex(1024, 1024, (g, w, h) => {
+  const rows = 8, rh = h / rows;
+  for (let r = 0; r < rows; r++) {
+    let x = -rnd() * 400;
+    while (x < w) {
+      const len = 300 + rnd() * 350, l = 46 + rnd() * 10;
+      g.fillStyle = `hsl(30, ${28 + rnd() * 10}%, ${l}%)`;
+      g.fillRect(x, r * rh, len, rh);
+      for (let k = 0; k < 14; k++) { g.strokeStyle = `rgba(60,35,15,${.05 + rnd() * .06})`; g.beginPath(); const yy = r * rh + rnd() * rh; g.moveTo(x, yy); g.bezierCurveTo(x + len * .3, yy + rnd() * 6 - 3, x + len * .6, yy + rnd() * 6 - 3, x + len, yy); g.stroke(); }
+      g.fillStyle = 'rgba(40,24,10,.55)'; g.fillRect(x, r * rh, 2, rh);
+      x += len;
+    }
+    g.fillStyle = 'rgba(40,24,10,.5)'; g.fillRect(0, r * rh, w, 2);
+  }
+}, [3, 2.5]);
+const nightTex = canvasTex(512, 440, (g, w, h) => {
+  const grd = g.createLinearGradient(0, 0, 0, h); grd.addColorStop(0, '#0b1730'); grd.addColorStop(1, '#1d2a44');
+  g.fillStyle = grd; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#0a0f1a';
+  for (let i = 0; i < 9; i++) { const bw = 40 + rnd() * 70, bh = 60 + rnd() * 170, bx = i * 60 - 20; g.fillRect(bx, h - bh, bw, bh); for (let k = 0; k < 10; k++) if (rnd() > .5) { g.fillStyle = `rgba(255,${190 + rnd() * 50},120,.85)`; g.fillRect(bx + 6 + rnd() * (bw - 14), h - bh + 8 + rnd() * (bh - 20), 6, 8); g.fillStyle = '#0a0f1a'; } }
+});
+const rugTex = canvasTex(512, 512, (g, w, h) => {
+  g.fillStyle = '#5b3f3a'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#7d5a4c'; g.lineWidth = 14; g.strokeRect(30, 30, w - 60, h - 60);
+  g.strokeStyle = '#3f2a27'; g.lineWidth = 4; g.strokeRect(58, 58, w - 116, h - 116);
+  for (let i = 0; i < 5000; i++) { g.fillStyle = `rgba(0,0,0,${rnd() * .08})`; g.fillRect(rnd() * w, rnd() * h, 2, 2); }
+});
+
+// --- Raum ---
+const RW = 6000, RD = 5000, RH = 2600;
+const wallMat = mat(0xc6c4d6, { roughness: .95 }); // leicht kühles Blau-Lila
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(RW, RD), mat(0xffffff, { map: floorTex, roughness: .7 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(RW, RD), mat(0xd8d4cc)); ceil.rotation.x = Math.PI / 2; ceil.position.y = RH; scene.add(ceil);
+const back = new THREE.Mesh(new THREE.PlaneGeometry(RW, RH), wallMat); back.position.set(0, RH / 2, -RD / 2); back.receiveShadow = true; scene.add(back);
+const left = new THREE.Mesh(new THREE.PlaneGeometry(RD, RH), wallMat); left.rotation.y = Math.PI / 2; left.position.set(-RW / 2, RH / 2, 0); left.receiveShadow = true; scene.add(left);
+const right = new THREE.Mesh(new THREE.PlaneGeometry(RD, RH), wallMat); right.rotation.y = -Math.PI / 2; right.position.set(RW / 2, RH / 2, 0); right.receiveShadow = true; scene.add(right);
+box(RW, 90, 14, 0xe6e2da, 0, 0, -RD / 2 + 7);
+box(14, 90, RD, 0xe6e2da, -RW / 2 + 7, 0, 0);
+box(14, 90, RD, 0xe6e2da, RW / 2 - 7, 0, 0);
+
+// Fenster links (Nacht über Thun)
+const win = new THREE.Mesh(new THREE.PlaneGeometry(1300, 1100), new THREE.MeshBasicMaterial({ map: nightTex }));
+win.rotation.y = Math.PI / 2; win.position.set(-RW / 2 + 4, 1450, -150); scene.add(win);
+[[0, 560, 1360, 60, 60], [0, -560, 1360, 60, 60]].forEach(([dz, dy, len]) => box(70, 60, len, 0xeeeeea, -RW / 2 + 30, 1450 + dy - 30, -150));
+box(70, 1180, 60, 0xeeeeea, -RW / 2 + 30, 860, -150 - 680); box(70, 1180, 60, 0xeeeeea, -RW / 2 + 30, 860, -150 + 680); box(70, 1180, 40, 0xeeeeea, -RW / 2 + 30, 860, -150);
+box(160, 30, 1420, 0xe9e6df, -RW / 2 + 80, 880, -150);
+
+// Teppich
+const rug = new THREE.Mesh(new THREE.BoxGeometry(2500, 8, 1900), mat(0xffffff, { map: rugTex, roughness: 1 }));
+rug.position.set(-1200, 4, -150); rug.receiveShadow = true; scene.add(rug);
+
+// Sofa (abgewetzt, olivgrün)
+const sofa = mat(0x6b6a3e, { roughness: .95 });
+box(2000, 380, 900, sofa, -1200, 0, 750);
+box(790, 140, 760, mat(0x75744a, { roughness: 1 }), -1600, 380, 690);
+box(790, 140, 760, mat(0x75744a, { roughness: 1 }), -800, 380, 690);
+box(2000, 480, 210, sofa, -1200, 380, 1095);
+box(200, 300, 900, sofa, -2100, 380, 750);
+box(200, 300, 900, sofa, -300, 380, 750);
+const blanket = box(560, 22, 820, mat(0x9a3d2f, { roughness: 1 }), -1750, 520, 700, .08); blanket.rotation.z = .04;
+box(380, 340, 120, mat(0xb9b2a0, { roughness: 1 }), -620, 520, 1010, -.2); // Kissen
+
+// Couchtisch mit Pizza-Karton, Dose, Fernbedienung
+const wood = mat(0x8a6a48, { roughness: .7 });
+box(1100, 36, 560, wood, -1200, 400, -500);
+[[-500, -230], [500, -230], [-500, 230], [500, 230]].forEach(([dx, dz]) => box(40, 400, 40, wood, -1200 + dx, 0, -500 + dz));
+box(400, 48, 400, mat(0xc9a36f), -1420, 436, -480, .32);
+cyl(33, 33, 122, mat(0xb4202a, { roughness: .35, metalness: .6 }), -900, 436, -380);
+box(50, 22, 170, 0x222222, -1020, 436, -600, -.5);
+
+// TV-Möbel + Fernseher mit eigenem Film
+box(1500, 420, 420, 0x2d2d30, -1200, 0, -2270);
+box(260, 50, 200, 0x1a1a1a, -1200, 420, -2290);
+box(70, 90, 40, 0x1a1a1a, -1200, 450, -2300);
+box(1160, 670, 50, mat(0x111214, { roughness: .4 }), -1200, 520, -2290);
+const tvVideo = document.createElement('video');
+Object.assign(tvVideo, { src: 'media/catsleep.mp4', muted: true, loop: true, playsInline: true, autoplay: true, crossOrigin: 'anonymous' });
+tvVideo.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;';
+document.body.appendChild(tvVideo);
+const tvTex = new THREE.VideoTexture(tvVideo); tvTex.colorSpace = THREE.SRGBColorSpace;
+const tvStill = new THREE.TextureLoader().load('media/catsleep-poster.jpg'); tvStill.colorSpace = THREE.SRGBColorSpace;
+const tvScreen = new THREE.Mesh(new THREE.PlaneGeometry(1110, 624), new THREE.MeshBasicMaterial({ map: tvStill, toneMapped: false }));
+tvScreen.position.set(-1200, 855, -2264); scene.add(tvScreen);
+tvVideo.addEventListener('playing', () => { tvScreen.material.map = tvTex; tvScreen.material.needsUpdate = true; });
+// Der Fernseher läuft immer: bei jeder Interaktion, beim Sichtbarwerden und periodisch neu anstossen
+const kickTV = () => { if (tvVideo.paused) tvVideo.play().catch(() => {}); };
+['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((ev) => addEventListener(ev, kickTV, { passive: true }));
+document.addEventListener('visibilitychange', kickTV); setInterval(kickTV, 2500); kickTV();
+box(90, 30, 200, 0x111111, -1700, 420, -2250); // Konsole
+
+// --- Deko: Pflanzen ---
+function plant(x, y, z, s = 1, tall = false) {
+  const g = new THREE.Group();
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(150, 115, 260, 24), mat(0xb5603a, { roughness: .9 }));
+  pot.position.y = 130; g.add(pot);
+  const soil = new THREE.Mesh(new THREE.CylinderGeometry(140, 140, 10, 24), mat(0x3a2a1c)); soil.position.y = 258; g.add(soil);
+  const greens = [0x3f7d3a, 0x4f9445, 0x2f6a33, 0x5aa04c];
+  const n = tall ? 16 : 10;
+  for (let i = 0; i < n; i++) {
+    const pivot = new THREE.Group(); pivot.position.y = 255; pivot.rotation.y = (i / n) * Math.PI * 2 + rnd() * .5;
+    const len = (tall ? 480 : 200) * (.7 + rnd() * .5), tilt = (tall ? .18 : .5) + rnd() * (tall ? .5 : .5);
+    const leaf = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), mat(greens[i % 4], { roughness: .7 }));
+    leaf.scale.set(tall ? 75 : 55, len, 12);
+    leaf.rotation.z = -tilt; leaf.position.set(Math.sin(tilt) * len, Math.cos(tilt) * len, 0);
+    leaf.castShadow = true; pivot.add(leaf); g.add(pivot);
+  }
+  g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  g.position.set(x, y, z); g.scale.setScalar(s); scene.add(g);
+  return g;
+}
+plant(-2600, 0, -1250, 1.15, true);
+plant(-560, 420, -2250, .55);
+plant(1560, 756, -2380, .4);
+plant(2650, 0, 200, .9, true);
+
+// --- Trikots im Rahmen (Vereinsfarben, keine nachgezeichneten Wappen) ---
+function jerseyTex({ body, sleeve, print, label }) {
+  return canvasTex(640, 800, (g, w, h) => {
+    g.fillStyle = '#17181c'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#23252b'; g.fillRect(26, 26, w - 52, h - 52);
+    const shirt = new Path2D('M200 100 L262 78 Q320 112 378 78 L440 100 L585 205 L525 315 L472 285 L472 650 L168 650 L168 285 L115 315 L55 205 Z');
+    g.fillStyle = body; g.fill(shirt);
+    g.save(); g.clip(shirt); g.fillStyle = sleeve;
+    g.beginPath(); g.moveTo(200, 100); g.lineTo(55, 205); g.lineTo(115, 315); g.lineTo(168, 285); g.lineTo(190, 150); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(440, 100); g.lineTo(585, 205); g.lineTo(525, 315); g.lineTo(472, 285); g.lineTo(450, 150); g.closePath(); g.fill();
+    g.restore();
+    g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 3; g.stroke(shirt);
+    g.fillStyle = print; g.textAlign = 'center';
+    g.font = '800 50px "Archivo", sans-serif'; g.fillText('CABAÑERO', 320, 240);
+    g.font = '800 230px "Archivo", sans-serif'; g.fillText('14', 320, 500);
+    g.fillStyle = '#c9c3b6'; g.font = '600 28px "Archivo", sans-serif'; g.fillText(label, 320, 730);
+  });
+}
+function framed(tex, w, h, x, y, z, ry = 0) {
+  const grp = new THREE.Group();
+  const fr = new THREE.Mesh(new THREE.BoxGeometry(w + 50, h + 50, 30), mat(0x111111, { roughness: .5 }));
+  const pic = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(0xffffff, { map: tex, roughness: .7 })); // nimmt nur Raumlicht an, leuchtet nicht
+  pic.position.z = 16; fr.castShadow = true; grp.add(fr, pic);
+  grp.position.set(x, y, z); grp.rotation.y = ry; scene.add(grp);
+}
+framed(jerseyTex({ body: '#c8102e', sleeve: '#b00d27', print: '#ffffff', label: 'Manchester United' }), 600, 750, -1200, 1760, -RD / 2 + 20);
+framed(jerseyTex({ body: '#f4f4f2', sleeve: '#d0021b', print: '#d0021b', label: 'FC Thun' }), 540, 675, RW / 2 - 20, 1560, 650, -Math.PI / 2);
+
+// Wimpel an der linken Wand
+function pennant(fill, stripe, text, txtColor) {
+  return canvasTex(600, 260, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    g.beginPath(); g.moveTo(0, 0); g.lineTo(w, h / 2); g.lineTo(0, h); g.closePath(); g.fillStyle = fill; g.fill();
+    if (stripe) { g.save(); g.clip(); g.fillStyle = stripe; g.fillRect(0, 0, 60, h); g.restore(); }
+    g.fillStyle = txtColor; g.font = '800 40px "Archivo", sans-serif'; g.textBaseline = 'middle'; g.fillText(text, 80, h / 2);
+  });
+}
+[[pennant('#c8102e', '#111', 'MAN UNITED', '#fff'), 1250], [pennant('#d0021b', '#fff', 'FC THUN', '#fff'), 1900]].forEach(([tex, z], i) => {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(760, 330), new THREE.MeshStandardMaterial({ map: tex, transparent: true, alphaTest: .5, side: THREE.DoubleSide, roughness: .9 }));
+  m.position.set(-RW / 2 + 6, 1820 - i * 60, z); m.rotation.set(0, Math.PI / 2, i ? .06 : -.05); scene.add(m);
+});
+
+// --- Hängepflanzen: Efeutute auf einem Brett an der rechten Wand + zwei Hängeampeln ---
+const leafGeo = new THREE.SphereGeometry(1, 10, 6);
+const leafPool = [];
+const GREENS = [0x2f6b2f, 0x3d8a3a, 0x4fa04a, 0x5fb35a, 0x376f31, 0x6fbf5f].map((c) => new THREE.Color(c));
+function vine(x0, y0, z0, len, wallSide = true) {
+  // eine Ranke: Blätter entlang einer leicht schwingenden Linie nach unten
+  const amp = 30 + rnd() * 70, freq = 1.5 + rnd() * 2.5, ph = rnd() * 6, drift = (rnd() - .5) * 160;
+  const step = 42 + rnd() * 10;
+  for (let d = 0; d < len; d += step) {
+    const t = d / len;
+    const side = (Math.round(d / step) % 2 ? 1 : -1);
+    leafPool.push({
+      x: x0 - (wallSide ? 20 + t * 40 + rnd() * 30 : (rnd() - .5) * 40),
+      y: y0 - d,
+      z: z0 + Math.sin(t * freq * Math.PI + ph) * amp * t + drift * t + side * 18,
+      s: 1 - t * .35, side,
+    });
+  }
+}
+// Brett mit Töpfchen
+const shelfX = RW / 2 - 90;
+box(170, 34, 3200, mat(0x9b7650, { roughness: .7 }), shelfX, 2230, -200);
+[-1600, -200, 1200].forEach((z) => box(150, 110, 26, 0x2a2a2a, RW / 2 - 75, 2125, z));
+[-1450, -850, -250, 350, 950].forEach((z) => cyl(80, 62, 140, mat(0xe7e2d8, { roughness: .6 }), shelfX, 2264, z));
+[-1450, -850, -250, 350, 950].forEach((z) => {
+  for (let i = 0; i < 6; i++) {
+    const zz = z + (rnd() - .5) * 180;
+    // über dem FC-Thun-Trikot nur kurze Ranken, damit es frei bleibt
+    const overJersey = zz > 300 && zz < 1000;
+    const len = overJersey ? 120 + rnd() * 180 : 450 + rnd() * 900;
+    vine(shelfX - 40, 2380, zz, len);
+  }
+});
+// Hängeampeln von der Decke
+function hanger(x, y, z) {
+  const pot = new THREE.Mesh(new THREE.SphereGeometry(150, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat(0xf1ede4, { roughness: .6 }));
+  pot.position.set(x, y, z); pot.castShadow = true; scene.add(pot);
+  for (let i = 0; i < 3; i++) {
+    const a = (i / 3) * Math.PI * 2, bx = x + Math.cos(a) * 140, bz = z + Math.sin(a) * 140;
+    const top = new THREE.Vector3(x, RH, z), bot = new THREE.Vector3(bx, y, bz);
+    const cord = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, top.distanceTo(bot), 6), mat(0xd9c9a8));
+    cord.position.copy(top).add(bot).multiplyScalar(.5); cord.lookAt(bot); cord.rotateX(Math.PI / 2); scene.add(cord);
+  }
+  for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2; vine(x + Math.cos(a) * 120, y + 60, z + Math.sin(a) * 120, 250 + rnd() * 550, false); }
+  for (let i = 0; i < 14; i++) leafPool.push({ x: x + (rnd() - .5) * 220, y: y + 40 + rnd() * 120, z: z + (rnd() - .5) * 220, s: 1.1, side: 1 });
+}
+hanger(2350, 1850, -900);
+hanger(2450, 1950, 1700);
+
+// alle Blätter als ein InstancedMesh (eine Draw-Call, kein Lag)
+const leaves = new THREE.InstancedMesh(leafGeo, new THREE.MeshStandardMaterial({ roughness: .6, side: THREE.DoubleSide }), leafPool.length);
+const dummy = new THREE.Object3D();
+leafPool.forEach((l, i) => {
+  dummy.position.set(l.x, l.y, l.z);
+  dummy.rotation.set(rnd() * Math.PI, (rnd() - .5) * .8, l.side * (.5 + rnd() * .6));
+  const s = l.s * (.8 + rnd() * .5);
+  dummy.scale.set(6 * s, 28 * s, 36 * s);
+  dummy.updateMatrix(); leaves.setMatrixAt(i, dummy.matrix);
+  leaves.setColorAt(i, GREENS[Math.floor(rnd() * GREENS.length)]);
+});
+leaves.castShadow = true; scene.add(leaves);
+
+// --- Manchester-United-Schal neben dem Trikot ---
+const scarfTex = canvasTex(220, 1100, (g, w, h) => {
+  g.fillStyle = '#c8102e'; g.fillRect(0, 0, w, h);
+  [[40, '#fff'], [70, '#111'], [h - 110, '#111'], [h - 80, '#fff']].forEach(([y, c]) => { g.fillStyle = c; g.fillRect(0, y, w, 26); });
+  g.fillStyle = '#ffd200'; g.fillRect(0, 130, w, 10); g.fillRect(0, h - 140, w, 10);
+  g.save(); g.translate(w / 2, h / 2); g.rotate(-Math.PI / 2);
+  g.fillStyle = '#fff'; g.font = '800 64px "Archivo", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('MANCHESTER UNITED', 0, 0); g.restore();
+  g.strokeStyle = '#a30d25'; g.lineWidth = 6; for (let x = 8; x < w; x += 16) { g.beginPath(); g.moveTo(x, h - 30); g.lineTo(x + (rnd() - .5) * 6, h); g.stroke(); }
+});
+function scarfStrip(x, len, tilt) {
+  const geo = new THREE.PlaneGeometry(175, len, 1, 24);
+  const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setZ(i, Math.sin(p.getY(i) * .012) * 10 + 10);
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: scarfTex, side: THREE.DoubleSide, roughness: .95 }));
+  m.position.set(x, 2130 - len / 2, -RD / 2 + 22); m.rotation.z = tilt; scene.add(m);
+}
+scarfStrip(-560, 980, .045);
+scarfStrip(-460, 900, -.06);
+box(26, 26, 40, 0x333333, -510, 2120, -RD / 2 + 20); // Haken
+
+/* =========================================================
+   Flur vor der Wohnungstür (weit weg vom Zimmer aufgebaut)
+   ========================================================= */
+const HZ = 12000;
+const terrazzo = canvasTex(512, 512, (g, w, h) => {
+  g.fillStyle = '#a7a297'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 2600; i++) { const c = ['#6e6a62', '#c9c4b8', '#8a5a44', '#4c4a45', '#d8d3c7'][i % 5]; g.fillStyle = c; const r = 1 + rnd() * 4; g.beginPath(); g.ellipse(rnd() * w, rnd() * h, r, r * (.5 + rnd() * .6), rnd() * 3, 0, 7); g.fill(); }
+}, [4, 6]);
+const hallWhite = mat(0xe4e1da, { roughness: .95 }), hallGreen = mat(0x6d8b78, { roughness: .8 });
+box(2600, 10, 4600, mat(0xffffff, { map: terrazzo, roughness: .5 }), 0, -10, HZ + 600);
+box(2600, 10, 4600, 0xe9e7e2, 0, 2700, HZ + 600);
+[-1310, 1310].forEach((x) => { box(20, 1100, 4600, hallGreen, x, 0, HZ + 600); box(20, 1600, 4600, hallWhite, x, 1100, HZ + 600); });
+box(800, 2700, 200, hallWhite, -900, 0, HZ - 1500); box(800, 2700, 200, hallWhite, 900, 0, HZ - 1500);
+box(1000, 550, 200, hallWhite, 0, 2150, HZ - 1500);
+box(800, 1100, 6, hallGreen, -900, 0, HZ - 1397); box(800, 1100, 6, hallGreen, 900, 0, HZ - 1397);
+const frameMat = mat(0xd8d2c4, { roughness: .6 });
+box(60, 2180, 240, frameMat, -530, 0, HZ - 1500); box(60, 2180, 240, frameMat, 530, 0, HZ - 1500); box(1120, 60, 240, frameMat, 0, 2150, HZ - 1500);
+
+// Tür mit Namensschild
+const plateTex = canvasTex(840, 240, (g, w, h) => {
+  const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#d9b874'); gr.addColorStop(.5, '#f1d79a'); gr.addColorStop(1, '#b8954f');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(70,45,10,.6)'; g.lineWidth = 6; g.strokeRect(14, 14, w - 28, h - 28);
+  g.fillStyle = '#2b1d08'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = '800 92px "Archivo", sans-serif'; g.fillText('M. Cabañero', w / 2, h / 2 - 14);
+  g.font = '600 30px "Archivo", sans-serif'; g.fillText('Informatiker EFZ · Praktikum ab 08/2027', w / 2, h / 2 + 62);
+});
+const door = new THREE.Group(); door.position.set(-500, 0, HZ - 1440); scene.add(door);
+const slab = new THREE.Mesh(new THREE.BoxGeometry(1000, 2150, 50), mat(0x5a3826, { roughness: .55 })); slab.position.set(500, 1075, 0); slab.castShadow = true; door.add(slab);
+[[500, 1620, 760, 700], [500, 640, 760, 900]].forEach(([x, y, w, h]) => { const p = new THREE.Mesh(new THREE.BoxGeometry(w, h, 12), mat(0x4c2f1f, { roughness: .6 })); p.position.set(x, y, 28); door.add(p); });
+const plate = new THREE.Mesh(new THREE.PlaneGeometry(420, 120), mat(0xffffff, { map: plateTex, roughness: .3, metalness: .4 })); plate.position.set(500, 1500, 36); door.add(plate);
+const handle = new THREE.Mesh(new THREE.BoxGeometry(150, 26, 40), mat(0xc0c0c0, { metalness: .9, roughness: .25 })); handle.position.set(880, 1040, 50); door.add(handle);
+const peep = new THREE.Mesh(new THREE.CylinderGeometry(14, 14, 10, 16), mat(0xb9b9b9, { metalness: .9, roughness: .3 })); peep.rotation.x = Math.PI / 2; peep.position.set(500, 1700, 36); door.add(peep);
+// Klingel
+box(150, 260, 24, mat(0xd8d2c4, { roughness: .5 }), 760, 1140, HZ - 1395);
+const bellBtn = new THREE.Mesh(new THREE.CylinderGeometry(30, 30, 18, 24), new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffb547, emissiveIntensity: 1.2 }));
+bellBtn.rotation.x = Math.PI / 2; bellBtn.position.set(760, 1330, HZ - 1378); scene.add(bellBtn);
+const bellLabel = new THREE.Mesh(new THREE.PlaneGeometry(110, 34), mat(0xffffff, { map: canvasTex(330, 100, (g, w, h) => { g.fillStyle = '#f7f4ec'; g.fillRect(0, 0, w, h); g.fillStyle = '#222'; g.font = '700 46px "Archivo", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Cabañero', w / 2, h / 2); }) }));
+bellLabel.position.set(760, 1225, HZ - 1381); scene.add(bellLabel);
+// Fussmatte, Schuhregal, Lampe
+box(900, 16, 560, mat(0xffffff, { map: canvasTex(900, 560, (g, w, h) => { g.fillStyle = '#5b4a36'; g.fillRect(0, 0, w, h); g.strokeStyle = '#3f3324'; g.lineWidth = 18; g.strokeRect(20, 20, w - 40, h - 40); g.fillStyle = '#d8c7a6'; g.font = '800 92px "Archivo", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('WILLKOMMEN', w / 2, h / 2); }), roughness: 1 }), 0, 0, HZ - 1080);
+box(800, 420, 300, mat(0x7c7c7c, { metalness: .4, roughness: .5 }), -880, 0, HZ - 1150);
+box(300, 110, 120, 0xf2f2f2, -1000, 420, HZ - 1150, .2); box(300, 110, 120, 0xf2f2f2, -700, 420, HZ - 1130, -.1);
+const lamp = new THREE.Mesh(new THREE.SphereGeometry(180, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfff3dc, emissive: 0xffe2b0, emissiveIntensity: 1.6, side: THREE.DoubleSide }));
+lamp.rotation.x = Math.PI; lamp.position.set(0, 2695, HZ - 200); scene.add(lamp);
+const hallLight = new THREE.PointLight(0xffe4bd, 1.5, 5200, 0); hallLight.position.set(0, 2450, HZ - 200); scene.add(hallLight);
+const doorSpot = new THREE.SpotLight(0xfff0d8, 1.4, 4500, .6, .7, 0); doorSpot.position.set(0, 2600, HZ - 700); doorSpot.target.position.set(0, 1200, HZ - 1500); doorSpot.castShadow = true; doorSpot.shadow.mapSize.set(512, 512); scene.add(doorSpot, doorSpot.target);
+
+// Hinter der Tür: schwarzer Raum mit treibendem Nebel
+const voidBox = new THREE.Mesh(new THREE.BoxGeometry(2400, 3000, 6000), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide, fog: false }));
+voidBox.position.set(0, 1500, HZ - 4620); scene.add(voidBox);
+const smokeTex = canvasTex(256, 256, (g, w, h) => {
+  g.clearRect(0, 0, w, h);
+  for (let i = 0; i < 40; i++) { const x = 40 + rnd() * 176, y = 40 + rnd() * 176, r = 30 + rnd() * 70; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,255,255,.14)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }
+});
+const fog = [];
+for (let i = 0; i < 12; i++) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: smokeTex, color: 0x34343e, transparent: true, opacity: .42, depthWrite: false, fog: false }));
+  const sz = 1500 + rnd() * 1600; m.scale.set(sz, sz, 1);
+  m.position.set((rnd() - .5) * 1400, 800 + rnd() * 1300, HZ - 1750 - i * 260);
+  m.rotation.z = rnd() * 6; m.userData.spin = (rnd() - .5) * .25; m.userData.drift = rnd() * 6;
+  scene.add(m); fog.push(m);
+}
+
+// Filmstill an der Wand
+const posterTex = new THREE.TextureLoader().load('media/catsleep-poster.jpg'); posterTex.colorSpace = THREE.SRGBColorSpace;
+box(820, 480, 20, 0x161616, 500, 1240, -RD / 2 + 10);
+const poster = new THREE.Mesh(new THREE.PlaneGeometry(780, 440), mat(0xffffff, { map: posterTex, roughness: .75 })); // matter Druck: leuchtet nicht, nimmt nur Raumlicht an
+poster.position.set(500, 1480, -RD / 2 + 22); scene.add(poster);
+
+// Schreibtisch hinten rechts
+const deskMat = mat(0xe8e5df, { roughness: .6 });
+box(1500, 36, 720, deskMat, 2150, 720, -2120);
+[[-700, -320], [700, -320], [-700, 320], [700, 320]].forEach(([dx, dz]) => box(36, 720, 36, mat(0x3a3a3a, { metalness: .5, roughness: .5 }), 2150 + dx, 0, -2120 + dz));
+// Monitor
+const SCREEN = { w: 560, h: 350, x: 2150, y: 1095, z: -2318 };
+box(240, 14, 190, 0x1b1b1d, 2150, 756, -2330);
+box(50, 200, 36, 0x1b1b1d, 2150, 770, -2360);
+box(600, 392, 34, mat(0x141416, { roughness: .45 }), SCREEN.x, SCREEN.y - 196, SCREEN.z - 18);
+// Aussparung: schreibt Alpha 0 → hier scheint der CSS-Desktop durch
+// Monitorbild: Abbild des echten Desktops als Textur, damit der PC-Zustand im Zimmer immer sichtbar bleibt
+const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN.w, SCREEN.h), new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }));
+screenMesh.position.set(SCREEN.x, SCREEN.y, SCREEN.z); scene.add(screenMesh);
+// Tastatur, Maus, Tasse, PC-Turm mit LED
+box(440, 22, 140, 0x2a2a2c, 2150, 756, -2010);
+box(64, 26, 110, 0x2a2a2c, 2460, 756, -2010);
+cyl(42, 38, 110, mat(0xf2f2ee, { roughness: .4 }), 1630, 756, -2250);
+box(210, 460, 470, mat(0x1c1c1f, { roughness: .5 }), 2700, 0, -2200);
+box(8, 380, 6, new THREE.MeshStandardMaterial({ color: 0x4aa3ff, emissive: 0x4aa3ff, emissiveIntensity: 2.2 }), 2640, 40, -1964);
+// Stuhl
+// Bürostuhl als eigenes Objekt in lokalen Koordinaten (vorne = +z), dann als Ganzes platziert,
+// damit er aus jedem Blickwinkel stimmt
+const chairMat = mat(0x1f1f22, { roughness: .8 }), chromeMat = mat(0x8a8a8f, { metalness: .8, roughness: .3 });
+const chair = new THREE.Group();
+const part = (geo, m, x, y, z) => { const p = new THREE.Mesh(geo, m); p.position.set(x, y, z); p.castShadow = p.receiveShadow = true; chair.add(p); return p; };
+for (let i = 0; i < 5; i++) { // Fusskreuz mit Rollen
+  const a = (i / 5) * Math.PI * 2;
+  const leg = part(new THREE.BoxGeometry(320, 26, 46), chromeMat, Math.cos(a) * 160, 70, Math.sin(a) * 160); leg.rotation.y = -a;
+  part(new THREE.SphereGeometry(30, 12, 8), chairMat, Math.cos(a) * 310, 30, Math.sin(a) * 310);
+}
+part(new THREE.CylinderGeometry(55, 55, 40, 16), chromeMat, 0, 70, 0);
+part(new THREE.CylinderGeometry(24, 24, 360, 12), chromeMat, 0, 270, 0); // Gasfeder
+part(new THREE.BoxGeometry(320, 30, 300), chromeMat, 0, 455, 0); // Sitzmechanik
+part(new THREE.BoxGeometry(520, 80, 500), chairMat, 0, 510, 20); // Sitz
+part(new THREE.BoxGeometry(70, 300, 40), chromeMat, 0, 600, -240); // Rückenträger
+const backrest = part(new THREE.BoxGeometry(480, 560, 70), chairMat, 0, 960, -265); backrest.rotation.x = -.1;
+[-1, 1].forEach((sd) => { // Armlehnen
+  part(new THREE.BoxGeometry(36, 220, 36), chromeMat, sd * 255, 640, 20);
+  part(new THREE.BoxGeometry(70, 30, 300), chairMat, sd * 255, 760, 30);
+});
+chair.position.set(2620, 0, -1480); chair.rotation.y = -.65; // vom Tisch weggedreht
+scene.add(chair);
+
+// Gitarre an der rechten Wand
+const guitar = new THREE.Group();
+const gBody = mat(0x9a5524, { roughness: .45 });
+const b1 = new THREE.Mesh(new THREE.CylinderGeometry(190, 190, 95, 40), gBody); b1.rotation.x = Math.PI / 2; b1.scale.set(1, 1, 1);
+const b2 = new THREE.Mesh(new THREE.CylinderGeometry(150, 150, 95, 40), gBody); b2.rotation.x = Math.PI / 2; b2.position.y = 230;
+const hole = new THREE.Mesh(new THREE.CylinderGeometry(52, 52, 4, 32), mat(0x1a0f07)); hole.rotation.x = Math.PI / 2; hole.position.set(0, 140, 50);
+const neck = new THREE.Mesh(new THREE.BoxGeometry(58, 620, 30), mat(0x3b2412)); neck.position.y = 650;
+const head = new THREE.Mesh(new THREE.BoxGeometry(85, 190, 32), mat(0x2a190c)); head.position.y = 1040;
+[b1, b2, hole, neck, head].forEach((m) => { m.castShadow = true; guitar.add(m); });
+guitar.position.set(2830, 200, -450); guitar.rotation.set(0, -Math.PI / 2, .18); scene.add(guitar);
+
+// Umzugskartons
+box(620, 460, 460, mat(0xb08a5a, { roughness: 1 }), 2350, 0, 1300, .1);
+box(480, 340, 400, mat(0xa47e50, { roughness: 1 }), 2330, 460, 1290, -.18);
+box(560, 420, 440, mat(0xb08a5a, { roughness: 1 }), 1720, 0, 1500, -.25);
+
+// LED-Streifen an der Deckenkante: sehr gedimmt, in der Lila-Blau-Farbe des Raums
+const LED = 0xa595ff;
+const washTex = canvasTex(8, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(.25, 'rgba(255,255,255,.18)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+function ledStrip(len, x, z, ry) {
+  const grp = new THREE.Group(); grp.position.set(x, RH - 55, z); grp.rotation.y = ry; scene.add(grp);
+  const strip = new THREE.Mesh(new THREE.BoxGeometry(len, 12, 14), new THREE.MeshBasicMaterial({ color: LED })); strip.position.z = 22; grp.add(strip);
+  const wash = new THREE.Mesh(new THREE.PlaneGeometry(len, 1100), new THREE.MeshBasicMaterial({ map: washTex, color: LED, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false }));
+  wash.position.set(0, -540, 4); grp.add(wash);
+}
+ledStrip(RW - 40, 0, -RD / 2, 0);
+ledStrip(RD, -RW / 2, 0, Math.PI / 2);
+ledStrip(RD, RW / 2, 0, -Math.PI / 2);
+
+// --- Licht: Abend, nackte Birne, Bildschirmglühen ---
+scene.add(new THREE.HemisphereLight(0x8580d6, 0x2a2238, .36));
+const fill = new THREE.PointLight(0xb4a6ff, .32, 5000, 0); fill.position.set(400, 1800, 3200); scene.add(fill); // Licht aus dem Flur
+[[-1500, -1900], [1500, -1900], [-2400, 800], [2400, 800]].forEach(([x, z]) => { const l = new THREE.PointLight(LED, .17, 5200, 0); l.position.set(x, RH - 200, z); scene.add(l); });
+const monitorGlow = new THREE.PointLight(0x9cc2ff, .28, 2400, 0); monitorGlow.position.set(SCREEN.x, SCREEN.y, SCREEN.z + 350); scene.add(monitorGlow);
+const tvGlow = new THREE.PointLight(0x8fb0ff, .3, 3200, 0); tvGlow.position.set(-1200, 860, -1900); scene.add(tvGlow);
+// Bildschirme als weiche Flächenlichter: werfen ihre aktuelle Farbe in den Raum, wie im Film
+const tvLight = new THREE.RectAreaLight(0x9fb6ff, 3.2, 1110, 624); tvLight.position.set(-1200, 855, -2250); tvLight.lookAt(-1200, 855, 1000); scene.add(tvLight);
+const monitorLight = new THREE.RectAreaLight(0xc9b8c4, 3.2, SCREEN.w, SCREEN.h); monitorLight.position.set(SCREEN.x, SCREEN.y, SCREEN.z + 8); monitorLight.lookAt(SCREEN.x, SCREEN.y, 1000); scene.add(monitorLight);
+const sampleC = document.createElement('canvas'); sampleC.width = 8; sampleC.height = 5;
+const sampleG = sampleC.getContext('2d', { willReadFrequently: true });
+const WHITE = new THREE.Color(0xffffff);
+function avgColor(src, out) {
+  try {
+    sampleG.drawImage(src, 0, 0, 8, 5); const d = sampleG.getImageData(0, 0, 8, 5).data; let r = 0, g = 0, b = 0;
+    for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
+    const n = d.length / 4; out.setRGB(r / n / 255, g / n / 255, b / n / 255, THREE.SRGBColorSpace).lerp(WHITE, .3);
+  } catch { /* Quelle noch nicht bereit */ }
+  return out;
+}
+const tvTarget = new THREE.Color(0x9fb6ff); let tvLum = .5, lastSample = 0;
+
+/* =========================================================
+   2. Desktop: echtes HTML, im Zimmer als Abbild auf dem Monitor
+   ========================================================= */
+const DW = 1280, DH = 800;
+const tpl = document.getElementById('desktop-tpl').content.cloneNode(true);
+const holder = document.createElement('div'); holder.appendChild(tpl);
+const desktopEl = holder.firstElementChild;
+// Der echte Desktop wohnt unsichtbar unter der 3D-Szene und wird von dort als Bild auf den Monitor gelegt
+const deskHome = document.createElement('div');
+deskHome.style.cssText = 'position:fixed;left:0;top:0;width:1280px;height:800px;z-index:-1;pointer-events:none;overflow:hidden;';
+document.body.appendChild(deskHome); deskHome.appendChild(desktopEl);
+const deskCanvas = document.createElement('canvas'); deskCanvas.width = DW; deskCanvas.height = DH;
+const deskTex = new THREE.CanvasTexture(deskCanvas); deskTex.colorSpace = THREE.SRGBColorSpace; deskTex.anisotropy = 8;
+screenMesh.material.map = deskTex; screenMesh.material.needsUpdate = true;
+const wp = new Image();
+wp.onload = () => { const g = deskCanvas.getContext('2d'), sc = Math.max(DW / wp.width, DH / wp.height); g.drawImage(wp, (DW - wp.width * sc) / 2, (DH - wp.height * sc) / 2, wp.width * sc, wp.height * sc); deskTex.needsUpdate = true; avgColor(deskCanvas, monitorLight.color); };
+wp.src = '/images/manchester-united.webp';
+let snapping = null;
+function snapshot() {
+  if (!window.html2canvas) return Promise.resolve();
+  if (snapping) return snapping;
+  snapping = window.html2canvas(desktopEl, { backgroundColor: '#1d2433', scale: 1, useCORS: true, logging: false, width: DW, height: DH, windowWidth: DW, windowHeight: DH,
+    // in der Kopie keine Einblend-Animationen, sonst sind frisch geöffnete Fenster dort noch unsichtbar
+    onclone: (doc) => { const st = doc.createElement('style'); st.textContent = '*,*::before,*::after{animation:none!important;transition:none!important}'; doc.head.appendChild(st); } })
+    .then((c) => { const g = deskCanvas.getContext('2d'); g.drawImage(c, 0, 0, DW, DH); deskTex.needsUpdate = true; avgColor(deskCanvas, monitorLight.color); monitorGlow.color.copy(monitorLight.color); })
+    .catch(() => {}).finally(() => { snapping = null; });
+  return snapping;
+}
+Promise.all([document.fonts.ready, new Promise((res) => (document.readyState === 'complete' ? res() : addEventListener('load', res)))]).then(() => setTimeout(snapshot, 300));
+setInterval(() => { if (state !== 'pc' && state !== 'moving') snapshot(); }, 60000); // Uhr auf dem Monitor aktuell halten
+
+/* =========================================================
+   3. Kamera als Zustandsmaschine: Flur → Zimmer ↔ PC / Fernseher
+   ========================================================= */
+const screenCenter = new THREE.Vector3(SCREEN.x, SCREEN.y, SCREEN.z);
+function fitDistance(w, h, margin) {
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const aspect = Number.isFinite(camera.aspect) && camera.aspect > 0 ? camera.aspect : 16 / 10;
+  return Math.max((h / 2) / t, (w / 2) / (t * aspect)) * margin;
+}
+const finalDistance = () => fitDistance(SCREEN.w, SCREEN.h, 1.015);
+let posCurve, lookCurve;
+function buildPath() {
+  const end = screenCenter.clone().add(new THREE.Vector3(0, 0, finalDistance()));
+  posCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-900, 1750, 3700),
+    new THREE.Vector3(500, 1580, 2300),
+    new THREE.Vector3(1500, 1350, 300),
+    new THREE.Vector3(2120, 1160, -1150),
+    end,
+  ], false, 'centripetal');
+  lookCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(250, 1050, -1500),
+    new THREE.Vector3(200, 900, -1500),
+    new THREE.Vector3(1700, 1000, -2000),
+    new THREE.Vector3(2150, 1090, -2300),
+    screenCenter.clone(),
+  ], false, 'centripetal');
+}
+buildPath();
+const TV = new THREE.Vector3(-1200, 855, -2264);
+const tvPose = () => ({ pos: TV.clone().add(new THREE.Vector3(0, 0, fitDistance(1110, 624, 1.25))), look: TV.clone() });
+const HALL = {
+  start: { pos: new THREE.Vector3(0, 1550, HZ + 1150), look: new THREE.Vector3(0, 1300, HZ - 1500) },
+  door: { pos: new THREE.Vector3(0, 1480, HZ - 1300), look: new THREE.Vector3(0, 1420, HZ - 4000) },
+  deep: { pos: new THREE.Vector3(0, 1450, HZ - 3200), look: new THREE.Vector3(0, 1400, HZ - 6000) },
+};
+
+const reduce = reduceMotionEarly;
+const vignette = document.getElementById('vignette');
+const pose = { pos: HALL.start.pos.clone(), look: HALL.start.look.clone() };
+const snap = () => ({ pos: pose.pos.clone(), look: pose.look.clone() });
+const lerpPose = (a, b, k) => { pose.pos.lerpVectors(a.pos, b.pos, k); pose.look.lerpVectors(a.look, b.look, k); };
+const curvePose = (t) => { t = THREE.MathUtils.clamp(t, 0, 1); posCurve.getPointAt(t, pose.pos); lookCurve.getPointAt(t, pose.look); };
+const easeIO = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const anims = [];
+function run(dur, step, done) { anims.push({ t0: performance.now(), dur: reduce ? Math.min(dur, 300) : dur, step, done }); }
+const wait = (ms, fn) => setTimeout(fn, reduce ? 0 : ms);
+
+let state = 'hall';
+const ui = {
+  hall: document.getElementById('hallUI'), room: document.getElementById('roomUI'),
+  tv: document.getElementById('tvUI'), black: document.getElementById('black'),
+};
+function show(name) { Object.entries(ui).forEach(([k, el]) => { if (k !== 'black') el.classList.toggle('on', k === name); }); }
+
+function dingDong() {
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    [[659.25, 0], [523.25, .5]].forEach(([f, t]) => {
+      [[1, .22], [2.01, .05], [3.02, .02]].forEach(([mul, vol]) => {
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = f * mul;
+        const s0 = ac.currentTime + t; g.gain.setValueAtTime(0, s0); g.gain.linearRampToValueAtTime(vol, s0 + .01); g.gain.exponentialRampToValueAtTime(.0001, s0 + 1.6);
+        o.connect(g).connect(ac.destination); o.start(s0); o.stop(s0 + 1.7);
+      });
+    });
+  } catch { /* ohne Ton weiter */ }
+}
+
+function enterRoom() {
+  state = 'room'; door.rotation.y = 0; curvePose(0);
+  show('room'); ui.black.classList.remove('on');
+}
+function ring() {
+  if (state !== 'hall') return;
+  state = 'entering'; show(null); dingDong(); tvVideo.play().catch(() => {});
+  bellBtn.material.emissiveIntensity = 4; wait(400, () => { bellBtn.material.emissiveIntensity = 1.2; });
+  wait(1000, () => run(1700, (k) => { door.rotation.y = 1.7 * easeIO(k); }));
+  wait(1500, () => {
+    const from = snap();
+    run(2300, (k) => lerpPose(from, HALL.door, easeIO(k)), () => {
+      ui.black.classList.add('on');
+      run(1500, (k) => lerpPose(HALL.door, HALL.deep, k * k), () => wait(500, enterRoom));
+    });
+  });
+}
+function jumpToPC() {
+  show(null); ui.black.classList.add('on');
+  wait(700, () => { door.rotation.y = 0; curvePose(1); arriveAtPC(); ui.black.classList.remove('on'); });
+}
+function arriveAtPC() { state = 'pc'; flatten(); }
+function goPC() {
+  if (state !== 'room') return;
+  state = 'moving'; show(null);
+  run(2600, (k) => curvePose(easeIO(k)), arriveAtPC);
+}
+function goRoom() {
+  if (state !== 'pc') return;
+  state = 'moving';
+  // Standbild des Desktops stehen lassen, während das echte Abbild für den Monitor entsteht
+  const freeze = desktopEl.cloneNode(true); freeze.removeAttribute('id'); freeze.style.pointerEvents = 'none'; flatHost.appendChild(freeze);
+  homeDesktop();
+  snapshot().then(() => {
+    flatHost.remove(); freeze.remove();
+    run(2600, (k) => curvePose(easeIO(1 - k)), () => { state = 'room'; show('room'); });
+  });
+}
+function goTV() {
+  if (state !== 'room') return;
+  state = 'moving'; show(null);
+  const from = snap(), to = tvPose();
+  run(1700, (k) => lerpPose(from, to, easeIO(k)), () => { state = 'tv'; show('tv'); });
+}
+function leaveTV() {
+  if (state !== 'tv') return;
+  state = 'moving'; show(null); tvVideo.muted = true; soundBtn.textContent = 'Ton an';
+  const from = snap(), to = { pos: posCurve.getPointAt(0), look: lookCurve.getPointAt(0) };
+  run(1500, (k) => lerpPose(from, to, easeIO(k)), () => { state = 'room'; show('room'); });
+}
+
+// --- Eingaben: kurzer Scroll / Wisch / Taste genügt ---
+addEventListener('wheel', (e) => {
+  if (Math.abs(e.deltaY) < 3) return;
+  if (state === 'room' && e.deltaY > 0) goPC();
+  else if (state === 'pc' && e.deltaY < 0 && !e.target.closest('.win, .startmenu')) goRoom();
+  else if (state === 'tv') leaveTV();
+}, { passive: true });
+let touchY = null;
+addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+addEventListener('touchend', (e) => {
+  if (touchY === null) return; const dy = touchY - e.changedTouches[0].clientY; touchY = null;
+  if (Math.abs(dy) < 40) return;
+  if (state === 'room' && dy > 0) goPC(); else if (state === 'pc' && dy < 0 && !e.target.closest('.win, .startmenu')) goRoom(); else if (state === 'tv') leaveTV();
+}, { passive: true });
+addEventListener('keydown', (e) => {
+  if (e.target.closest('input, textarea')) return;
+  if (state === 'hall' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); ring(); }
+  else if (state === 'room' && ['ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); goPC(); }
+  else if (state === 'pc' && ['ArrowUp', 'PageUp'].includes(e.key)) goRoom();
+  else if (state === 'tv' && ['Escape', 'ArrowUp', 'Backspace'].includes(e.key)) leaveTV();
+});
+
+// --- Klicks in die 3D-Szene: Tür/Klingel im Flur, Fernseher im Zimmer ---
+const tvHit = new THREE.Mesh(new THREE.BoxGeometry(1350, 900, 300), new THREE.MeshBasicMaterial()); tvHit.visible = false; tvHit.position.set(-1200, 860, -2240); scene.add(tvHit);
+const pcHit = new THREE.Mesh(new THREE.BoxGeometry(800, 720, 420), new THREE.MeshBasicMaterial()); pcHit.visible = false; pcHit.position.set(2150, 1000, -2250); scene.add(pcHit);
+
+// Einmalige Hilfe: Pfeil + "Klick" über Fernseher und PC, verschwindet nach dem ersten Klick
+let hintsDone = false; // gilt pro Besuch: nach dem Neuladen erscheint die Hilfe wieder
+const hints = [
+  { el: document.getElementById('hintTV'), at: new THREE.Vector3(-1200, 1230, -2264) },
+  { el: document.getElementById('hintPC'), at: new THREE.Vector3(2150, 1300, -2318) },
+];
+const projV = new THREE.Vector3();
+function placeHints() {
+  const visible = state === 'room' && !hintsDone;
+  hints.forEach(({ el, at }) => {
+    el.classList.toggle('on', visible);
+    if (!visible) return;
+    projV.copy(at).project(camera);
+    el.style.left = `${(projV.x + 1) / 2 * innerWidth}px`; el.style.top = `${(1 - projV.y) / 2 * innerHeight}px`;
+  });
+}
+function dismissHints() { hintsDone = true; }
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function hitAt(x, y) {
+  const targets = state === 'hall' ? [slab, plate, bellBtn, bellLabel] : state === 'room' ? [tvHit, pcHit] : [];
+  if (!targets.length) return false;
+  ndc.set((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  return ray.intersectObjects(targets, false).length > 0;
+}
+addEventListener('click', (e) => {
+  if (state === 'pc' || e.target.closest('button, a')) return;
+  if (state === 'hall') { if (hitAt(e.clientX, e.clientY)) ring(); return; }
+  if (state !== 'room') return;
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects([tvHit, pcHit], false)[0];
+  if (!hit) return;
+  dismissHints();
+  if (hit.object === pcHit) goPC(); else goTV();
+});
+addEventListener('pointermove', (e) => {
+  if (state !== 'hall' && state !== 'room') { document.body.style.cursor = ''; return; }
+  document.body.style.cursor = !e.target.closest('button, a') && hitAt(e.clientX, e.clientY) ? 'pointer' : '';
+}, { passive: true });
+
+document.getElementById('ringBtn').addEventListener('click', ring);
+document.getElementById('skip').addEventListener('click', (e) => { e.preventDefault(); jumpToPC(); });
+document.getElementById('backBtn').addEventListener('click', leaveTV);
+const soundBtn = document.getElementById('soundBtn');
+soundBtn.addEventListener('click', () => { tvVideo.muted = !tvVideo.muted; tvVideo.play().catch(() => {}); soundBtn.textContent = tvVideo.muted ? 'Ton an' : 'Ton aus'; });
+
+let vw = 0, vh = 0;
+function onResize() {
+  if (!innerWidth || !innerHeight) return;
+  vw = innerWidth; vh = innerHeight;
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  buildPath();
+  if (state === 'room') curvePose(0); else if (state === 'pc') { curvePose(1); placeFlat(); } else if (state === 'tv') { const p = tvPose(); pose.pos.copy(p.pos); pose.look.copy(p.look); }
+}
+addEventListener('resize', onResize);
+
+// Am Ziel: Desktop als flache Ebene exakt über den Monitor legen (klickbar, gestochen scharf)
+const flatHost = document.createElement('div');
+flatHost.style.cssText = 'position:fixed;inset:0;z-index:3;overflow:hidden;';
+function placeFlat() {
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), dist = finalDistance();
+  const pxPerMm = innerHeight / (2 * dist * t);
+  const w = SCREEN.w * pxPerMm, h = SCREEN.h * pxPerMm;
+  Object.assign(desktopEl.style, { position: 'absolute', left: `${(innerWidth - w) / 2}px`, top: `${(innerHeight - h) / 2}px`, transform: `scale(${w / DW})`, transformOrigin: '0 0' });
+}
+function flatten() { document.body.appendChild(flatHost); flatHost.appendChild(desktopEl); desktopEl.style.pointerEvents = 'auto'; placeFlat(); }
+function homeDesktop() { Object.assign(desktopEl.style, { position: '', left: '', top: '', transform: '', transformOrigin: '', pointerEvents: 'none' }); deskHome.appendChild(desktopEl); }
+function unflatten() { homeDesktop(); flatHost.remove(); }
+desktopEl.style.pointerEvents = 'none'; // im Zimmer klickt man durch den Monitor hindurch auf die 3D-Szene
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; const e = now / 1000;
+  if (innerWidth !== vw || innerHeight !== vh) onResize();
+  for (const a of [...anims]) {
+    const k = Math.min(1, Math.max(0, (now - a.t0) / a.dur)); a.step(k);
+    if (k >= 1) { anims.splice(anims.indexOf(a), 1); a.done && a.done(); }
+  }
+  if (now - lastSample > 180 && tvScreen.material.map === tvTex && tvVideo.readyState >= 2) {
+    lastSample = now; avgColor(tvVideo, tvTarget); tvLum = tvTarget.r * .3 + tvTarget.g * .59 + tvTarget.b * .11;
+  }
+  tvLight.color.lerp(tvTarget, .08); tvGlow.color.copy(tvLight.color);
+  tvLight.intensity = 2.2 + tvLum * 2.4; tvGlow.intensity = .18 + tvLum * .25;
+  vignette.classList.toggle('on', state !== 'pc');
+  if (state === 'hall' || state === 'entering') fog.forEach((m) => { m.rotation.z += m.userData.spin * dt; m.position.x += Math.sin(e * .3 + m.userData.drift) * 20 * dt; });
+  camera.position.copy(pose.pos); camera.lookAt(pose.look); camera.updateMatrixWorld();
+  placeHints();
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+requestAnimationFrame(frame);
+show('hall');
+if (location.hash === '#pc') { curvePose(1); arriveAtPC(); show(null); }
+else if (location.hash === '#zimmer') enterRoom();
+setTimeout(() => { const l = document.getElementById('loading'); l.style.opacity = 0; setTimeout(() => l.remove(), 700); }, 250);
+
+/* =========================================================
+   4. Desktop-Logik: Icons, Fenster, Startmenü, Uhr
+   ========================================================= */
+const IC = {
+  user: `<svg viewBox="0 0 48 48"><path d="M4 12a3 3 0 0 1 3-3h11l4 4h19a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="#e8a930"/><path d="M4 18h40v19a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="#ffc94d"/><circle cx="24" cy="25" r="4.5" fill="#7a4d00"/><path d="M15.5 36a8.5 8.5 0 0 1 17 0Z" fill="#7a4d00"/></svg>`,
+  folder: `<svg viewBox="0 0 48 48"><path d="M4 12a3 3 0 0 1 3-3h11l4 4h19a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="#e8a930"/><path d="M4 18h40v19a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="#ffc94d"/><path d="M14 33l6-8 5 6 3-4 6 6Z" fill="#7a4d00" opacity=".8"/></svg>`,
+  lock: `<svg viewBox="0 0 48 48"><path d="M4 12a3 3 0 0 1 3-3h11l4 4h19a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="#e8a930"/><path d="M4 18h40v19a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="#ffc94d"/><rect x="18" y="26" width="12" height="10" rx="1.5" fill="#7a4d00"/><path d="M20.5 26v-3a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="#7a4d00" stroke-width="2.4"/></svg>`,
+  music: `<svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="9" fill="#1fb35a"/><path d="M19 33V15l15-3v17" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><circle cx="15.5" cy="33" r="4.5" fill="#fff"/><circle cx="30.5" cy="29" r="4.5" fill="#fff"/></svg>`,
+  film: `<svg viewBox="0 0 48 48"><rect x="4" y="8" width="40" height="32" rx="5" fill="#1d1d22"/><path d="M4 15h40M4 33h40" stroke="#ffb547" stroke-width="2"/><g fill="#ffb547"><rect x="8" y="10" width="4" height="3" rx=".5"/><rect x="16" y="10" width="4" height="3" rx=".5"/><rect x="24" y="10" width="4" height="3" rx=".5"/><rect x="32" y="10" width="4" height="3" rx=".5"/><rect x="8" y="35" width="4" height="3" rx=".5"/><rect x="16" y="35" width="4" height="3" rx=".5"/><rect x="24" y="35" width="4" height="3" rx=".5"/><rect x="32" y="35" width="4" height="3" rx=".5"/></g><path d="M21 19.5v9l8-4.5Z" fill="#fff"/></svg>`,
+  cube: `<svg viewBox="0 0 48 48"><path d="M24 5 41 14v20L24 43 7 34V14Z" fill="#e8762b"/><path d="M24 5 41 14 24 23 7 14Z" fill="#ffa55c"/><path d="M24 23v20L7 34V14Z" fill="#c95c17"/><circle cx="24" cy="23" r="5" fill="none" stroke="#fff" stroke-width="2.2"/></svg>`,
+  door: `<svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="9" fill="#141518"/><rect x="15" y="9" width="18" height="31" rx="1" fill="#3a2a22"/><rect x="15" y="9" width="18" height="31" rx="1" fill="none" stroke="#7a1f1f" stroke-width="1.6"/><circle cx="24" cy="17" r="2.2" fill="#e04848"/><circle cx="29.5" cy="26" r="1.6" fill="#c9a26a"/></svg>`,
+  note: `<svg viewBox="0 0 48 48"><path d="M10 5h20l9 9v29H10Z" fill="#fff"/><path d="M30 5v9h9" fill="#d6e4f5"/><path d="M15 21h18M15 26h18M15 31h18M15 36h11" stroke="#4a78b5" stroke-width="2"/><path d="M10 5h20l9 9v29H10Z" fill="none" stroke="#9aa9bd" stroke-width="1.2"/></svg>`,
+  bin: `<svg viewBox="0 0 48 48"><path d="M12 14h24l-2.5 28h-19Z" fill="#dfe6ee" stroke="#9aa9bd" stroke-width="1.2"/><rect x="10" y="9" width="28" height="5" rx="1.5" fill="#c4cfdb"/><path d="M19 20l1 17M24 20v17M29 20l-1 17" stroke="#9aa9bd" stroke-width="1.6"/><path d="M17 25l5 3-1 5-5-2Z" fill="#ffc94d"/></svg>`,
+};
+
+const PROJECTS = [
+  { t: 'Fellow Tenants', img: 'media/fellow-poster.jpg', tag: 'wip', kind: 'Privat', d: 'Mein aktuelles Spiel: Story-Horror in Unity, solo entwickelt. Ein Sirenenalarm, Kreaturen, die auf Geräusche reagieren, und die einzige Regel: Stille heisst Überleben. Rauskommen kann man nur, indem man mit den Nachbarn spricht.', video: 'media/fellow-door.mp4' },
+  { t: 'ProfileAuth', img: '/images/ProfileAuth_preview.webp', tag: 'live', kind: 'Privat', d: 'Zentrales Konto-System für alle miguel-cabanero.ch-Webseiten: eine Anmeldung, die per geteiltem Cookie über alle Subdomains hinweg funktioniert.', live: 'https://profile.miguel-cabanero.ch', gh: 'https://github.com/miguelcabanero08/ProfileAuth' },
+  { t: 'Tunehead', img: '/images/TuneHead_preview.webp', tag: 'live', kind: 'Privat', d: 'Webbasiertes Stimmgerät für Gitarre und Bass mit Live-Tonhöhenerkennung über das Mikrofon, frei konfigurierbaren Stimmungen und Metronom.', live: 'https://tunehead.miguel-cabanero.ch', gh: 'https://github.com/miguelcabanero08/TuneHead' },
+  { t: 'SlapFighters', img: '/images/SlapFighters_preview.webp', tag: 'wip', kind: 'Privat', d: '3D-Sumo-Kampfspiel in Unity mit selbst in Blender erstellten Charakteren und Animationen. Noch in Entwicklung.', gh: 'https://github.com/miguelcabanero08/SlapFighters' },
+  { t: 'Film Finder', img: '/images/FilmFinder_preview.webp', tag: 'live', kind: 'Privat', d: 'Filmsuche mit React, TypeScript und der TMDB-API: Titel entdecken, Besetzung, Trailer und Bewertungen ansehen, Favoriten lokal speichern.', live: 'https://filmfinder-planary.vercel.app/', gh: 'https://github.com/miguelcabanero08/FilmFinder' },
+  { t: 'CarPin', img: '/images/Carpin1_preview.webp', tag: 'school', kind: 'Schule', d: 'Mobile App zum Speichern und Verwalten von Parkplätzen, im überbetrieblichen Kurs in Gruppenarbeit mit React Native entwickelt.', gh: 'https://github.com/miguelcabanero08/CarPin' },
+  { t: 'BookLoan', img: '/images/BookLoan_preview.webp', tag: 'school', kind: 'Schule', d: 'Plattform zur Verwaltung von Buchausleihen, in einer Projektwoche mit React umgesetzt.', gh: 'https://github.com/miguelcabanero08/BookLoan' },
+  { t: 'Manchester United Webseite', img: '/images/ManUtd_preview.webp', tag: 'live', kind: 'Schule', d: 'Statische Fan-Webseite mit Fokus auf UI/UX, reines HTML/CSS/JavaScript, live auf Vercel.', live: 'https://manutd-cabanero.vercel.app/', gh: 'https://github.com/miguelcabanero08/ManUtdWebsite' },
+  { t: 'HotelsoftSolutions', img: '/images/hotelsoft.webp', tag: 'school', kind: 'Schule', d: '.NET MAUI-Applikation für Hotelpersonal: Reservationen erstellen, Zimmer zuteilen, Abläufe digital abbilden.', gh: 'https://github.com/miguelcabanero08/HotelsoftSolutions' },
+  { t: 'Unendliches Tic-Tac-Toe', img: '/images/InfTicTacToe_preview.webp', tag: 'school', kind: 'Schule', d: 'Tic-Tac-Toe, bei dem die ältesten Steine wieder verschwinden, sodass eine Partie theoretisch endlos weitergeht.', gh: 'https://github.com/miguelcabanero08/InfTicTacToe' },
+  { t: 'URL Shortener', img: '/images/UrlShortener_preview.webp', tag: 'school', kind: 'Schule', d: 'Projekt mit Fokus auf Codequalität, Git-Workflows, Pipelines und GitOps.', gh: 'https://github.com/miguelcabanero08/UrlShortener' },
+  { t: 'Erste eigene Webseite', img: '/images/ErsteWebseite_preview.webp', tag: 'school', kind: 'Schule', d: 'Meine erste Webseite mit HTML, CSS und JavaScript, im Fach Praxistraining.', gh: 'https://github.com/miguelcabanero08/FirstWebsite' },
+];
+const TAGTXT = { live: 'live', wip: 'in Arbeit', school: 'Schule' };
+
+const APPS = [
+  { id: 'about', label: 'Über mich', icon: 'user', w: 860, h: 560 },
+  { id: 'projects', label: 'Projekte', icon: 'folder', w: 960, h: 600 },
+  { id: 'docs', label: 'Dokumente', icon: 'lock', w: 720, h: 470 },
+  { id: 'music', label: 'Meine Songs', icon: 'music', w: 720, h: 520 },
+  { id: 'films', label: 'Filme', icon: 'film', w: 860, h: 600 },
+  { id: 'blender', label: 'Blender', icon: 'cube', w: 760, h: 500 },
+  { id: 'fellow', label: 'Fellow Tenants', icon: 'door', w: 860, h: 600 },
+  { id: 'imp', label: 'Impressum.txt', icon: 'note', w: 600, h: 420 },
+  { id: 'bin', label: 'Papierkorb', icon: 'bin', w: 640, h: 380 },
+];
+
+function content(id) {
+  switch (id) {
+    case 'about': return `<div class="pad about">
+      <div><img src="/images/portrait.webp" alt="Portrait von Miguel Cabañero" />
+        <ul class="facts"><li><span>Alter</span><span>18</span></li><li><span>Wohnort</span><span>Thun BE</span></li><li><span>Schule</span><span>IMS, BWD Bern</span></li><li><span>Schnitt EFZ / BM</span><span>5.1 / 5.1</span></li><li><span>Verfügbar</span><span>ab Aug. 2027</span></li></ul></div>
+      <div><h2>Über mich</h2>
+        <p>Mein Name ist Miguel Cabañero, ich bin 18 Jahre alt und wohne in Thun. Aktuell besuche ich die Informatikmittelschule (IMS) an der BWD Bern mit Berufsmaturität Wirtschaft und Dienstleistung. Im Sommer 2027 schliesse ich den schulischen Teil ab und suche ab dann ein Praktikum als Informatiker Applikationsentwicklung EFZ.</p>
+        <p>Schon mit etwa 12 Jahren hat mich fasziniert, wie Programme im Hintergrund funktionieren. Mit rund 16 schrieb ich meine ersten eigenen Zeilen Code. Mich begeistert an der Informatik die Kombination aus Logik, Kreativität und Problemlösung, und genau die treibt mich auch ausserhalb des Codes an: Gitarre, eigene Songs, kurze Filme und Blender.</p>
+        <h4>Wie ich arbeite</h4>
+        <p>Lösungsorientiert und logisch, ich arbeite mich schnell in neue Themen ein, bin zuverlässig und geduldig. Ich arbeite gerne selbstständig, schätze aber auch den Austausch im Team und versuche bei Projekten vorauszudenken.</p>
+        <h4>Stärken</h4>
+        <p class="muted">Sicher: C#, Java, JavaScript/TypeScript, React, HTML &amp; CSS, SQL, Git · Gute Erfahrung: Next.js, Tailwind, MongoDB, Docker, Azure · Im Aufbau: Unity, Python, Kubernetes</p>
+        <span class="placeholder-note">Mockup · Texte werden im Bau ausgebaut</span>
+      </div></div>`;
+    case 'projects': return `<div class="explorer">
+      <div class="ex-side">
+        <button class="on" data-f="all">${IC.folder.replace('<svg', '<svg width="18" height="18"')} Alle Projekte</button>
+        <button data-f="live">${IC.folder.replace('<svg', '<svg width="18" height="18"')} Live</button>
+        <button data-f="Privat">${IC.folder.replace('<svg', '<svg width="18" height="18"')} Privat</button>
+        <button data-f="Schule">${IC.folder.replace('<svg', '<svg width="18" height="18"')} Schule</button>
+      </div>
+      <div class="ex-main"></div></div>`;
+    case 'docs': return `<div class="pad"><div class="lockbox">
+      ${IC.lock}
+      <h2 style="font-size:20px;margin-top:8px">Dieser Ordner ist geschützt</h2>
+      <p class="muted">Lebenslauf, Zeugnis und Bewerbungsschreiben. Den Code finden Sie in meinem Bewerbungsschreiben.</p>
+      <form><input type="password" placeholder="Code eingeben" aria-label="Code" /><button class="btn primary" type="submit">Entsperren</button></form>
+      <p class="muted" style="font-size:12px;margin-top:14px">Mockup: jede Eingabe öffnet den Ordner, im Bau prüft der Server wie bisher.</p>
+    </div></div>`;
+    case 'music': return `<div class="player">
+      <div class="pl-head"><img class="pl-cover" src="/images/portrait.webp" alt="" /><div><small>Playlist</small><h2>Aufnahmen</h2><div style="font-size:13px;color:#ddd">Miguel Cabañero · eigene Gitarren-Aufnahmen</div></div></div>
+      <div class="tracks">
+        ${[1,2,3].map(n => `<div class="track"><span>${n}</span><span><b>Aufnahme ${n}</b><br /><small style="color:#999">Datei folgt</small></span><span style="text-align:right">–:––</span></div>`).join('')}
+        <p style="color:#999;font-size:13px;padding:10px">Hier laufen meine eigenen Songs, sobald die Aufnahmen da sind. <span class="placeholder-note">Platzhalter</span></p>
+      </div>
+      <div class="pl-bar"><button class="playbtn" aria-label="Abspielen"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5v11l9-5.5Z" fill="#111"/></svg></button><span>0:00</span><div class="prog"></div><span>–:––</span></div>
+    </div>`;
+    case 'films': return `<div class="cinema">
+      <video id="filmplayer" src="media/ausflug-blueme.mp4" controls playsinline preload="metadata" poster="media/catsleep-poster.jpg"></video>
+      <div class="pad"><h2 id="filmtitle">Ausflug Blueme</h2>
+        <p class="muted">Seit kurzem filme und schneide ich kurze cinematische Videos. Gedreht und in DaVinci Resolve geschnitten, Original in 4K.</p>
+        <div class="reel"><button class="on" data-src="media/ausflug-blueme.mp4" data-t="Ausflug Blueme">Ausflug Blueme</button><button data-src="media/catsleep.mp4" data-t="CatSleep">CatSleep</button></div>
+      </div></div>`;
+    case 'blender': return `<div class="pad">
+      <h2>Blender</h2>
+      <p class="muted">Ich habe mir die Grundlagen von Blender selbst beigebracht, um in die 3D-Welt reinzukommen. Die Charaktere von SlapFighters sind darin entstanden.</p>
+      <div class="tiles" style="margin-top:18px">${[1,2,3].map(n => `<div class="tile"><div class="ph" style="display:grid;place-items:center;color:#777;font-size:13px">Render ${n} folgt</div><b>Render ${n}</b><small>.blend</small></div>`).join('')}</div>
+      <p style="margin-top:16px"><span class="placeholder-note">Platzhalter · Renders fehlen noch</span></p></div>`;
+    case 'fellow': return `<div class="game">
+      <div class="hero"><video src="media/fellow-door.mp4" autoplay muted loop playsinline></video><h2>Fellow Tenants</h2></div>
+      <div class="pad">
+        <span class="rule">Stille = Überleben</span>
+        <p>Ein Story-Horrorspiel, das ich gerade alleine in Unity entwickle. Ein Sirenenalarm kündigt den Ausbruch von Kreaturen an, die auf Lärm reagieren. Der Spieler sitzt in seiner Wohnung fest und kommt nur raus, indem er mit den Nachbarn spricht. Wer wen rettet, entscheidet über eines von mehreren Enden.</p>
+        <p class="muted">In Entwicklung · Unity · C# · Story, Dialogsystem und 11 Nachbarn ausgearbeitet</p>
+      </div></div>`;
+    case 'imp': return `<div class="menubar"><span>Datei</span><span>Bearbeiten</span><span>Ansicht</span></div><div class="notepad">IMPRESSUM
+=========
+
+Verantwortlich für den Inhalt
+Miguel Cabañero
+Thun, Kanton Bern
+
+Kontakt
+E-Mail: contact@miguel-cabanero.ch
+
+Ausbildung
+Informatikmittelschule (IMS), BWD Bern,
+Berufsmaturität Wirtschaft und Dienstleistung
+
+Haftungsausschluss
+Diese Website ist ein persönliches Schulprojekt im Rahmen
+der Ausbildung an der IMS und dient der Bewerbung für
+Praktikumsstellen. Für die Inhalte externer Links wird
+keine Haftung übernommen.</div>`;
+    case 'bin': return `<div class="pad"><table class="files"><thead><tr><th>Name</th><th>Gelöscht am</th><th>Grösse</th></tr></thead><tbody>
+      <tr><td>alte-website-neon/</td><td>09.10.2026</td><td>zu viel Glitzer</td></tr></tbody></table>
+      <p class="muted" style="margin-top:16px;font-size:13px">Das alte Design. Lila Verläufe, Glas und ein Lichtstrahl, der gelaggt hat.</p></div>`;
+  }
+  return '';
+}
+
+const icons = desktopEl.querySelector('#icons'), winHost = desktopEl.querySelector('#windows');
+const tbApps = desktopEl.querySelector('#tbapps'), smgrid = desktopEl.querySelector('#smgrid');
+APPS.forEach((a) => {
+  const b = document.createElement('button'); b.className = 'icon'; b.innerHTML = `${IC[a.icon]}<span>${a.label}</span>`;
+  b.addEventListener('click', () => { icons.querySelectorAll('.sel').forEach((x) => x.classList.remove('sel')); b.classList.add('sel'); openApp(a.id); });
+  icons.appendChild(b);
+  if (a.id !== 'bin') {
+    const s = b.cloneNode(true); s.classList.remove('sel'); s.addEventListener('click', () => { openApp(a.id); toggleStart(false); }); smgrid.appendChild(s);
+  }
+});
+['about', 'projects', 'docs', 'films', 'fellow'].forEach((id) => {
+  const a = APPS.find((x) => x.id === id);
+  const b = document.createElement('button'); b.className = 'tb-btn'; b.dataset.app = id; b.setAttribute('aria-label', a.label); b.innerHTML = IC[a.icon];
+  b.addEventListener('click', () => { const w = wins[id]; if (w && !w.el.classList.contains('min') && w.el.classList.contains('focus')) w.el.classList.add('min'); else openApp(id); syncTaskbar(); });
+  tbApps.appendChild(b);
+});
+
+const wins = {}; let z = 100, cascade = 0;
+function syncTaskbar() {
+  tbApps.querySelectorAll('.tb-btn').forEach((b) => {
+    const w = wins[b.dataset.app];
+    b.classList.toggle('open', !!w); b.classList.toggle('active', !!w && w.el.classList.contains('focus') && !w.el.classList.contains('min'));
+  });
+}
+function focusWin(id) {
+  Object.values(wins).forEach((w) => w.el.classList.remove('focus'));
+  const w = wins[id]; w.el.classList.add('focus'); w.el.classList.remove('min'); w.el.style.zIndex = ++z; syncTaskbar();
+}
+function openApp(id) {
+  if (wins[id]) return focusWin(id);
+  const a = APPS.find((x) => x.id === id);
+  const el = document.createElement('section'); el.className = 'win'; el.setAttribute('aria-label', a.label);
+  const x = 150 + (cascade % 5) * 34, y = 40 + (cascade % 5) * 26; cascade++;
+  Object.assign(el.style, { left: `${Math.min(x, DW - a.w - 10)}px`, top: `${Math.min(y, DH - 48 - a.h - 6)}px`, width: `${a.w}px`, height: `${a.h}px` });
+  el.innerHTML = `<div class="titlebar"><svg class="ti" viewBox="0 0 48 48">${IC[a.icon].replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg><span class="tt">${a.label}</span>
+    <button class="wc" data-a="min" aria-label="Minimieren"><svg width="10" height="10"><path d="M0 5h10" stroke="currentColor"/></svg></button>
+    <button class="wc" data-a="max" aria-label="Maximieren"><svg width="10" height="10"><rect x=".5" y=".5" width="9" height="9" fill="none" stroke="currentColor"/></svg></button>
+    <button class="wc x" data-a="close" aria-label="Schliessen"><svg width="10" height="10"><path d="M0 0l10 10M10 0 0 10" stroke="currentColor"/></svg></button></div>
+    <div class="wbody">${content(id)}</div>`;
+  winHost.appendChild(el);
+  wins[id] = { el };
+  el.addEventListener('pointerdown', () => focusWin(id));
+  el.querySelector('[data-a=close]').addEventListener('click', (e) => { e.stopPropagation(); el.querySelectorAll('video').forEach((v) => v.pause()); el.remove(); delete wins[id]; syncTaskbar(); });
+  el.querySelector('[data-a=min]').addEventListener('click', (e) => { e.stopPropagation(); el.classList.add('min'); el.classList.remove('focus'); syncTaskbar(); });
+  el.querySelector('[data-a=max]').addEventListener('click', (e) => { e.stopPropagation(); el.classList.toggle('max'); });
+  el.querySelector('.titlebar').addEventListener('dblclick', () => el.classList.toggle('max'));
+  dragify(el);
+  wire(id, el);
+  focusWin(id);
+}
+function dragify(el) {
+  const bar = el.querySelector('.titlebar'); let sx, sy, ox, oy, on = false;
+  const k = () => desktopEl.getBoundingClientRect().width / DW; // Bildschirm-px pro Desktop-px
+  bar.addEventListener('pointerdown', (e) => { if (e.target.closest('.wc') || el.classList.contains('max')) return; on = true; sx = e.clientX; sy = e.clientY; ox = el.offsetLeft; oy = el.offsetTop; bar.setPointerCapture(e.pointerId); });
+  bar.addEventListener('pointermove', (e) => { if (!on) return; const f = k(); el.style.left = `${Math.max(-el.offsetWidth + 120, Math.min(DW - 120, ox + (e.clientX - sx) / f))}px`; el.style.top = `${Math.max(0, Math.min(DH - 90, oy + (e.clientY - sy) / f))}px`; });
+  bar.addEventListener('pointerup', () => { on = false; });
+}
+function wire(id, el) {
+  if (id === 'projects') {
+    const main = el.querySelector('.ex-main');
+    const list = (f) => {
+      const items = PROJECTS.filter((p) => f === 'all' || (f === 'live' ? p.tag === 'live' : p.kind === f));
+      main.innerHTML = `<div class="ex-path">Dieser PC › Miguel › Projekte${f === 'all' ? '' : ' › ' + (f === 'live' ? 'Live' : f)} · ${items.length} Elemente</div><div class="tiles">${items.map((p) => `<button class="tile" data-t="${p.t}"><img src="${p.img}" alt="" loading="lazy" /><b>${p.t}</b><small><span class="tag ${p.tag}">${TAGTXT[p.tag]}</span>${p.kind}</small></button>`).join('')}</div>`;
+      main.querySelectorAll('.tile').forEach((b) => b.addEventListener('click', () => detail(PROJECTS.find((p) => p.t === b.dataset.t), f)));
+    };
+    const detail = (p, f) => {
+      main.innerHTML = `<button class="btn back">← Zurück</button><div class="detail">${p.video ? `<video src="${p.video}" autoplay muted loop playsinline></video>` : `<img src="${p.img}" alt="" />`}<div><h2>${p.t}</h2><p><span class="tag ${p.tag}">${TAGTXT[p.tag]}</span> <span class="muted">${p.kind}</span></p><p>${p.d}</p><div style="display:flex;gap:8px;flex-wrap:wrap">${p.live ? `<a class="btn primary" href="${p.live}" target="_blank" rel="noreferrer">Live ansehen ↗</a>` : ''}${p.gh ? `<a class="btn" href="${p.gh}" target="_blank" rel="noreferrer">GitHub ↗</a>` : ''}</div></div></div>`;
+      main.querySelector('.back').addEventListener('click', () => list(f));
+    };
+    el.querySelectorAll('.ex-side button').forEach((b) => b.addEventListener('click', () => { el.querySelectorAll('.ex-side button').forEach((x) => x.classList.toggle('on', x === b)); list(b.dataset.f); }));
+    list('all');
+  }
+  if (id === 'docs') {
+    el.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      el.querySelector('.wbody').innerHTML = `<div class="pad"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:20px;margin:0">Dokumente</h2><button class="btn primary">Alle herunterladen (.zip)</button></div>
+        <table class="files"><thead><tr><th>Name</th><th>Typ</th><th>Stand</th><th></th></tr></thead><tbody>
+        <tr><td>Lebenslauf_Miguel_Cabanero.pdf</td><td>PDF</td><td>2026</td><td><a class="btn" href="#">Öffnen</a></td></tr>
+        <tr><td>Zeugnis_IMS.pdf</td><td>PDF</td><td>2026</td><td><a class="btn" href="#">Öffnen</a></td></tr>
+        <tr><td>Bewerbungsschreiben.pdf</td><td>PDF</td><td>2026</td><td><a class="btn" href="#">Öffnen</a></td></tr>
+        </tbody></table><p class="muted" style="font-size:12px;margin-top:14px">Mockup: Links ohne Funktion.</p></div>`;
+    });
+  }
+  if (id === 'films') {
+    const v = el.querySelector('#filmplayer'), tt = el.querySelector('#filmtitle');
+    el.querySelectorAll('.reel button').forEach((b) => b.addEventListener('click', () => { el.querySelectorAll('.reel button').forEach((x) => x.classList.toggle('on', x === b)); v.src = b.dataset.src; tt.textContent = b.dataset.t; v.play().catch(() => {}); }));
+  }
+}
+
+const startmenu = desktopEl.querySelector('#startmenu');
+function toggleStart(force) { startmenu.classList.toggle('show', force ?? !startmenu.classList.contains('show')); }
+desktopEl.querySelector('#startbtn').addEventListener('click', (e) => { e.stopPropagation(); toggleStart(); });
+desktopEl.addEventListener('pointerdown', (e) => { if (!e.target.closest('.startmenu, #startbtn')) toggleStart(false); });
+desktopEl.querySelector('#leave').addEventListener('click', () => { toggleStart(false); goRoom(); });
+
+const clock = desktopEl.querySelector('#clock');
+const tick = () => { const d = new Date(); clock.innerHTML = `${d.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}<br />${d.toLocaleDateString('de-CH')}`; };
+tick(); setInterval(tick, 20000);
+</script>
+</body>
+</html>

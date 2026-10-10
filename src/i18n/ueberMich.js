@@ -28,6 +28,14 @@ export const ueberMich = {
         title: 'Gaming',
         text: 'Beim Gaming faszinieren mich weniger die neuesten Trends als die Technik dahinter: Wie ein Survival-Spiel wie Subnautica riesige, dynamische Welten simuliert, wie Satisfactory komplexe Produktionsketten im Hintergrund berechnet, oder wie EA Sports FC und ARK: Survival Evolved ganz unterschiedliche Systeme miteinander verbinden, von der Physik bis zur KI. Genau dieses Interesse an der Entwicklung hinter den Spielen hat auch meine Neugier für Game Development geweckt, das ich gerne weiterverfolgen möchte.',
       },
+      {
+        title: 'Filme drehen',
+        text: 'In letzter Zeit habe ich angefangen, selbst kurze cinematische Videos zu filmen und in DaVinci Resolve zu schneiden. Zwei Filme in 4K sind bereits entstanden; einer davon läuft in meinem Zimmer auf dem Fernseher.',
+      },
+      {
+        title: 'Blender',
+        text: 'Um in die 3D-Welt reinzukommen, habe ich mir Blender selbst beigebracht und erste eigene Designs erstellt. Auch die Figuren und Animationen von SlapFighters sind in Blender entstanden.',
+      },
     ],
 
     docsReference: {
@@ -120,6 +128,14 @@ export const ueberMich = {
         title: 'Gaming',
         text: "When it comes to gaming, I'm less interested in the latest trends than in the technology behind them: how a survival game like Subnautica simulates huge, dynamic worlds, how Satisfactory calculates complex production chains in the background, or how EA Sports FC and ARK: Survival Evolved combine very different systems, from physics to AI. This same interest in what happens behind the scenes of games also sparked my curiosity for game development, which I'd like to pursue further.",
       },
+      {
+        title: 'Filmmaking',
+        text: 'Recently I started shooting my own short cinematic videos and editing them in DaVinci Resolve. Two films in 4K are already done; one of them is playing on the TV in my room.',
+      },
+      {
+        title: 'Blender',
+        text: 'To get into the 3D world, I taught myself Blender and created my first own designs. The characters and animations of SlapFighters were also made in Blender.',
+      },
     ],
 
     docsReference: {
@@ -211,6 +227,14 @@ export const ueberMich = {
       {
         title: 'Jeux vidéo',
         text: "En matière de jeux vidéo, ce ne sont pas les dernières tendances qui m'intéressent le plus, mais plutôt la technologie qui se cache derrière : comment un jeu de survie comme Subnautica simule d'immenses mondes dynamiques, comment Satisfactory calcule des chaînes de production complexes en arrière-plan, ou comment EA Sports FC et ARK: Survival Evolved combinent des systèmes très différents, de la physique à l'IA. C'est justement cet intérêt pour ce qui se passe derrière les jeux qui a éveillé ma curiosité pour le développement de jeux, un domaine que j'aimerais approfondir.",
+      },
+      {
+        title: 'Tourner des films',
+        text: "Depuis peu, je filme mes propres courtes vidéos cinématiques et je les monte avec DaVinci Resolve. Deux films en 4K sont déjà terminés ; l'un d'eux passe à la télé dans ma chambre.",
+      },
+      {
+        title: 'Blender',
+        text: "Pour entrer dans le monde de la 3D, j'ai appris Blender seul et créé mes premiers designs. Les personnages et animations de SlapFighters ont eux aussi été réalisés avec Blender.",
       },
     ],
 

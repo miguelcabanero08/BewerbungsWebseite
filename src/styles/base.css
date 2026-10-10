@@ -1,0 +1,104 @@
+/* Tokens aus DESIGN.md */
+:root {
+  --night: #0b0d12;
+  --overlay-ink: #f1ece3;
+  --bell-amber: #ffb547;
+  --bell-amber-hover: #ffc56e;
+  --led-violet: #a595ff;
+  --vignette-ink: 8, 5, 22;
+  --chip-bg: rgba(10, 12, 18, 0.66);
+  --chip-line: rgba(255, 255, 255, 0.16);
+
+  --win-bg: #f3f3f3;
+  --win-surface: #ffffff;
+  --win-ink: #1b1b1b;
+  --win-muted: #5b5b5b;
+  --win-line: #dcdcdc;
+  --win-accent: #0f6cbd;
+  --win-accent-hover: #115ea3;
+  --sticky-paper: #fff4a8;
+  --sticky-ink: #2a2510;
+  --tag-live-bg: #dff3e5;
+  --tag-live-ink: #12632f;
+  --tag-wip-bg: #fff1d6;
+  --tag-wip-ink: #8a4b00;
+  --tag-school-bg: #e8eef8;
+  --tag-school-ink: #24477a;
+  --error: #b42318;
+
+  --font-world: "Archivo", system-ui, sans-serif;
+  --font-desk: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: Consolas, "Cascadia Mono", ui-monospace, monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; }
+body {
+  background: var(--night);
+  color: var(--overlay-ink);
+  font-family: var(--font-world);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+img, video { max-width: 100%; }
+button { font: inherit; color: inherit; }
+::selection { background: var(--bell-amber); color: #1b1205; }
+
+.sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.sr.focusable:focus-visible {
+  width: auto; height: auto; clip-path: none; overflow: visible;
+  position: static !important;
+}
+
+:focus-visible { outline: 2px solid var(--bell-amber); outline-offset: 3px; }
+
+/* 3D-Bühne */
+.stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.stage canvas { display: block; }
+
+.vignette {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  opacity: 0; transition: opacity 0.6s ease;
+  background: radial-gradient(ellipse 75% 70% at 50% 48%, transparent 45%, rgba(var(--vignette-ink), 0.62) 100%);
+}
+.vignette.on { opacity: 1; }
+.vignette.day { --vignette-ink: 40, 26, 12; }
+.vignette.day.on { opacity: 0.55; }
+
+.black {
+  position: fixed; inset: 0; z-index: 40; background: #000; pointer-events: none;
+  opacity: 0; transition: opacity 1.8s ease;
+}
+.black.on { opacity: 1; transition: opacity 1.2s ease-in; }
+
+.loader {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  background: var(--night); color: #cfc8bb;
+  font-size: 14px; letter-spacing: 0.04em;
+  transition: opacity 0.7s ease, visibility 0s linear 0.7s;
+}
+.loader.done { opacity: 0; visibility: hidden; }
+
+.notice-flat {
+  position: fixed; z-index: 35; left: 50%; top: 12px; transform: translateX(-50%);
+  margin: 0; padding: 8px 14px; border-radius: 999px;
+  background: var(--chip-bg); border: 1px solid var(--chip-line);
+  font-size: 13px; color: var(--overlay-ink);
+  max-width: calc(100% - 32px); text-align: center;
+  animation: notice-out 0.6s ease 7s forwards;
+}
+@keyframes notice-out { to { opacity: 0; visibility: hidden; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

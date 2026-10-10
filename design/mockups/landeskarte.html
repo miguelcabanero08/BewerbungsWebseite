@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mockup · Blatt Thun–Bern</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f5f6f2;
+    --ink: #161616;
+    --ink-2: #4a4b47;
+    --lake: #c6e2f2;
+    --water: #2f86c4;
+    --contour: #c39b6f;
+    --forest: #d2e6bd;
+    --route: #d6281c;
+    --sign: #f6c400;
+    --hair: rgba(22, 22, 22, 0.55);
+    --margin: clamp(14px, 2vw, 30px);
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo", system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--sign); color: var(--ink); }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--route); outline-offset: 3px; }
+
+  /* ---------- Blatt (erste Ansicht) ---------- */
+  .sheet {
+    position: relative;
+    height: 100svh;
+    min-height: 640px;
+    padding: var(--margin);
+    padding-top: calc(var(--margin) + 22px);
+    padding-bottom: calc(var(--margin) + 22px);
+  }
+  .margin-top, .margin-bottom {
+    position: absolute;
+    left: var(--margin);
+    right: var(--margin);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    font-stretch: 85%;
+  }
+  .margin-top { top: var(--margin); }
+  .margin-bottom { bottom: var(--margin); }
+  .sheet-title b { color: var(--ink); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .lang { display: flex; gap: 10px; }
+  .lang button {
+    font: inherit; background: none; border: 0; padding: 2px 0; cursor: pointer; color: var(--ink-2);
+  }
+  .lang button[aria-pressed="true"] { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+  .map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1.5px solid var(--ink);
+    outline: 1px solid var(--ink);
+    outline-offset: 4px;
+    overflow: hidden;
+    background: #fbfbf8;
+    cursor: crosshair;
+  }
+  .map svg.terrain text { paint-order: stroke; stroke: #fbfbf8; stroke-width: 4px; stroke-linejoin: round; }
+  .map svg.terrain { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* Fadenkreuz */
+  .xhair-h, .xhair-v { position: absolute; background: var(--route); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .xhair-h { left: 0; right: 0; height: 1px; }
+  .xhair-v { top: 0; bottom: 0; width: 1px; }
+  .map:hover .xhair-h, .map:hover .xhair-v { opacity: .35; }
+
+  /* Name als Landschaftsbeschriftung */
+  .region {
+    position: absolute;
+    left: 34%;
+    top: 56%;
+    pointer-events: none;
+    max-width: 46%;
+  }
+  .region h1 {
+    margin: 0;
+    font-weight: 800;
+    font-stretch: 112%;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    line-height: 0.98;
+    font-size: clamp(2.2rem, 4vw, 4.3rem);
+    color: var(--ink);
+    text-shadow: 0 0 6px #fbfbf8, 0 0 2px #fbfbf8;
+  }
+  .region p {
+    margin: 18px 0 0;
+    font-style: italic;
+    font-stretch: 90%;
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    line-height: 1.45;
+    max-width: 34ch;
+    color: var(--ink);
+    text-shadow: 0 0 5px #fbfbf8, 0 0 5px #fbfbf8;
+  }
+  .region p strong { font-style: normal; font-weight: 700; color: var(--route); }
+
+  /* Wanderwegweiser = Navigation */
+  .signpost {
+    position: absolute;
+    top: 6%;
+    right: 4%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 10px;
+  }
+  .signpost::before {
+    content: "";
+    position: absolute;
+    left: 0; top: -40px; bottom: -60px;
+    width: 6px;
+    background: #8d918c;
+    border-radius: 1px;
+  }
+  .sign {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    width: 300px;
+    padding: 10px 34px 10px 14px;
+    background: var(--sign);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%);
+    box-shadow: inset 0 0 0 0 var(--ink);
+    transition: transform .25s cubic-bezier(.16,1,.3,1), background-color .2s;
+  }
+  .sign span { font-weight: 500; font-size: 13px; }
+  .sign:hover { transform: translateX(8px); background: #ffd21f; }
+  .sign.head {
+    background: #fff;
+    clip-path: none;
+    border: 1.5px solid var(--ink);
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .sign.head:hover { transform: none; background: #fff; }
+
+  /* Ausschnitt mit Portrait */
+  .inset {
+    position: absolute;
+    right: 4%;
+    top: 40%;
+    width: clamp(150px, 13vw, 200px);
+    background: #fff;
+    border: 1.5px solid var(--ink);
+    padding: 6px;
+    box-shadow: 0 10px 30px -12px rgba(0,0,0,.35);
+  }
+  .inset img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(.15) contrast(1.05); }
+  .inset figcaption { font-size: 12px; line-height: 1.35; padding: 6px 2px 0; color: var(--ink-2); font-stretch: 88%; }
+  .inset figcaption b { color: var(--ink); }
+
+  /* Legende = Fakten + Aktion */
+  .legend {
+    position: absolute;
+    left: 3%;
+    bottom: 5%;
+    width: min(390px, 44%);
+    background: #fff;
+    border: 1.5px solid var(--ink);
+    padding: 18px 20px 20px;
+    box-shadow: 0 14px 40px -18px rgba(0,0,0,.4);
+  }
+  .legend h2 {
+    margin: 0 0 12px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-stretch: 110%;
+  }
+  .legend dl { margin: 0; display: grid; grid-template-columns: 22px 1fr; gap: 7px 10px; font-size: 14px; line-height: 1.35; }
+  .legend dt { display: flex; align-items: center; justify-content: center; padding-top: 2px; }
+  .legend dd { margin: 0; }
+  .legend dd small { color: var(--ink-2); font-size: 12.5px; }
+  .grade { font-weight: 800; font-size: 15px; }
+  .action { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hair); }
+  .action label { display: block; font-size: 12.5px; color: var(--ink-2); margin-bottom: 7px; }
+  .action .row { display: flex; gap: 0; }
+  .action input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 15px;
+    padding: 11px 12px;
+    border: 1.5px solid var(--ink);
+    border-right: 0;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 0;
+  }
+  .action input::placeholder { color: #5c5d58; }
+  .action input:focus { outline: none; background: #fff; box-shadow: inset 0 -3px 0 var(--route); }
+  .action button {
+    font: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 0 16px;
+    border: 1.5px solid var(--ink);
+    background: var(--ink);
+    color: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    border-radius: 0;
+    transition: background-color .2s;
+  }
+  .action button:hover { background: var(--route); border-color: var(--route); }
+  .action .alt { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-weight: 700; font-size: 14px; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+  .action .alt:hover { color: var(--route); }
+
+  /* Massstab = Zeitachse */
+  .scale {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-38%);
+    bottom: 4.5%;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .scale .bar { display: flex; border: 1.5px solid var(--ink); height: 9px; }
+  .scale .bar i { display: block; height: 100%; }
+  .scale .bar i:nth-child(odd) { background: var(--ink); }
+  .scale .bar i:nth-child(even) { background: #fff; }
+  .scale .ticks { position: relative; height: 16px; margin-top: 3px; }
+  .scale .ticks span { position: absolute; transform: translateX(-50%); font-weight: 600; }
+  .scale .cap { margin-top: 2px; color: var(--ink-2); font-stretch: 88%; white-space: nowrap; }
+
+  .coords { font-stretch: 85%; }
+
+  /* ---------- Unter der ersten Ansicht ---------- */
+  .index {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 110px var(--margin) 120px;
+  }
+  .index h2 {
+    margin: 0;
+    font-size: clamp(2rem, 3.6vw, 3.4rem);
+    font-weight: 800;
+    font-stretch: 112%;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .index > p { max-width: 62ch; font-size: 17px; line-height: 1.6; color: var(--ink-2); margin: 18px 0 44px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; padding: 0 12px 10px 0; border-bottom: 1.5px solid var(--ink); }
+  td { padding: 16px 12px 16px 0; border-bottom: 1px solid var(--hair); vertical-align: middle; }
+  tr.p { cursor: pointer; transition: background-color .15s; }
+  tr.p:hover { background: #fff; }
+  tr.p:hover td:first-child svg { transform: scale(1.25); }
+  td:first-child svg { transition: transform .2s; display: block; }
+  td.name { font-weight: 800; font-size: 18px; font-stretch: 105%; }
+  td.desc { color: var(--ink-2); max-width: 46ch; line-height: 1.45; }
+  td.coord { color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 8px; border: 1.5px solid var(--ink); white-space: nowrap; }
+  .tag.live { background: var(--ink); color: #fff; }
+  .tag.wip { border-style: dashed; }
+  .note { margin-top: 26px; font-size: 13px; color: var(--ink-2); }
+
+  /* Route einzeichnen */
+  .route-reveal { stroke-dasharray: 2600; stroke-dashoffset: 2600; animation: draw 2.4s cubic-bezier(.16,1,.3,1) .4s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .route-reveal { animation: none; stroke-dashoffset: 0; }
+    .sign { transition: none; }
+  }
+
+  /* ---------- Mobil ---------- */
+  @media (max-width: 860px) {
+    .sheet { height: auto; min-height: 0; padding: var(--margin); }
+    .margin-top { position: static; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .map { height: auto; min-height: 0; padding: 64svh 14px 16px; overflow: visible; outline: none; }
+    .map svg.terrain { height: 64svh; bottom: auto; border-bottom: 1.5px solid var(--ink); }
+    .xhair-h, .xhair-v { display: none; }
+    .signpost { position: relative; top: auto; right: auto; padding: 18px 0 0; }
+    .signpost .sign { width: 100%; }
+    .signpost::before { display: none; }
+    .sign { width: 220px; font-size: 14px; padding: 9px 30px 9px 12px; }
+    .sign.head { display: none; }
+    .region { left: 18px; top: 22px; max-width: calc(100% - 36px); }
+    .region h1 { font-size: clamp(2rem, 10.5vw, 3rem); letter-spacing: .1em; }
+    .inset { display: none; }
+    .scale { display: none; }
+    .legend { position: relative; left: auto; bottom: auto; width: 100%; margin-top: 18px; box-shadow: none; }
+    .region p { max-width: 26ch; }
+    .margin-bottom { position: static; margin-top: 14px; }
+    td.desc, td.coord, th.c-desc, th.c-coord { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="sheet" aria-label="Startseite">
+  <div class="margin-top">
+    <span class="sheet-title"><b>Blatt 2027 · Thun – Bern</b> &nbsp;Bewerbung Miguel Cabañero</span>
+    <nav class="lang" aria-label="Sprache">
+      <button aria-pressed="true">DE</button><button aria-pressed="false">EN</button><button aria-pressed="false">FR</button>
+    </nav>
+  </div>
+
+  <div class="map" id="map">
+    <svg class="terrain" id="terrain" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <filter id="goo" x="-5%" y="-5%" width="110%" height="110%">
+          <feGaussianBlur stdDeviation="7" />
+          <feComponentTransfer><feFuncA type="discrete" tableValues="0 1" /></feComponentTransfer>
+        </filter>
+        <pattern id="kmgrid" width="120" height="120" patternUnits="userSpaceOnUse">
+          <path d="M120 0H0V120" fill="none" stroke="#2f86c4" stroke-opacity=".22" stroke-width="1" />
+        </pattern>
+        <mask id="routeMask">
+          <path class="route-reveal" d="M1066 628 C 1010 600 980 560 930 548 S 820 520 760 470 S 640 400 580 360 S 430 318 330 262 S 200 200 150 150 S 80 70 40 40" fill="none" stroke="#fff" stroke-width="16" />
+        </mask>
+      </defs>
+      <g id="forest" filter="url(#goo)" fill="#d2e6bd"></g>
+      <g id="contours" fill="none" stroke="#c39b6f"></g>
+      <rect width="1440" height="900" fill="url(#kmgrid)" />
+
+      <!-- Thunersee -->
+      <path d="M1052 662 C1100 640 1170 646 1232 682 S1356 752 1440 778 L1440 900 L1316 900 C1262 860 1196 822 1146 790 S1062 724 1052 662 Z" fill="#c6e2f2" stroke="#2f86c4" stroke-width="2" />
+      <text x="1250" y="800" fill="#2f86c4" font-style="italic" font-size="26" letter-spacing="9" transform="rotate(24 1250 800)" font-family="Archivo">Thunersee</text>
+
+      <!-- Aare mit Berner Schlaufe -->
+      <path id="aare" d="M1058 660 C1012 612 968 574 912 556 S790 520 736 468 S612 392 556 352 S440 312 380 300 C346 292 330 262 312 244 C292 222 262 214 246 236 C230 258 250 286 226 292 C196 300 168 262 140 214 S80 120 0 96" fill="none" stroke="#2f86c4" stroke-width="5" stroke-linecap="round" />
+      <text font-family="Archivo" font-style="italic" font-size="17" letter-spacing="6" fill="#2f86c4"><textPath href="#aare" startOffset="34%">Aare</textPath></text>
+
+      <!-- Bahnlinie Thun–Bern -->
+      <path d="M1080 600 C1000 560 930 520 860 500 S700 440 620 400 S470 330 360 330 S250 300 190 250" fill="none" stroke="#161616" stroke-width="4" />
+      <path d="M1080 600 C1000 560 930 520 860 500 S700 440 620 400 S470 330 360 330 S250 300 190 250" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="14 14" />
+
+      <g id="houses" fill="#161616"></g>
+
+      <!-- Route (Werdegang) -->
+      <path d="M1066 628 C 1010 600 980 560 930 548 S 820 520 760 470 S 640 400 580 360 S 430 318 330 262 S 200 200 150 150 S 80 70 40 40" fill="none" stroke="#d6281c" stroke-width="4.5" stroke-dasharray="11 7" mask="url(#routeMask)" />
+
+      <!-- Stationen -->
+      <g font-family="Archivo" font-size="15" fill="#161616">
+        <g transform="translate(1066 628)"><circle r="9" fill="#fff" stroke="#d6281c" stroke-width="3.5"/><text x="0" y="36" text-anchor="middle" font-weight="800" font-size="22" letter-spacing="2">THUN</text><text x="0" y="54" text-anchor="middle" font-size="13">Primarschule Neufeld · 2015</text></g>
+        <g transform="translate(930 548)"><circle r="6" fill="#d6281c"/><text x="12" y="-8" font-size="13">Spez. Sek Strättligen · 2021</text></g>
+        <g transform="translate(760 470)"><circle r="6" fill="#d6281c"/><text x="12" y="-8" font-size="13">Spez. Sek Progymatte · 2023</text></g>
+        <g transform="translate(330 262)"><rect x="-9" y="-9" width="18" height="18" fill="#fff" stroke="#d6281c" stroke-width="3.5"/><text x="18" y="22" font-weight="800" font-size="22" letter-spacing="2">BERN</text><text x="18" y="40" font-size="13">IMS · BWD Bern · 2024–2027</text></g>
+        <g transform="translate(40 40)"><path d="M0 0 V-0 M0 24 V-22 L26 -14 L0 -6" fill="#d6281c" stroke="#d6281c" stroke-width="3"/></g>
+      </g>
+
+      <!-- Projekte als Gipfel -->
+      <g font-family="Archivo" font-size="13" fill="#161616" id="peaks">
+        <g transform="translate(860 150)"><path d="M0 -13 L12 9 H-12Z" fill="#161616"/><text x="16" y="4" font-weight="700">ProfileAuth</text><text x="16" y="19" font-size="12" fill="#4a4b47">live</text></g>
+        <g transform="translate(1000 255)"><path d="M0 -13 L12 9 H-12Z" fill="#161616"/><text x="16" y="4" font-weight="700">TuneHead</text><text x="16" y="19" font-size="12" fill="#4a4b47">live</text></g>
+        <g transform="translate(900 385)"><path d="M0 -13 L12 9 H-12Z" fill="none" stroke="#161616" stroke-width="2" stroke-dasharray="4 3"/><text x="16" y="4" font-weight="700">Fellow Tenants</text><text x="16" y="19" font-size="12" fill="#4a4b47">im Bau · Unity</text></g>
+        <g transform="translate(470 130)"><path d="M0 -13 L12 9 H-12Z" fill="#161616"/><text x="16" y="4" font-weight="700">FilmFinder</text><text x="16" y="19" font-size="12" fill="#4a4b47">live</text></g>
+        <g transform="translate(190 430)"><path d="M0 -13 L12 9 H-12Z" fill="#161616"/><text x="16" y="4" font-weight="700">ManUtd Website</text><text x="16" y="19" font-size="12" fill="#4a4b47">live</text></g>
+        <g transform="translate(760 300)"><path d="M0 -13 L12 9 H-12Z" fill="none" stroke="#161616" stroke-width="2"/><text x="16" y="4" font-weight="700">SlapFighters</text></g>
+        <g transform="translate(600 250)"><path d="M0 -13 L12 9 H-12Z" fill="none" stroke="#161616" stroke-width="2"/><text x="16" y="4" font-weight="700">CarPin</text></g>
+        <g transform="translate(660 110)"><path d="M0 -13 L12 9 H-12Z" fill="none" stroke="#161616" stroke-width="2"/><text x="16" y="4" font-weight="700">BookLoan</text></g>
+      </g>
+    </svg>
+
+    <div class="xhair-h" id="xh"></div>
+    <div class="xhair-v" id="xv"></div>
+
+    <div class="region">
+      <h1>Miguel<br />Cabañero</h1>
+      <p>Informatiker EFZ Applikationsentwicklung, 18, aus Thun. Sucht ein Praktikum <strong>ab August 2027</strong>.</p>
+    </div>
+
+    <nav class="signpost" aria-label="Hauptnavigation">
+      <div class="sign head">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="none" stroke="#161616" stroke-width="1.6"/><circle cx="7" cy="7" r="1.8" fill="#d6281c"/></svg>
+        Standort · Thun 560 m
+      </div>
+      <a class="sign" href="#">Über mich <span>Person · Werdegang</span></a>
+      <a class="sign" href="#projekte">Projekte <span>12 Gipfel</span></a>
+      <a class="sign" href="#">Dokumente <span>mit Code</span></a>
+      <a class="sign" href="#">Impressum <span></span></a>
+    </nav>
+
+    <figure class="inset">
+      <img src="/images/portrait.webp" alt="Portrait von Miguel Cabañero" />
+      <figcaption><b>Ausschnitt 1:1</b><br />Miguel Cabañero, IMS BWD Bern</figcaption>
+    </figure>
+
+    <aside class="legend" aria-label="Zeichenerklärung">
+      <h2>Zeichenerklärung</h2>
+      <dl>
+        <dt><svg width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="#fff" stroke="#d6281c" stroke-width="3"/></svg></dt>
+        <dd>Wohnort Thun BE · 18 Jahre</dd>
+        <dt><svg width="16" height="16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" fill="#fff" stroke="#d6281c" stroke-width="3"/></svg></dt>
+        <dd>Informatikmittelschule BWD Bern<br /><small>mit Berufsmaturität Wirtschaft &amp; Dienstleistung, Abschluss Juli 2027</small></dd>
+        <dt><svg width="16" height="16" aria-hidden="true"><path d="M8 2 L15 14 H1Z" fill="#161616"/></svg></dt>
+        <dd>Live-Projekt <small>· gestrichelt: in Arbeit</small></dd>
+        <dt><svg width="16" height="16" aria-hidden="true"><path d="M1 8 H15" stroke="#d6281c" stroke-width="3" stroke-dasharray="4 3"/></svg></dt>
+        <dd>Notenschnitt <span class="grade">5.1</span> EFZ · <span class="grade">5.1</span> BM</dd>
+      </dl>
+      <form class="action" onsubmit="event.preventDefault()">
+        <label for="pw">Code aus dem Bewerbungsschreiben</label>
+        <div class="row">
+          <input id="pw" type="password" placeholder="Passwort" autocomplete="off" />
+          <button type="submit">Dokumente öffnen
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+        </div>
+        <a class="alt" href="#projekte">Projekte ansehen
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2v9M3.5 7.5 7 11l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </a>
+      </form>
+    </aside>
+
+    <div class="scale" aria-label="Zeitachse">
+      <div class="bar" style="width:min(420px,32vw)"><i style="width:50%"></i><i style="width:16.7%"></i><i style="width:8.3%"></i><i style="width:25%"></i></div>
+      <div class="ticks"><span style="left:0">2015</span><span style="left:50%">2021</span><span style="left:66.7%">2023</span><span style="left:75%">2024</span><span style="left:100%">2027</span></div>
+      <div class="cap">Massstab: Schulweg 2015 – Abschluss 2027</div>
+    </div>
+  </div>
+
+  <div class="margin-bottom">
+    <span>Äquidistanz 20 m · Route = Werdegang · Gipfel = Projekte</span>
+    <span class="coords" id="coords">E 2'614'000 · N 1'178'000</span>
+  </div>
+</section>
+
+<section class="index" id="projekte">
+  <h2>Gipfelverzeichnis</h2>
+  <p>Was ich gebaut habe, von der Schule bis zu Apps, die unter meiner eigenen Domain laufen. Ein Klick öffnet Ziel, Technologien, meine Rolle und was ich dabei gelernt habe.</p>
+  <table>
+    <thead><tr><th></th><th>Projekt</th><th class="c-desc">Worum es geht</th><th>Stand</th><th class="c-coord">Koordinate</th></tr></thead>
+    <tbody>
+      <tr class="p"><td><svg width="20" height="18"><path d="M10 1 L19 17 H1Z" fill="#161616"/></svg></td><td class="name">ProfileAuth</td><td class="desc">Zentrales Login für alle meine Apps unter miguel-cabanero.ch.</td><td><span class="tag live">live</span></td><td class="coord">E 2'617'420 · N 1'183'900</td></tr>
+      <tr class="p"><td><svg width="20" height="18"><path d="M10 1 L19 17 H1Z" fill="#161616"/></svg></td><td class="name">TuneHead</td><td class="desc">Musik-App, angebunden an ProfileAuth.</td><td><span class="tag live">live</span></td><td class="coord">E 2'619'080 · N 1'188'600</td></tr>
+      <tr class="p"><td><svg width="20" height="18"><path d="M10 1 L19 17 H1Z" fill="none" stroke="#161616" stroke-width="2" stroke-dasharray="4 3"/></svg></td><td class="name">Fellow Tenants</td><td class="desc">Mein Horror-Story-Game in Unity: Stille heisst Überleben, Entkommen nur über Gespräche mit den Nachbarn.</td><td><span class="tag wip">im Bau</span></td><td class="coord">E 2'616'900 · N 1'192'100</td></tr>
+      <tr class="p"><td><svg width="20" height="18"><path d="M10 1 L19 17 H1Z" fill="#161616"/></svg></td><td class="name">FilmFinder</td><td class="desc">Filme suchen und entdecken.</td><td><span class="tag live">live</span></td><td class="coord">E 2'605'200 · N 1'180'300</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Mockup · Texte gekürzt, im fertigen Bau mit allen 12 Projekten und den echten Beschreibungen.</p>
+</section>
+
+<script>
+(() => {
+  // ---- Gelände: Höhenfeld aus Rauschen, Höhenlinien per Marching Squares ----
+  const W = 1440, H = 900, S = 12;
+  let seed = 2027;
+  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const G = 64, grid = Array.from({ length: (G + 1) * (G + 1) }, rand);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const sm = (t) => t * t * (3 - 2 * t);
+  function vnoise(x, y) {
+    const xi = Math.floor(x) % G, yi = Math.floor(y) % G, xf = x - Math.floor(x), yf = y - Math.floor(y);
+    const g = (i, j) => grid[((j % G) * (G + 1)) + (i % G)];
+    return lerp(lerp(g(xi, yi), g(xi + 1, yi), sm(xf)), lerp(g(xi, yi + 1), g(xi + 1, yi + 1), sm(xf)), sm(yf));
+  }
+  const fbm = (x, y) => { let v = 0, a = .5, f = 1; for (let o = 0; o < 4; o++) { v += a * vnoise(x * f, y * f); a *= .5; f *= 2.03; } return v; };
+
+  // Talachse (Aare) grob als Linie Thun -> Bern
+  function valley(x, y) {
+    const ax = 1060, ay = 640, bx = 240, by = 250;
+    const dx = bx - ax, dy = by - ay, t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy)));
+    const d = Math.hypot(x - (ax + t * dx), y - (ay + t * dy));
+    return Math.exp(-(d * d) / (2 * 150 * 150));
+  }
+  const cols = Math.ceil(W / S) + 1, rows = Math.ceil(H / S) + 1;
+  const h = new Float32Array(cols * rows);
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+    const x = i * S, y = j * S;
+    const alpine = Math.max(0, (x - 700) / 740) * Math.max(0, (y - 120) / 780); // Oberland im Südosten
+    h[j * cols + i] = fbm(x / 210, y / 210) * .9 + alpine * .75 - valley(x, y) * .32;
+  }
+
+  function contourPath(level) {
+    let d = '';
+    const P = (i, j) => h[j * cols + i];
+    const interp = (x1, y1, v1, x2, y2, v2) => { const t = (level - v1) / (v2 - v1); return [(x1 + (x2 - x1) * t).toFixed(1), (y1 + (y2 - y1) * t).toFixed(1)]; };
+    for (let j = 0; j < rows - 1; j++) for (let i = 0; i < cols - 1; i++) {
+      const a = P(i, j), b = P(i + 1, j), c = P(i + 1, j + 1), e = P(i, j + 1);
+      const idx = (a > level) | ((b > level) << 1) | ((c > level) << 2) | ((e > level) << 3);
+      if (idx === 0 || idx === 15) continue;
+      const x = i * S, y = j * S;
+      const top = () => interp(x, y, a, x + S, y, b), right = () => interp(x + S, y, b, x + S, y + S, c);
+      const bottom = () => interp(x, y + S, e, x + S, y + S, c), left = () => interp(x, y, a, x, y + S, e);
+      const seg = (p, q) => { d += `M${p[0]} ${p[1]}L${q[0]} ${q[1]}`; };
+      switch (idx) {
+        case 1: case 14: seg(left(), top()); break;
+        case 2: case 13: seg(top(), right()); break;
+        case 3: case 12: seg(left(), right()); break;
+        case 4: case 11: seg(right(), bottom()); break;
+        case 6: case 9: seg(top(), bottom()); break;
+        case 7: case 8: seg(left(), bottom()); break;
+        case 5: seg(left(), top()); seg(right(), bottom()); break;
+        case 10: seg(top(), right()); seg(left(), bottom()); break;
+      }
+    }
+    return d;
+  }
+  const NS = 'http://www.w3.org/2000/svg';
+  const cg = document.getElementById('contours');
+  let min = Infinity, max = -Infinity; for (const v of h) { if (v < min) min = v; if (v > max) max = v; }
+  const step = (max - min) / 26;
+  for (let k = 1; k < 26; k++) {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', contourPath(min + k * step));
+    p.setAttribute('stroke-width', k % 5 === 0 ? '1.5' : '.75');
+    p.setAttribute('stroke-opacity', k % 5 === 0 ? '.95' : '.7');
+    cg.appendChild(p);
+  }
+
+  // Wald: zweites Rauschfeld, per Blur+Schwelle zu weichen Flächen verschmolzen
+  const fg = document.getElementById('forest');
+  let rects = '';
+  for (let y = 0; y < H; y += 14) for (let x = 0; x < W; x += 14) {
+    const n = fbm(x / 120 + 40, y / 120 + 17);
+    if (n > .56 && valley(x, y) < .75) rects += `<rect x="${x}" y="${y}" width="15" height="15"/>`;
+  }
+  fg.innerHTML = rects;
+
+  // Häuser: Siedlungen Thun und Bern als schwarze Kleinflächen
+  const hg = document.getElementById('houses');
+  let houses = '';
+  const town = (cx, cy, r, n) => { for (let i = 0; i < n; i++) { const a = rand() * Math.PI * 2, rr = Math.sqrt(rand()) * r; const w = 4 + rand() * 7, hh = 4 + rand() * 6; houses += `<rect x="${(cx + Math.cos(a) * rr).toFixed(0)}" y="${(cy + Math.sin(a) * rr * .8).toFixed(0)}" width="${w.toFixed(0)}" height="${hh.toFixed(0)}" transform="rotate(${(rand() * 40 - 20).toFixed(0)} ${cx} ${cy})"/>`; } };
+  town(1030, 600, 70, 120); town(300, 250, 80, 170); town(930, 530, 26, 22); town(760, 455, 24, 18); town(580, 360, 22, 16);
+  hg.innerHTML = houses;
+
+  // ---- Fadenkreuz + Koordinaten (Signatur-Interaktion) ----
+  const map = document.getElementById('map'), xh = document.getElementById('xh'), xv = document.getElementById('xv'), out = document.getElementById('coords');
+  const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+  map.addEventListener('pointermove', (e) => {
+    const r = map.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    xh.style.top = y + 'px'; xv.style.left = x + 'px';
+    const fx = x / r.width, fy = y / r.height;
+    out.textContent = `E 2'${fmt(598000 + fx * 22000).slice(2)} · N 1'${fmt(1202000 - fy * 27000).slice(2)}`;
+  });
+})();
+</script>
+</body>
+</html>
