@@ -3,6 +3,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { ui } from '../i18n/ui.js'
 import { UiIcon } from '../desk/icons.jsx'
 import LangSwitch from '../desk/LangSwitch.jsx'
+import { BriefButton } from './Brief.jsx'
 
 // Oberfläche über der 3D-Welt, je nach Zustand der Kamera.
 export function HallOverlay({ visible, onRing, onSkip }) {
@@ -72,12 +73,15 @@ export function RoomOverlay({ visible, touch, diorama, onDiorama, onPC, onTV, on
 }
 
 // Am PC (Desktop-Ansicht): Knopf oben links zurück ins Zimmer, wie beim Fernseher
-export function PcOverlay({ visible, onBack }) {
+export function PcOverlay({ visible, onBack, onBrief }) {
   const { language } = useLanguage()
   const t = ui[language].tv
   return (
     <section className={`ui pc-ui${visible ? ' on' : ''}`} aria-hidden={!visible} inert={!visible}>
-      <button type="button" className="tvbtn ghost pc-back" onClick={onBack}><UiIcon name="back" size={14} /> {t.back}</button>
+      <div className="pc-top">
+        <button type="button" className="tvbtn ghost" onClick={onBack}><UiIcon name="back" size={14} /> {t.back}</button>
+        <BriefButton onOpen={onBrief} className="tvbtn brief-solid" />
+      </div>
     </section>
   )
 }

@@ -63,6 +63,14 @@ const ICONS = {
       <circle cx="29.5" cy="26" r="1.6" fill="#c9a26a" />
     </>
   ),
+  making: (
+    <>
+      <rect x="4" y="9" width="40" height="33" rx="5" fill="#2a2348" />
+      <path d="M6 9.5 42 4l1 6.5L7 16Z" fill="#ffb547" />
+      <path d="M13 8.4l4 6M22 7l4 6M31 5.7l4 6" stroke="#2a2348" strokeWidth="2.6" />
+      <path d="M18 23l-6 6 6 6M30 23l6 6-6 6M26 21l-4 16" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
   note: (
     <>
       <path d="M10 5h20l9 9v29H10Z" fill="#fff" />
@@ -105,6 +113,7 @@ export function UiIcon({ name, size = 16 }) {
     case 'download': return <svg {...p}><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13.5h10" /></svg>
     case 'play': return <svg {...p} fill="currentColor" stroke="none"><path d="M4.5 2.5v11l9-5.5Z" /></svg>
     case 'pause': return <svg {...p} fill="currentColor" stroke="none"><rect x="3.5" y="2.5" width="3" height="11" rx=".6" /><rect x="9.5" y="2.5" width="3" height="11" rx=".6" /></svg>
+    case 'card': return <svg {...p}><rect x="1.8" y="3.2" width="12.4" height="9.6" rx="1.6" /><circle cx="5.6" cy="7" r="1.5" /><path d="M3.4 10.6a2.3 2.3 0 0 1 4.4 0M9.6 6.4h2.8M9.6 9h2.8" /></svg>
     case 'iso': return <svg {...p}><path d="M8 1.8 13.5 5v6L8 14.2 2.5 11V5Z" /><path d="M2.5 5 8 8.2 13.5 5M8 8.2v6" /></svg>
     case 'eye': return <svg {...p}><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8Z" /><circle cx="8" cy="8" r="2" /></svg>
     case 'sun': return <svg {...p}><circle cx="8" cy="8" r="3" /><path d="M8 1.2v1.6M8 13.2v1.6M1.2 8h1.6M13.2 8h1.6M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" /></svg>

@@ -14,7 +14,12 @@
   padding: max(16px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
   overflow: auto;
 }
-.phone-top { display: flex; justify-content: flex-end; }
+.phone-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.phone-brief {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--chip-line); background: var(--chip-bg); color: #fff;
+  font: 600 13px/1 var(--font-world); padding: 9px 13px; border-radius: 999px; cursor: pointer;
+}
 .phone-note {
   display: flex; flex-direction: column; padding: 14px 16px; border-radius: 10px;
   background: var(--sticky-paper); color: var(--sticky-ink); font-size: 14px; line-height: 1.5;

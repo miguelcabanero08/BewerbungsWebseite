@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from './context/LanguageContext.jsx'
+import { useMusic } from './context/MusicContext.jsx'
 import { ui } from './i18n/ui.js'
 import { appById, appBySlug, LEGACY_ROUTES, DESK_W, DESK_H } from './data/apps.js'
 import { tvFilm } from './data/media.js'
@@ -10,6 +11,7 @@ import Desktop from './desk/Desktop.jsx'
 import PhoneShell from './desk/PhoneShell.jsx'
 import { HallOverlay, RoomOverlay, TvOverlay, PcOverlay, WindowOverlay, Hints } from './world/Overlays.jsx'
 import { hasWebGL } from './world/webgl.js'
+import { BriefCard, BriefTab } from './world/Brief.jsx'
 
 const PHONE_QUERY = '(max-width: 760px)'
 const DAY_KEY = 'mc-daylight'
@@ -36,6 +38,7 @@ function useMediaQuery(query) {
 function parseEntry(pathname) {
   const slug = decodeURIComponent(pathname).replace(/^\/+|\/+$/g, '').toLowerCase()
   if (!slug) return { start: 'hall' }
+  if (slug === 'kurz') return { start: 'hall', brief: true } // Direktlink für Recruiter
   if (slug === 'desktop') return { start: 'pc' }
   const app = appBySlug(slug)
   if (app) return { start: 'pc', app: app.id }
@@ -63,6 +66,8 @@ export default function Experience() {
   const [ready, setReady] = useState(mode === 'flat')
   const [daylight, setDaylight] = useState(readDaylight)
   const [diorama, setDiorama] = useState(readDiorama) // Computer: Zimmer als Diorama von oben
+  const [tvSound, setTvSound] = useState(false)
+  const [briefOpen, setBriefOpen] = useState(!!entry.brief)
   const isPhone = useMediaQuery(PHONE_QUERY)
   const reduceMotion = useMediaQuery(REDUCE_QUERY)
 
@@ -134,6 +139,16 @@ export default function Experience() {
     try { localStorage.setItem(DAY_KEY, daylight ? '1' : '0') } catch { /* egal */ }
   }, [daylight])
 
+  /* ---------- Musik: läuft nur, solange ihr Fenster offen (oder minimiert) ist ---------- */
+  // Songs gibt es als eigene App und als Tab in Über mich; der PC darf dabei verlassen werden.
+  const { stop: stopMusic, duck: duckMusic } = useMusic()
+  const musicOpen = !!(windows.wins.songs || windows.wins.about)
+  useEffect(() => { if (!musicOpen) stopMusic() }, [musicOpen, stopMusic])
+  // Fernseher mit Ton hat Vorrang (Ton geht beim Verlassen des Fernsehers automatisch aus)
+  if (tvSound && worldState !== 'tv') setTvSound(false)
+  const tvLoud = tvSound && worldState === 'tv'
+  useEffect(() => { duckMusic(tvLoud) }, [tvLoud, duckMusic])
+
   /* ---------- Sprache: Titel, lang-Attribut, Beschriftungen in der Welt ---------- */
   useEffect(() => {
     document.title = t.meta.title
@@ -167,12 +182,13 @@ export default function Experience() {
   useEffect(() => {
     if (worldState === 'moving' || worldState === 'entering') return
     let path = '/'
-    if (worldState === 'pc') {
+    if (briefOpen) path = '/kurz'
+    else if (worldState === 'pc') {
       const f = windows.focus ? windows.wins[windows.focus] : null
       path = f && !f.min ? `/${appById(f.id).slug}` : '/desktop'
     }
     if (path !== location.pathname) navigate(path, { replace: true })
-  }, [worldState, windows, location.pathname, navigate])
+  }, [worldState, windows, briefOpen, location.pathname, navigate])
 
   const openApp = useCallback((id, tab) => dispatch({ type: 'open', id, tab }), [])
   const desk = useMemo(() => ({ openApp }), [openApp])
@@ -180,6 +196,12 @@ export default function Experience() {
   const canLeave = mode === 'world'
   const atPC = worldState === 'pc'
   const deskInteractive = atPC && !isPhone
+  // aus der Karte "In Kürze": App öffnen und, falls nötig, an den PC fahren
+  const openFromBrief = useCallback((id) => {
+    openApp(id)
+    if (mode === 'world' && worldState !== 'pc') engineRef.current?.skipToPC()
+  }, [openApp, mode, worldState])
+  const openBrief = useCallback(() => setBriefOpen(true), [])
 
   return (
     <DeskContext.Provider value={desk}>
@@ -190,8 +212,8 @@ export default function Experience() {
         <>
           <HallOverlay visible={worldState === 'hall'} onRing={() => engineRef.current?.ring()} onSkip={() => engineRef.current?.skipToPC()} />
           <RoomOverlay visible={worldState === 'room'} touch={isPhone} diorama={diorama && !isPhone} onDiorama={() => setDiorama((d) => !d)} onPC={() => engineRef.current?.goPC()} onTV={() => engineRef.current?.goTV()} onWindow={() => engineRef.current?.goWindow()} onHelp={() => engineRef.current?.showHints()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
-          <PcOverlay visible={atPC && !isPhone} onBack={leave} />
-          <TvOverlay visible={worldState === 'tv'} onBack={() => engineRef.current?.leaveTV()} onSound={(on) => engineRef.current?.setTVMuted(!on)} />
+          <PcOverlay visible={atPC && !isPhone} onBack={leave} onBrief={openBrief} />
+          <TvOverlay visible={worldState === 'tv'} onBack={() => engineRef.current?.leaveTV()} onSound={(on) => { setTvSound(on); engineRef.current?.setTVMuted(!on) }} />
           <WindowOverlay visible={worldState === 'window'} onBack={() => engineRef.current?.leaveWindow()} daylight={daylight} onDaylight={() => setDaylight((d) => !d)} />
           <Hints
             tvRef={hintTvRef} pcRef={hintPcRef} winRef={hintWinRef} touch={isPhone || diorama}
@@ -204,8 +226,11 @@ export default function Experience() {
         <Desktop windows={windows} dispatch={dispatch} onLeave={canLeave ? leave : null} />
       </main>
 
-      {isPhone && atPC && <PhoneShell windows={windows} dispatch={dispatch} onLeave={canLeave ? leave : null} />}
+      {isPhone && atPC && <PhoneShell windows={windows} dispatch={dispatch} onLeave={canLeave ? leave : null} onBrief={openBrief} />}
 
+      {/* am PC (und auf dem Handy-Startbildschirm) sitzt der Knopf in der Leiste oben */}
+      <BriefTab visible={ready && mode === 'world' && !atPC && !briefOpen} onOpen={openBrief} />
+      <BriefCard open={briefOpen} onClose={() => setBriefOpen(false)} onApp={openFromBrief} />
       {mode === 'flat' && <p className="notice-flat" role="status">{t.desktop.noWebgl}</p>}
       <div className="black" ref={blackRef} aria-hidden="true" />
       <div className={`loader${ready ? ' done' : ''}`} aria-hidden={ready} role="status">{t.meta.loading}</div>

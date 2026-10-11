@@ -27,8 +27,8 @@ protected-files/      Geschützte PDFs, NUR lokal (gitignored)
 design/mockups/       Freigegebene Mockups als Referenz (werden nicht ausgeliefert)
 ```
 
-**Adressen:** `/` = Flur · `/desktop` = direkt am PC · `/ueber-mich`,
-`/projekte`, `/dokumente`, `/songs`, `/filme`, `/blender`, `/fellow-tenants`,
+**Adressen:** `/` = Flur · `/kurz` = Flur mit offener Karte „Das Wichtigste in Kürze“ · `/desktop` = direkt am PC · `/ueber-mich`,
+`/projekte`, `/dokumente`, `/songs`, `/filme`, `/blender`, `/making-of`, `/fellow-tenants`,
 `/impressum` = direkt am PC mit offener App (gut für Links im
 Bewerbungsschreiben). Alte Adressen `/lebenslauf`, `/staerken`,
 `/persoenliches` leiten auf „Über mich“ weiter.

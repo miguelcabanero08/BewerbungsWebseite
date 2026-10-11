@@ -4,6 +4,8 @@
 .wbody::-webkit-scrollbar, .scroll::-webkit-scrollbar { width: 10px; height: 10px; }
 .wbody::-webkit-scrollbar-thumb, .scroll::-webkit-scrollbar-thumb { background: #c9c9c9; border-radius: 6px; border: 3px solid #fff; }
 .scroll { overflow: auto; overscroll-behavior: contain; }
+/* direkt im Fenster: die App selbst ist der Scrollbereich (sonst blockiert "contain" das Scrollen) */
+.wbody > .scroll, .phone-body > .scroll { height: 100%; }
 
 .pad { padding: 26px 30px 30px; }
 .wbody h2, .phone-body h2 { margin: 0 0 8px; font-size: 26px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
@@ -217,3 +219,19 @@
   .game-hero h2 { font-size: 30px !important; left: 18px; bottom: 50px; }
   .files th:nth-child(2), .files td:nth-child(2) { display: none; }
 }
+
+/* Making-of */
+.mk-stack { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.mk-stack li { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: #eef1f6; color: #2b3a52; }
+.mk-numbers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.mk-numbers li { padding: 12px 14px; border-radius: 8px; border: 1px solid var(--win-line); background: var(--win-surface); }
+.mk-numbers b { display: block; font-size: 28px; line-height: 1.1; color: var(--win-accent); font-variant-numeric: tabular-nums; }
+.mk-numbers span { display: block; font-size: 13px; line-height: 1.4; color: var(--win-muted); }
+.mk-how { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+.mk-how p { margin: 0; }
+.mk-problems { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.mk-problems li { padding: 12px 14px; border-radius: 8px; background: #f7f7f8; border: 1px solid #ececec; }
+.mk-problems p { margin: 0 0 4px; }
+.mk-problems p:last-child { margin: 0; }
+.mk-problems .tag { margin-right: 4px; }
+.mk-care { margin: 0 0 18px; padding-left: 20px; }

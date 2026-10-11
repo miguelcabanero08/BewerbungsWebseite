@@ -86,7 +86,8 @@
 
 /* PC: Knopf oben links, über dem Desktop */
 .pc-ui { z-index: 31; }
-.pc-back { position: absolute; left: 14px; top: 14px; padding: 9px 14px; font-size: 13px; }
+.pc-top { position: absolute; left: 14px; top: 14px; display: flex; gap: 8px; }
+.pc-top .tvbtn { padding: 9px 14px; font-size: 13px; }
 
 /* Fernseher */
 .tv-top { position: absolute; left: clamp(20px, 4vw, 56px); top: clamp(18px, 4vh, 44px); display: flex; gap: 10px; flex-wrap: wrap; }
@@ -138,11 +139,114 @@ button.hint3d { display: flex; flex-direction: column; align-items: center; bord
 @media (max-width: 640px) {
   .hall-top { right: 20px; }
   .hall-top p { font-size: 14px; }
-  .hall-corner { top: 116px; left: 20px; right: auto; gap: 14px; }
+  .hall-corner { top: 116px; left: 20px; right: 20px; gap: 10px 14px; flex-wrap: wrap; }
   .hall-bottom { flex-direction: column; gap: 10px; }
   .hint { display: none; }
   .chip { font-size: 13px; padding: 10px 14px; }
   .room-corner { left: 20px; right: 20px; justify-content: space-between; }
   .room-tools { gap: 8px; }
   .room-tools .tvbtn { padding: 10px 12px; }
+}
+
+/* Knopf "Das Wichtigste in Kürze": Lasche am rechten Rand (Brief.jsx BriefTab) */
+.brief-tab {
+  position: fixed; right: 0; top: 50%; z-index: 3;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 20px 15px 18px; border: 0; border-radius: 999px 0 0 999px; cursor: pointer;
+  font: 700 15px/1.1 var(--font-world); color: #1b1205; background: var(--bell-amber);
+  box-shadow: 0 10px 30px -8px rgba(255, 181, 71, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35);
+  transform: translate(100%, -50%); opacity: 0; visibility: hidden;
+  transition: transform 0.5s var(--ease-out), opacity 0.3s ease, visibility 0s linear 0.5s, background-color 0.2s, padding 0.2s var(--ease-out);
+}
+.brief-tab.on {
+  transform: translate(0, -50%); opacity: 1; visibility: visible;
+  transition: transform 0.5s var(--ease-out), opacity 0.3s ease, visibility 0s, background-color 0.2s, padding 0.2s var(--ease-out);
+  animation: brief-pulse 1.8s ease-out 1.2s 3;
+}
+.brief-tab:hover { background: var(--bell-amber-hover); padding-right: 26px; }
+.brief-tab:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@keyframes brief-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 181, 71, 0.6), 0 2px 10px rgba(0, 0, 0, 0.35); }
+  100% { box-shadow: 0 0 0 16px rgba(255, 181, 71, 0), 0 2px 10px rgba(0, 0, 0, 0.35); }
+}
+@media (max-width: 640px) {
+  /* Handy: kürzer und etwas tiefer, damit das Diorama frei bleibt */
+  .brief-tab { top: 76%; padding: 11px 14px 11px 14px; font-size: 13.5px; line-height: 1.2; text-align: left; }
+  .brief-tab span { max-width: 7.6em; }
+}
+/* gleiche Farbe für den Knopf am PC und auf dem Handy-Startbildschirm */
+.brief-solid { background: var(--bell-amber) !important; color: #1b1205 !important; border-color: transparent !important; font-weight: 700; }
+.brief-solid:hover { background: var(--bell-amber-hover) !important; }
+
+/* Karte "Das Wichtigste in Kürze" (Brief.jsx): <dialog> über allem */
+.brief {
+  width: min(600px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
+  margin: auto; padding: 0; border: 0; background: none; color: var(--overlay-ink);
+  overflow: visible;
+}
+.brief::backdrop { background: rgba(6, 5, 14, 0.55); backdrop-filter: blur(3px); }
+.brief[open] { animation: brief-in 0.32s var(--ease-out); }
+@keyframes brief-in { from { opacity: 0; transform: translateY(10px) scale(0.985); } }
+.brief-card {
+  max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain;
+  padding: 24px 26px 22px; border-radius: 18px;
+  background: rgba(16, 15, 26, 0.94); border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7);
+  font: 400 14.5px/1.55 var(--font-world);
+}
+.brief-btn { white-space: nowrap; }
+.brief-head { display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start; }
+.brief-head img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 181, 71, 0.6); }
+.brief-head small { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bell-amber); }
+.brief-head h2 { margin: 2px 0 4px; font-size: 24px; line-height: 1.15; color: #fff; }
+.brief-role { margin: 0; color: #e9e3d8; text-wrap: pretty; }
+.brief-x {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.06); color: #fff;
+}
+.brief-x:hover { background: rgba(255, 255, 255, 0.14); }
+.brief-facts { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.brief-facts li { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); color: #d9d3c8; }
+.brief h3 { margin: 20px 0 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #a9a2b8; }
+.brief-strengths { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: s; }
+.brief-strengths li { position: relative; padding-left: 30px; color: #e9e3d8; counter-increment: s; }
+.brief-strengths li::before {
+  content: counter(s); position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 11.5px; font-weight: 700; background: var(--bell-amber); color: #1b1205;
+}
+.brief-strengths b { color: #fff; }
+.brief-projects { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.brief-projects li {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.brief-projects li > div { flex: 1; min-width: 0; }
+.brief-projects b { display: block; color: #fff; }
+.brief-projects span { display: block; font-size: 13px; line-height: 1.45; color: #cfc8bb; }
+.brief-projects a, .brief-projects button {
+  flex: none; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+  font: 600 13px/1 var(--font-world); color: var(--bell-amber); text-decoration: none;
+  padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(255, 181, 71, 0.45); background: none;
+}
+.brief-projects a:hover, .brief-projects button:hover { background: rgba(255, 181, 71, 0.12); }
+.brief-actions { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brief-main {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: 700 14.5px/1 var(--font-world); color: #1b1205; background: var(--bell-amber);
+  border: 0; border-radius: 999px; padding: 12px 18px;
+}
+.brief-main:hover { background: var(--bell-amber-hover); }
+.brief-sec {
+  border: 0; background: none; padding: 4px 0; cursor: pointer;
+  font: 600 13.5px/1.3 var(--font-world); color: #fff;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255, 255, 255, 0.35);
+}
+.brief-sec:hover { color: var(--bell-amber); text-decoration-color: currentColor; }
+.brief :focus-visible { outline: 2px solid var(--bell-amber); outline-offset: 2px; }
+@media (max-width: 640px) {
+  .brief-card { padding: 20px 18px 18px; }
+  .brief-head { grid-template-columns: 52px 1fr auto; gap: 12px; }
+  .brief-head img { width: 52px; height: 52px; }
+  .brief-head h2 { font-size: 21px; }
+  .brief-projects li { flex-wrap: wrap; }
 }

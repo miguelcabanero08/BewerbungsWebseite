@@ -7,6 +7,7 @@ export const APPS = [
   { id: 'songs', slug: 'songs', icon: 'music', w: 720, h: 540 },
   { id: 'films', slug: 'filme', icon: 'film', w: 880, h: 640, taskbar: true },
   { id: 'blender', slug: 'blender', icon: 'cube', w: 860, h: 620 },
+  { id: 'making', slug: 'making-of', icon: 'making', w: 860, h: 640 },
   { id: 'fellow', slug: 'fellow-tenants', icon: 'door', w: 880, h: 640, taskbar: true },
   { id: 'imprint', slug: 'impressum', icon: 'note', w: 620, h: 460 },
   { id: 'bin', slug: 'papierkorb', icon: 'bin', w: 640, h: 380 },

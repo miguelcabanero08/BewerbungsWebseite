@@ -6,10 +6,11 @@ import { AppContent } from '../apps/index.jsx'
 import { AppIcon, UiIcon } from './icons.jsx'
 import { useDesk } from './DeskContext.jsx'
 import LangSwitch from './LangSwitch.jsx'
+import { BriefButton } from '../world/Brief.jsx'
 
 // Auf schmalen Bildschirmen statt des 1280er-Desktops: ein Startbildschirm mit
 // denselben Apps, jede App im Vollbild. Teilt den Fensterzustand mit dem Desktop.
-export default function PhoneShell({ windows, dispatch, onLeave }) {
+export default function PhoneShell({ windows, dispatch, onLeave, onBrief }) {
   const { language } = useLanguage()
   const t = ui[language]
   const { openApp } = useDesk()
@@ -43,6 +44,7 @@ export default function PhoneShell({ windows, dispatch, onLeave }) {
       <div className="phone-home">
         <header className="phone-top">
           <LangSwitch />
+          <BriefButton onOpen={onBrief} className="phone-brief brief-solid" />
         </header>
         <aside className="phone-note">
           <b>Miguel Cabañero</b>

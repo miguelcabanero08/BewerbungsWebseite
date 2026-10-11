@@ -222,7 +222,7 @@ Die Welt ist aus einfachen, ehrlichen Volumen gebaut (Boxen, Zylinder, abgeflach
 - **Auslöser:** Knopf, Klick auf Tür/Schild/Klingel in 3D, Enter oder Leertaste. Gong per Web Audio (E5 → C5 mit Obertönen).
 
 ### Overlay-Chip
-- Halbtransparente Nacht-Pille (`rgba(10,12,18,.66)`, 1px Rand `rgba(255,255,255,.16)`), weisse Schrift, für Hinweise wie "Kurz scrollen oder PC anklicken".
+- Halbtransparente Nacht-Pille (`rgba(10,12,18,.66)`, 1px Rand `rgba(255,255,255,.16)`), weisse Schrift, für Hinweise wie "PC anklicken: zu den Inhalten".
 
 ### Klick-Hilfe (Signature)
 - Halbtransparenter, wippender Pfeil nach unten mit "KLICK"-Pille darüber, per Projektion an 3D-Ankern über Fernseher (-1200, 1230, -2264) und Monitor (2150, 1300, -2318) befestigt.
@@ -248,7 +248,7 @@ Die Welt ist aus einfachen, ehrlichen Volumen gebaut (Boxen, Zylinder, abgeflach
 
 ### Do:
 - **Do** die Reihenfolge Flur → Zimmer → PC beibehalten und "Direkt zu den Inhalten" im Flur anbieten (HR mit wenig Zeit).
-- **Do** jede Bewegung mit einem einzigen Scroll-Tick, Wisch (≥ 40px) oder einer Taste komplett auslösen; Scrollen in Fenstern (`.win`, `.startmenu`) nie als Navigation werten.
+- **Do** Bewegungen nur per Klick/Tippen oder Taste auslösen (Wunsch von Miguel, 2026-10-11): Scrollen und Wischen navigieren nie, damit man nicht aus Versehen am PC landet oder ihn verlässt.
 - **Do** echte, eigene Medien zeigen: CatSleep im Fernseher, Ausflug Blueme in "Filme", Fellow-Tenants-Clip, Old-Trafford-Foto als Wallpaper.
 - **Do** Vereine nur über Farben und Schriftzüge zeigen (Trikot "CABAÑERO 14", Schal, Wimpel).
 - **Do** Skills in Worten statt Zahlen: "Sicher / Gute Erfahrung / Im Aufbau".
@@ -291,3 +291,6 @@ Lehren aus dem Mockup, die beim Umbau in React sofort gelten:
 24. **Handy = Diorama:** Im Hochformat zeigt das Zimmer sich von schräg oben wie ein Puppenhaus (`dioramaPose`, fov 28, Neigung ~54°). Wände, die zur Kamera zeigen, verschwinden durch Backface-Culling von selbst; dunkle Wandkronen und eine Bodenplatte (über der Decke / 15 mm unter dem Boden, im Zimmer unsichtbar) geben den Modell-Schnitt. Horizontal ziehen dreht das Diorama (±0.9 rad, mit Nachschwung), Tippen auf Objekte oder auf die beschrifteten Knöpfe (Fernseher, PC · Inhalte, Fenster) fliegt hinein. Von oben: kein Raumnebel (sonst verschluckt er das Zimmer aus 30 m), keine Stadt, ruhiger Hintergrund (Nacht #0b0d12, Tag #d6cfc4), Belichtung steigt mit der Kamerahöhe. Jede Pose hat ein eigenes fov, Übergänge mischen es mit. Szenenwahl: Flur nur, wenn die Kamera vorne UND unter Deckenhöhe steht. Am Computer per Knopf „Diorama“ zuschaltbar (Zimmer-Overlay, gemerkt in localStorage "mc-diorama"); die Kamera fliegt hin und zurück, Hintergrund, Nebel und Belichtung gleiten mit der Kamerahöhe (kein Sprung). Im Diorama sind die Hinweise auch am Computer beschriftete Knöpfe, oben steht Name und Eckdaten.
 25. **iOS-Tippen:** iOS löst `click` nur auf Elementen mit eigenem Listener aus. Die 3D-Fläche nimmt deshalb Klicks selbst an (`.stage` ohne `pointer-events: none`, Listener auf der Leinwand, `touch-action: none`). Ein Listener nur auf `window` reicht auf dem iPhone nicht.
 26. **Test-Hilfen (nur DEV):** `__engine.debugPose(pos, look)`, `debugWorld`, `debugRenderer`, `debugCamera`, `world.city.stats()`, `__viewer` im Modell-Viewer.
+27. **Musik:** Ein Player für die ganze Seite (MusicContext). Experience stoppt ihn, sobald weder „Meine Songs“ noch „Über mich“ offen ist (minimiert zählt als offen); den PC verlassen stoppt nicht. Fernseher mit Ton blendet die Songs aus (`duck`: 0,6 s auf 0, dann Pause) und nach „Ton aus“ oder beim Verlassen des Fernsehers wieder ein. iOS ignoriert `audio.volume`, dort wird nur pausiert. Fade-Fortschritt auf [0, 1] begrenzen (sonst Volume > 1 → IndexSizeError).
+28. **„Bewegung reduzieren“:** Kamerafahrten laufen über `move()`; bei reduzierter Bewegung stattdessen `blink()`: Schwarzblende 0,2 s, Kamera springt, 0,2 s einblenden (`.black.quick`, als Ausnahme in der globalen Reduce-Regel von base.css). Auch Klingeln und „Direkt zu den Inhalten“.
+29. **Karte „Das Wichtigste in Kürze“ (Brief.jsx, i18n/kurz.js):** natives `<dialog>` (Fokus bleibt drin, Esc schliesst), Knopf: amberfarbene Lasche am rechten Rand (`BriefTab`, immer am selben Ort in Flur, Zimmer, Fernseher, Fenster; Handy tiefer, 76 %, damit das Diorama frei bleibt, pulsiert anfangs 3×); am PC und auf dem Handy-Startbildschirm amberfarbener Knopf in der Leiste oben, Direktlink `/kurz`. Knöpfe darin öffnen Apps am PC; `skipToPC` geht dafür auch vom Fernseher und Fenster aus. App „Making-of“ (`/making-of`, i18n/makingOf.js) fasst diese Notes für Besucher zusammen.

@@ -270,6 +270,25 @@ export function createEngine({
   /* ---------- Animationen ---------- */
   const anims = []
   const run = (dur, step, done) => anims.push({ t0: performance.now(), dur: reduceMotion ? Math.min(dur, 300) : dur, step, done })
+  // Kamerafahrt. Bei "Bewegung reduzieren" stattdessen eine kurze Schwarzblende:
+  // ausblenden, Kamera springt ans Ziel, wieder einblenden (base.css .black.quick)
+  const FADE_MS = 200
+  const after = (ms, fn) => {
+    const id = setTimeout(() => { timers.delete(id); if (!disposed) fn() }, ms)
+    timers.add(id)
+  }
+  function blink(jump) {
+    blackEl.classList.add('quick', 'on')
+    after(FADE_MS, () => {
+      jump()
+      blackEl.classList.remove('on')
+      after(FADE_MS, () => blackEl.classList.remove('quick'))
+    })
+  }
+  const move = (dur, step, done) => {
+    if (!reduceMotion) { run(dur, step, done); return }
+    blink(() => { step(1); done?.() })
+  }
 
   /* ---------- Zustände ---------- */
   let state = startState
@@ -320,6 +339,7 @@ export function createEngine({
       kickTV()
       world.bellBtn.material.emissiveIntensity = 4
       later(400, () => { world.bellBtn.material.emissiveIntensity = 1.2 })
+      if (reduceMotion) { after(500, () => blink(enterRoom)); return }
       later(1000, () => run(1700, (k) => { world.door.rotation.y = 1.7 * easeIO(k) }))
       later(1500, () => {
         const from = snap()
@@ -330,16 +350,20 @@ export function createEngine({
       })
     },
 
+    // direkt an den PC (Flur-Link, Karte "In Kürze"), auch vom Fernseher oder Fenster aus
     skipToPC() {
-      if (state !== 'hall' && state !== 'room') return
+      if (!['hall', 'room', 'tv', 'window'].includes(state)) return
+      tvVideo.muted = true
       setState('moving')
-      blackEl.classList.add('on')
-      later(700, () => {
+      const jump = () => {
         world.door.rotation.y = 0
         curvePose(1)
         arriveAtPC()
         blackEl.classList.remove('on')
-      })
+      }
+      if (reduceMotion) { blink(jump); return }
+      blackEl.classList.add('on')
+      later(700, jump)
     },
 
     goPC() {
@@ -348,7 +372,7 @@ export function createEngine({
       yawVel = 0
       buildPath()
       setState('moving')
-      run(2600, (k) => curvePose(easeIO(k)), arriveAtPC)
+      move(2600, (k) => curvePose(easeIO(k)), arriveAtPC)
     },
 
     goRoom() {
@@ -356,7 +380,7 @@ export function createEngine({
       setState('moving')
       tvHold = false
       kickTV()
-      const back = () => run(2600, (k) => curvePose(easeIO(1 - k)), () => setState('room'))
+      const back = () => move(2600, (k) => curvePose(easeIO(1 - k)), () => setState('room'))
       if (phone) { snapshot().then(() => { if (!disposed) back() }); return }
       // Standbild stehen lassen, während das Abbild für den Monitor entsteht
       const freeze = deskLayer.cloneNode(true)
@@ -376,7 +400,7 @@ export function createEngine({
       hintsDone = true
       setState('moving')
       const from = snap(), to = tvPose()
-      run(1700, (k) => lerpPose(from, to, easeIO(k)), () => setState('tv'))
+      move(1700, (k) => lerpPose(from, to, easeIO(k)), () => setState('tv'))
     },
 
     // Fenster: hinschauen und die Stadt ansehen, zurück wie beim Fernseher
@@ -385,14 +409,14 @@ export function createEngine({
       hintsDone = true
       setState('moving')
       const from = snap(), to = windowPose()
-      run(1900, (k) => lerpPose(from, to, easeIO(k)), () => setState('window'))
+      move(1900, (k) => lerpPose(from, to, easeIO(k)), () => setState('window'))
     },
 
     leaveWindow() {
       if (state !== 'window') return
       setState('moving')
       const from = snap(), to = roomPose()
-      run(1700, (k) => lerpPose(from, to, easeIO(k)), () => setState('room'))
+      move(1700, (k) => lerpPose(from, to, easeIO(k)), () => setState('room'))
     },
 
     leaveTV() {
@@ -400,7 +424,7 @@ export function createEngine({
       tvVideo.muted = true
       setState('moving')
       const from = snap(), to = roomPose()
-      run(1500, (k) => lerpPose(from, to, easeIO(k)), () => setState('room'))
+      move(1500, (k) => lerpPose(from, to, easeIO(k)), () => setState('room'))
     },
 
     setTVMuted(muted) {
@@ -418,7 +442,7 @@ export function createEngine({
       yawVel = 0
       setState('moving')
       const from = snap(), to = roomPose()
-      run(1800, (k) => lerpPose(from, to, easeIO(k)), () => { buildPath(); setState('room') })
+      move(1800, (k) => lerpPose(from, to, easeIO(k)), () => { buildPath(); setState('room') })
     },
 
     // Licht-Modus: Tag (Sonne durchs Fenster, Lampen aus) oder Nacht (LED-Leisten)
@@ -461,7 +485,7 @@ export function createEngine({
       deskHome()
       document.body.style.cursor = ''
       for (const el of Object.values(hintEls)) el?.classList.remove('on')
-      blackEl.classList.remove('on')
+      blackEl.classList.remove('on', 'quick')
     },
   }
 
@@ -469,28 +493,8 @@ export function createEngine({
   const inLocalUI = (target) => target instanceof Element && !!target.closest(LOCAL_UI)
   const onButton = (target) => target instanceof Element && !!target.closest('button, a, [role="button"]')
 
-  on(window, 'wheel', (e) => {
-    if (Math.abs(e.deltaY) < 3) return
-    if (state === 'room' && e.deltaY > 0) api.goPC()
-    else if (state === 'pc' && e.deltaY < 0 && !inLocalUI(e.target)) api.goRoom()
-    else if (state === 'tv') api.leaveTV()
-    else if (state === 'window') api.leaveWindow()
-  }, { passive: true })
-
-  let touchY = null, touchX = 0
-  on(window, 'touchstart', (e) => { touchY = e.touches[0]?.clientY ?? null; touchX = e.touches[0]?.clientX ?? 0 }, { passive: true })
-  on(window, 'touchend', (e) => {
-    if (touchY === null) return
-    const dy = touchY - (e.changedTouches[0]?.clientY ?? touchY)
-    const dx = touchX - (e.changedTouches[0]?.clientX ?? touchX)
-    touchY = null
-    if (Math.abs(dy) < 40 || Math.abs(dx) > Math.abs(dy)) return
-    if (state === 'room' && dy > 0) api.goPC()
-    else if (state === 'pc' && dy < 0 && !inLocalUI(e.target)) api.goRoom()
-    else if (state === 'tv') api.leaveTV()
-    else if (state === 'window') api.leaveWindow()
-  }, { passive: true })
-
+  // Navigation nur per Klick/Tippen (und Tastatur), nicht per Scrollen oder Wischen:
+  // sonst landet man beim Herumscrollen aus Versehen am PC oder fliegt wieder raus
   on(window, 'keydown', (e) => {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || inLocalUI(e.target)) return
     const key = e.key
